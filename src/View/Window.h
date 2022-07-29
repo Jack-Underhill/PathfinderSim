@@ -3,6 +3,7 @@
 
 #include <string>
 #include <functional>
+#include <memory>
 
 #include "gwindow.h"
 #include "gevent.h"
@@ -11,6 +12,9 @@
 #include "glabel.h"
 #include "gtextfield.h"
 
+#include "Constants.h"
+
+#include "SimulationDisplay.h"
 #include "panel.h"
 #include "event.h"
 #include "buttonevent.h"
@@ -26,8 +30,8 @@ namespace PFSim {
         unsigned int Width, Height;
 
         WindowProps(const std::string& title = "Pathfinder Simulator",
-                    unsigned int width = 1280,
-                    unsigned int height = 820)
+                    unsigned int width = WINDOW_WIDTH,
+                    unsigned int height = WINDOW_HEIGHT)
                     : Title(title), Width(width), Height(height)
         {
         }
@@ -35,28 +39,24 @@ namespace PFSim {
     
     class Window
     {
-        const std::string BACKGROUND_COLOR = "black";
-        const int DEFAULT_MAZE_LENGTH = 10;
-    public:
         using EventCallbackFn = std::function<void(Event&)>;
 
-        Window(const WindowProps& props = WindowProps()) { Init(props); };
+    public:
+        Window(const WindowProps& props = WindowProps());
         ~Window();
+
+        bool isRunning() { return m_Window->isOpen(); }
 
         unsigned int getWidth() { return m_Data.width; };
         unsigned int getHeight() { return m_Data.height; };
+        sgl::GWindow* getNativeWindow() const { return m_Window; };
+        std::shared_ptr<SimulationDisplay> getSimulationDisplay() const { return m_SimDisplay; };
 
 		void setEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
 
     private:
-        void Init(const WindowProps& props);
-        void loadPanelCheckpoint();
-        void loadPanelPathfinder();
-        void loadPanelGenerator();
-        void addSpacer(Panel& panel);
-
-
         sgl::GWindow* m_Window;
+        std::shared_ptr<SimulationDisplay> m_SimDisplay;    // do I need to delete this memory?
 
         struct WindowData
         {
@@ -65,8 +65,14 @@ namespace PFSim {
 
             EventCallbackFn EventCallback;
         };
-
         WindowData m_Data;
+
+
+        void Init(const WindowProps& props);
+        void loadPanelCheckpoint();
+        void loadPanelPathfinder();
+        void loadPanelGenerator();
+        void addSpacer(Panel& panel);
     };
 
 }

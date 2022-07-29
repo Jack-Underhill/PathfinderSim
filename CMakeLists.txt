@@ -51,11 +51,13 @@ add_compile_options(
 
 # convenience variables to represent all source / header files to compile
 FILE(GLOB LibSources
-	lib/*.cpp
+	lib/PFSim/*.cpp
+	lib/SGL/*.cpp
 )
 
 FILE(GLOB LibHeaders
-	lib/*.h
+	lib/PFSim/*.h
+	lib/SGL/*.h
 )
 
 # non-sgl-library source / header files specific to this project
@@ -227,7 +229,8 @@ endforeach()
 
 target_include_directories(StarterProject
 	PRIVATE
-	lib/
+	lib/PFSim/
+	lib/SGL/
 	src/
 	src/Model/
 	src/View/

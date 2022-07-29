@@ -33,10 +33,7 @@ namespace PFSim {
         virtual const char* getName() const = 0;
         virtual std::string toString() const { return getName(); }; // debug tool
 
-        inline bool IsInCategory(EventCategory category)
-        {
-            return getCategoryFlags() & category;
-        }
+        inline bool IsInCategory(EventCategory category) { return getCategoryFlags() & category; }
 
     protected:
         bool m_IsHandled = false;

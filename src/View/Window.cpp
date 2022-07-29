@@ -2,6 +2,13 @@
 
 namespace PFSim {
 
+    Window::Window(const WindowProps& props) 
+    { 
+        Init(props); 
+        m_SimDisplay = std::shared_ptr<SimulationDisplay>
+                       (new SimulationDisplay(m_Window));
+    }
+
     Window::~Window()
     {
         delete m_Window;
@@ -17,10 +24,10 @@ namespace PFSim {
         m_Window = new sgl::GWindow(m_Data.width, m_Data.height);
         m_Window->setWindowTitle(m_Data.title);
 
-        m_Window->setExitOnClose(true);
+        m_Window->setResizable(false);
         m_Window->setAutoRepaint(true);
         m_Window->toFront();
-        m_Window->setBackground(BACKGROUND_COLOR);
+        m_Window->setBackground(BACKGROUND_WINDOW_COLOR);
 
         // Set callbacks
         loadPanelCheckpoint();
