@@ -1,11 +1,11 @@
-#include "MainController.h"
+#include "Application.h"
+
+using namespace PFSim;
 
 int main() {
-    MazeNode m;
-    MainUI v;
-
-    MainController c(&v, &m);
-    c.run();
+    Application* app = new Application();
+    app->run();
+    delete app;
 
     return 0;
 }

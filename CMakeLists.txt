@@ -63,14 +63,18 @@ FILE(GLOB ProjectSources
 	src/*.cpp
 	src/Model/*.cpp
 	src/View/*.cpp
-	src/Controller/*.cpp
+	# src/Controller/*.cpp
+	src/Controller/Core/*.cpp
+	# src/Controller/Events/*.cpp
 )
 
 FILE(GLOB ProjectHeaders
-	src/*.h
+	# src/*.h
 	src/Model/*.h
 	src/View/*.h
-	src/Controller/*.h
+	# src/Controller/*.h
+	src/Controller/Core/*.h
+	src/Controller/Events/*.h
 )
 
 # # resource files (images, input files, etc.) for this project
@@ -227,7 +231,9 @@ target_include_directories(StarterProject
 	src/
 	src/Model/
 	src/View/
-	src/Controller/
+	# src/Controller/
+	src/Controller/Core/
+	src/Controller/Events/
 )
 
 target_link_libraries(StarterProject
