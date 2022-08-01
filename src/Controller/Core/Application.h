@@ -27,12 +27,14 @@ namespace PFSim {
         bool onCheckpointEvent(UpdateCheckpointEvent& e);
         bool onPathfinderEvent(UpdatePathfinderEvent& e);
         bool onGeneratorEvent(UpdateGeneratorEvent& e);
-        // bool onMazeLengthEvent(UpdateMazeLengthEvent& e);
 
         void runAnimation();        // This is a basic version of run; only applying SimulationDisplay::updateMazeNode().
         // void runResetNodes();    // This is a new name for resetBoard/resetGraph/resetMaze from last version of project.
+
+
         int updateMazeLength();
-        bool isValidMazeLength(sgl::GTextField*& gtf_MazeLength) const;
+        bool isValidMazeLength(std::string gtf_MazeLength) const;
+        bool isAnInteger(std::string str) const;
     };
 
 }

@@ -17,8 +17,6 @@
 #include "panel.h"
 #include "event.h"
 #include "buttonevent.h"
-#include "textfieldevent.h"
-#include "textfieldcodes.h"
 #include "buttoncodes.h"
 
 namespace PFSim {
@@ -50,9 +48,10 @@ namespace PFSim {
         unsigned int getHeight() { return m_Data.height; };
         sgl::GWindow* getNativeWindow() const { return m_Window; };
         SimulationDisplay*& getSimulationDisplay() { return m_SimDisplay; };
-        sgl::GTextField*& getGTFMazeLength() { return gtf_MazeLength; }
+        std::string getInputMazeLength() { return gtf_MazeLength->getText(); }
 
 		void setEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
+        void setInputMazeLength(int length) { gtf_MazeLength->setText( std::to_string(length) ); }
 
     private:
         sgl::GWindow* m_Window;

@@ -29,13 +29,12 @@ namespace PFSim {
 
     void Application::onEvent(Event& e) 
     {
+        std::cout << "Event Fired: " << e << std::endl;
+
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<UpdateCheckpointEvent>(BIND_EVENT_FN(onCheckpointEvent));
         dispatcher.Dispatch<UpdatePathfinderEvent>(BIND_EVENT_FN(onPathfinderEvent));
         dispatcher.Dispatch<UpdateGeneratorEvent>(BIND_EVENT_FN(onGeneratorEvent));
-        // dispatcher.Dispatch<UpdateMazeLengthEvent>(BIND_EVENT_FN(onMazeLengthEvent));
-
-        std::cout << e << std::endl;
     }
 
     bool Application::onCheckpointEvent(UpdateCheckpointEvent& e)
@@ -54,10 +53,14 @@ namespace PFSim {
     {
         if(e.getButtonCode() == ButtonCode::pf_BFS) 
         {
+            m_Graph->setPathfinderBFS();
         }
         else if(e.getButtonCode() == ButtonCode::pf_DFS) 
         {
+            // m_Graph->setPathfinderDFS();
         }
+
+        runAnimation();
 
         return true;
     }
@@ -81,55 +84,74 @@ namespace PFSim {
 
         return true;
     }
-
-    // bool Application::onMazeLengthEvent(UpdateMazeLengthEvent& e) 
-    // {
-    //     // set new mazelength
-    //     // m_Window->getSimulationDisplay()->clearDisplay();
-
-    //     return true;
-    // }
     
     void Application::runAnimation()
     {
         while(!m_Graph->isAnimationComplete()) {
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
-        std::cout << "Animation Finished" << std::endl;
+
+        // std::cout << "Animation Finished" << std::endl;
     }
+
+
+
+
+
+
+    /***********************************************************************************************************/
     
     int Application::updateMazeLength() 
     {
         int mazeLength;
-        sgl::GTextField* gtf_MazeLength = m_Window->getGTFMazeLength();
+        std::string gtf_MazeLength = m_Window->getInputMazeLength();
 
         if(isValidMazeLength(gtf_MazeLength))
         {
-            mazeLength = std::stoi(gtf_MazeLength->getText());
+            mazeLength = std::stoi(gtf_MazeLength);
         }
         else
         {
             mazeLength = m_Graph->getMazeLength();
-            gtf_MazeLength->setText(std::to_string(mazeLength));
+            m_Window->setInputMazeLength(mazeLength);
         }
 
         return mazeLength;
     }
 
-    bool Application::isValidMazeLength(sgl::GTextField*& gtf_MazeLength) const
+    bool Application::isValidMazeLength(std::string gtf_MazeLength) const
     {
-        if(gtf_MazeLength->getText().size() == 0) 
+        if(gtf_MazeLength.length() == 0) 
         {
             return false;
         }
         else 
         {
-            bool isInteger = gtf_MazeLength->valueIsInteger();
-            bool isInsideLowerBound = MINIMUM_MAZE_LENGTH <= std::stoi(gtf_MazeLength->getText());
-            bool isInsideUpperBound = std::stoi(gtf_MazeLength->getText()) <= MAXIMUM_MAZE_LENGTH;
+            bool isInteger = isAnInteger(gtf_MazeLength);
+            bool isInsideLowerBound;
+            bool isInsideUpperBound;
+
+            if(isInteger) 
+            {
+                isInsideLowerBound = MINIMUM_MAZE_LENGTH <= std::stoi(gtf_MazeLength);
+                isInsideUpperBound = std::stoi(gtf_MazeLength) <= MAXIMUM_MAZE_LENGTH;
+            }
 
             return (isInteger && isInsideLowerBound && isInsideUpperBound);
         }
+    }
+    
+    bool Application::isAnInteger(std::string str) const
+    {
+        for(char c : str) 
+        {
+            if(!isdigit(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

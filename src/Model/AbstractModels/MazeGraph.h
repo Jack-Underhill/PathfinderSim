@@ -18,7 +18,7 @@ namespace PFSim {
     {
     public:
         MazeGraph();
-        ~MazeGraph() { disposeGraph(); };
+        ~MazeGraph();
 
         int getMazeLength() const { return m_MazeLength; }
         int getCellSize() const;
@@ -30,6 +30,10 @@ namespace PFSim {
         MazeNode*& updateAnimation();
 
         void setGeneratorOpen(int mazeLength);
+
+        void setPathfinderBFS();
+
+        void findNodeToSetType(CellType type);
 
     private:
         int m_MazeLength;
@@ -60,6 +64,10 @@ namespace PFSim {
 
         // Deletes all the heap allocated memory (PathNodes, CellTypes, MazeNodes, Map).
         void disposeGraph();
+        
+        // void setStartAndEnd(AnimationObject* type);
+
+        void setNode(MazeNode* node, CellType type);
 
     };
 

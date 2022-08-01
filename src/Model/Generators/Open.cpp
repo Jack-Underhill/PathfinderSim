@@ -10,10 +10,13 @@ namespace Generator {
         m_CurrPos = NodePosition(1, 1, m_MazeLength);
     }
 
-    MazeNode*& Open::step() {
+    int Open::step() {
         MazeNode*& node = m_MappedNodes->at(m_CurrPos.positionKey);
 
-        node->setType(Blank);
+        if(node->getType() == DefaultCell)
+        {
+            node->setType(Blank);
+        }
         node->setDirectionMovedIn(CENTER);
 
         connectUnlinkedNeighbors(node);
@@ -31,7 +34,7 @@ namespace Generator {
 
         m_CurrPos.updatePositionKey(m_MazeLength);
 
-        return node;
+        return node->getPosition().positionKey;
     }
 
     std::string Open::getTitle() const {

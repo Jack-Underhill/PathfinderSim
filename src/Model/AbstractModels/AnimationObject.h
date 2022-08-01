@@ -38,7 +38,7 @@ namespace PFSim {
         bool isComplete() const { return m_IsComplete; }
 
         //Takes one step of animation and returns the updates node.
-        virtual MazeNode*& step() = 0;
+        virtual int step() = 0;
 
         //Takes the given boolean parameter and sets the complete status to that parameter.
         void setIsComplete(bool isComplete) { m_IsComplete = isComplete; }

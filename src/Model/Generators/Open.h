@@ -18,7 +18,7 @@ namespace Generator {
         std::string getTitle() const;
 
         //Connects the unlinked neighbors of the node at the current position.
-        MazeNode*& step();
+        int step();
 
     private:
         NodePosition m_CurrPos;

@@ -10,7 +10,7 @@ namespace PFSim {
         m_StartNode = nullptr;
         m_EndNode = nullptr;
 
-        m_Animation = new Generator::Open(m_MappedNodes, m_MazeLength);
+        m_Animation = nullptr;
         
         // foundTargetNode = nullptr;
         // m_IsComplete = false;
@@ -18,10 +18,15 @@ namespace PFSim {
         // checkpointsToFind = new std::unordered_set<NodePosition>();
         // checkpointStack = new std::stack<NodePosition>();
         // currCheckpointsToFind = new std::unordered_set<NodePosition>();
-
-        // buildDisconnectedGraph();
     }
     
+    MazeGraph::~MazeGraph() 
+    { 
+        disposeGraph(); 
+
+        delete m_Animation;
+    }
+
     int MazeGraph::getCellSize() const 
     {
         double removedWallSizeFromTotalSize = DISPLAY_SIZE - ((m_MazeLength + 1) * WALL_WIDTH);
@@ -35,12 +40,23 @@ namespace PFSim {
         //     // PathfinderTemplate* finder = (PathfinderTemplate*)m_Animation;
         //     // return animatingPathfinder(finder);
         // } else { 
-            return m_Animation->step();
+
+
+            int key = m_Animation->step();
+            MazeNode*& n = m_MappedNodes->at(key);
+
+            return n;
         // }
     }
     
     void MazeGraph::setGeneratorOpen(int mazeLength) 
     {
+        if(m_Animation != nullptr) 
+        {
+            delete m_Animation;
+            m_Animation = nullptr;
+        }
+
         if(m_MappedNodes != nullptr && m_MappedNodes->size() > 0) 
         {
             disposeGraph();
@@ -48,7 +64,21 @@ namespace PFSim {
         m_MazeLength = mazeLength;
         buildDisconnectedGraph();
 
+        findNodeToSetType(StartCell);
+        findNodeToSetType(EndCell);
+
         m_Animation = new Generator::Open(m_MappedNodes, mazeLength);
+    }
+
+    void MazeGraph::setPathfinderBFS()
+    {
+        if(m_Animation != nullptr) 
+        {
+            delete m_Animation;
+            m_Animation = nullptr;
+        }
+
+        m_Animation = new Pathfinder::BFS(m_StartNode, nullptr);    // nullptr is temp until checkpoints are implemented
     }
 
     void MazeGraph::buildDisconnectedGraph() 
@@ -80,6 +110,52 @@ namespace PFSim {
 
         // delete the map
         delete m_MappedNodes;
+
+        m_StartNode = nullptr;
+        m_EndNode = nullptr;
+    }
+
+    void MazeGraph::findNodeToSetType(CellType type) 
+    {
+        NodePosition pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
+        MazeNode*& node = m_MappedNodes->at(pos.positionKey);
+        
+        // If curr node is already taken, then "reroll" position until curr node is not taken.
+        while(node->getType() != DefaultCell && node->getType() != Blank) 
+        {
+            pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
+            node = m_MappedNodes->at(pos.positionKey);
+        }
+
+        // Node found to host new CellType, set node.
+        setNode(node, type);
+    }
+
+    void MazeGraph::setNode(MazeNode* node, CellType type) 
+    {
+        node->setDirectionMovedIn(CENTER);
+        if(type == StartCell) 
+        {
+            node->setType(StartCell);
+            m_StartNode = node;
+        }
+        else if(type == EndCell) 
+        {
+            node->setType(EndCell);
+            m_EndNode = node;
+        }
+        // else if(type == CheckpointCell) 
+        // {
+        //     node->setType(CheckpointCell);
+        //     NodePosition pos = node->getPosition();
+        //     checkpointsToFind->insert(pos);
+        //     checkpointStack->push(pos);
+        // } 
+        else 
+        {
+            node->setType(type);
+        }
     }
 
 }
+

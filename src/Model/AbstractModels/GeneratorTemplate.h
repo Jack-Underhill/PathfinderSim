@@ -8,9 +8,10 @@
 #ifndef _Generator_h
 #define _Generator_h
 
-#include "AnimationObject.h"
 #include <cmath>
 #include <unordered_map>
+
+#include "AnimationObject.h"
 
 namespace PFSim {
 
@@ -47,7 +48,7 @@ namespace PFSim {
         bool isInsideMaze(const NodePosition& p, int mazeLength) const;
 
         //Progresses the generation of the maze a single step.
-        virtual MazeNode*& step() = 0;
+        virtual int step() = 0;
 
     protected:
         int m_MazeLength;
