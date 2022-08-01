@@ -3,7 +3,6 @@
 
 #include <string>
 #include <functional>
-#include <memory>
 
 #include "gwindow.h"
 #include "gevent.h"
@@ -50,13 +49,16 @@ namespace PFSim {
         unsigned int getWidth() { return m_Data.width; };
         unsigned int getHeight() { return m_Data.height; };
         sgl::GWindow* getNativeWindow() const { return m_Window; };
-        std::shared_ptr<SimulationDisplay> getSimulationDisplay() const { return m_SimDisplay; };
+        SimulationDisplay*& getSimulationDisplay() { return m_SimDisplay; };
+        sgl::GTextField*& getGTFMazeLength() { return gtf_MazeLength; }
 
 		void setEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
 
     private:
         sgl::GWindow* m_Window;
-        std::shared_ptr<SimulationDisplay> m_SimDisplay;    // do I need to delete this memory?
+        SimulationDisplay* m_SimDisplay;
+        sgl::GTextField* gtf_MazeLength;
+        std::stack<sgl::GInteractor*> m_Interactors;
 
         struct WindowData
         {

@@ -16,14 +16,15 @@ namespace PFSim {
         ~SimulationDisplay() = default;
 
         void clearDisplay();
-        void updateResetMarkers(int x);
-        void updateMazeNode(MazeNode* node);
-        void updatePathNode(MazeNode* node);
-        void updateMazeNodeFiller(MazeNode* node);
-        void updatePathNodeFiller(MazeNode* node);
+        void updateResetMarkers(int x, int cellSize);
+        void updateMazeNode(MazeNode*& node, int cellSize);
+        void updatePathNode(MazeNode*& node, int cellSize);
+        void updateMazeNodeFiller(MazeNode*& node, int cellSize);
+        void updatePathNodeFiller(MazeNode*& node, int cellSize);
         
     private: 
         sgl::GWindow* m_Window;
+
     };
 
 }

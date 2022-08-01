@@ -63,8 +63,15 @@ FILE(GLOB LibHeaders
 # non-sgl-library source / header files specific to this project
 FILE(GLOB ProjectSources
 	src/*.cpp
-	src/Model/*.cpp
+
+	# src/Model/*.cpp
+	src/Model/AbstractModels/*.cpp
+	src/Model/Generators/*.cpp
+	src/Model/OtherAnimationModels/*.cpp
+	src/Model/Pathfinders/*.cpp
+
 	src/View/*.cpp
+
 	# src/Controller/*.cpp
 	src/Controller/Core/*.cpp
 	# src/Controller/Events/*.cpp
@@ -72,8 +79,15 @@ FILE(GLOB ProjectSources
 
 FILE(GLOB ProjectHeaders
 	# src/*.h
-	src/Model/*.h
+
+	# src/Model/*.h
+	src/Model/AbstractModels/*.h
+	src/Model/Generators/*.h
+	src/Model/OtherAnimationModels/*.h
+	src/Model/Pathfinders/*.h
+
 	src/View/*.h
+
 	# src/Controller/*.h
 	src/Controller/Core/*.h
 	src/Controller/Events/*.h
@@ -87,122 +101,11 @@ FILE(GLOB ProjectResources
 set(sgl_HDRS
 	${LibHeaders}
 	${ProjectHeaders}
-	# lib/build.h
-	# lib/console.h
-	# lib/consolestreambuf.h
-	# lib/consoletext.h
-	# lib/echoinputstreambuf.h
-	# lib/forwardingstreambuf.h
-	# lib/gbrowserpane.h
-	# lib/gbutton.h
-	# lib/gcanvas.h
-	# lib/gcheckbox.h
-	# lib/gchooser.h
-	# lib/gclipboard.h
-	# lib/gcolorchooser.h
-	# lib/gcolor.h
-	# lib/gconsolewindow.h
-	# lib/gcontainer.h
-	# lib/gdiffgui.h
-	# lib/gdiffimage.h
-	# lib/gdownloader.h
-	# lib/gdrawingsurface.h
-	# lib/gevent.h
-	# lib/geventqueue.h
-	# lib/gexceptions.h
-	# lib/gfilechooser.h
-	# lib/gfontchooser.h
-	# lib/gfont.h
-	# lib/ginit.h
-	# lib/ginteractor.h
-	# lib/glabel.h
-	# lib/glayout.h
-	# lib/gmath.h
-	# lib/gobjects.h
-	# lib/gobservable.h
-	# lib/goptionpane.h
-	# lib/gradiobutton.h
-	# lib/grid.h
-	# lib/gridlocation.h
-	# lib/gscrollbar.h
-	# lib/gscrollpane.h
-	# lib/gslider.h
-	# lib/gsound.h
-	# lib/gspacer.h
-	# lib/gstatic.h
-	# lib/gtable.h
-	# lib/gtextarea.h
-	# lib/gtextfield.h
-	# lib/gthread.h
-	# lib/gtimer.h
-	# lib/gtypes.h
-	# lib/gversion.h
-	# lib/gwindow.h
-	# lib/privatediff.h
-	# lib/privatefilelib.h
-	# lib/privateregexpr.h
-	# lib/privatestrlib.h
-	# lib/qtgui.h
-	# lib/require.h
 )
 
 set(sgl_SRCS
 	${LibSources}
 	${ProjectSources}
-	# lib/console.cpp
-	# lib/gbrowserpane.cpp
-	# lib/gbutton.cpp
-	# lib/gcanvas.cpp
-	# lib/gcheckbox.cpp
-	# lib/gchooser.cpp
-	# lib/gclipboard.cpp
-	# lib/gcolorchooser.cpp
-	# lib/gcolor.cpp
-	# lib/gconsolewindow.cpp
-	# lib/gcontainer.cpp
-	# lib/gdiffgui.cpp
-	# lib/gdiffimage.cpp
-	# lib/gdownloader.cpp
-	# lib/gdrawingsurface.cpp
-	# lib/gevent.cpp
-	# lib/geventqueue.cpp
-	# lib/gexceptions.cpp
-	# lib/gfilechooser.cpp
-	# lib/gfontchooser.cpp
-	# lib/gfont.cpp
-	# lib/ginit.cpp
-	# lib/ginteractor.cpp
-	# lib/glabel.cpp
-	# lib/glayout.cpp
-	# lib/gmath.cpp
-	# lib/gobjects.cpp
-	# lib/gobservable.cpp
-	# lib/goptionpane.cpp
-	# lib/gradiobutton.cpp
-	# lib/gridlocation.cpp
-	# lib/gscrollbar.cpp
-	# lib/gscrollpane.cpp
-	# lib/gslider.cpp
-	# lib/gsound.cpp
-	# lib/gspacer.cpp
-	# lib/gtable.cpp
-	# lib/gtextarea.cpp
-	# lib/gtextfield.cpp
-	# lib/gthread.cpp
-	# lib/gtimer.cpp
-	# lib/gtypes.cpp
-	# lib/gversion.cpp
-	# lib/gwindow.cpp
-	# lib/librarymain.cpp
-	# lib/mainwrapper.cpp
-	# lib/privatediff.cpp
-	# lib/privatefilelib.cpp
-	# lib/privatefilelibunix.cpp
-	# lib/privatefilelibwindows.cpp
-	# lib/privateregexpr.cpp
-	# lib/privatestrlib.cpp
-	# lib/qtgui.cpp
-	# lib/require.cpp
 )
 
 # all libraries to link
@@ -232,8 +135,15 @@ target_include_directories(StarterProject
 	lib/PFSim/
 	lib/SGL/
 	src/
-	src/Model/
+
+	# src/Model/
+	src/Model/AbstractModels/
+	src/Model/Generators/
+	src/Model/OtherAnimationModels/
+	src/Model/Pathfinders/
+
 	src/View/
+
 	# src/Controller/
 	src/Controller/Core/
 	src/Controller/Events/

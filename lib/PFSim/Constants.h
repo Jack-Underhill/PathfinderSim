@@ -5,7 +5,10 @@
 
 namespace PFSim {
 
+    const int WALL_WIDTH = 2;
     const int DEFAULT_MAZE_LENGTH = 10;  
+    const int MINIMUM_MAZE_LENGTH = 3;
+    const int MAXIMUM_MAZE_LENGTH = 60;
 
     const std::string BACKGROUND_WINDOW_COLOR = "black";
     const int WINDOW_WIDTH = 1280;

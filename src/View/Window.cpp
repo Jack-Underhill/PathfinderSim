@@ -5,14 +5,20 @@ namespace PFSim {
     Window::Window(const WindowProps& props) 
     { 
         Init(props); 
-        m_SimDisplay = std::shared_ptr<SimulationDisplay>
-                       (new SimulationDisplay(m_Window));
+        m_SimDisplay = new SimulationDisplay(m_Window);
     }
 
     Window::~Window()
     {
+        delete m_SimDisplay;
+
+        while(!m_Interactors.empty()) 
+        {
+            delete m_Interactors.top();
+            m_Interactors.pop();
+        }
+
         delete m_Window;
-        m_Window = nullptr;
     }
 
     void Window::Init(const WindowProps& props) 
@@ -50,6 +56,7 @@ namespace PFSim {
             data.EventCallback(event);
         });
         p_Checkpoint.addInteractor(btn_AddCP);
+        m_Interactors.push(btn_AddCP);
         
 
         sgl::GButton* btn_SubtractCP = new sgl::GButton("Remove Checkpoint");
@@ -61,6 +68,7 @@ namespace PFSim {
             data.EventCallback(event);
         });
         p_Checkpoint.addInteractor(btn_SubtractCP);
+        m_Interactors.push(btn_SubtractCP);
 
         
         m_Window->addToRegion(p_Checkpoint.getPanel(), sgl::GWindow::REGION_EAST);
@@ -81,6 +89,7 @@ namespace PFSim {
             data.EventCallback(event);
         });
         p_Pathfinder.addInteractor(btn_pfBFS);
+        m_Interactors.push(btn_pfBFS);
 
 
         sgl::GButton* btn_pfDFS = new sgl::GButton("Run DFS");
@@ -92,6 +101,7 @@ namespace PFSim {
             data.EventCallback(event);
         });
         p_Pathfinder.addInteractor(btn_pfDFS);
+        m_Interactors.push(btn_pfDFS);
 
 
         m_Window->addToRegion(p_Pathfinder.getPanel(), sgl::GWindow::REGION_EAST);
@@ -105,18 +115,15 @@ namespace PFSim {
 
         sgl::GLabel* lbl_desc = new sgl::GLabel("Length of Maze Graph");
         p_Generator.addInteractor(lbl_desc);
-        sgl::GLabel* lbl_bounds = new sgl::GLabel("Integer from 3-70");
+        m_Interactors.push(lbl_desc);
+        std::string lengthRange = std::to_string(MINIMUM_MAZE_LENGTH) + "-" + std::to_string(MAXIMUM_MAZE_LENGTH);
+        sgl::GLabel* lbl_bounds = new sgl::GLabel("(Integer from " + lengthRange + ")");
         p_Generator.addInteractor(lbl_bounds);
+        m_Interactors.push(lbl_bounds);
 
-        sgl::GTextField* txtf_MazeLength = new sgl::GTextField(std::to_string(DEFAULT_MAZE_LENGTH));
-        txtf_MazeLength->setTextChangeListener([this]
-        {
-            WindowData& data = this->m_Data; 
-
-            UpdateMazeLengthEvent event(TextFieldCode::MazeLength);
-            data.EventCallback(event);
-        });
-        p_Generator.addInteractor(txtf_MazeLength);
+        gtf_MazeLength = new sgl::GTextField(std::to_string(DEFAULT_MAZE_LENGTH));
+        p_Generator.addInteractor(gtf_MazeLength);
+        m_Interactors.push(gtf_MazeLength);
 
 
         addSpacer(p_Generator);
@@ -131,6 +138,7 @@ namespace PFSim {
             data.EventCallback(event);
         });
         p_Generator.addInteractor(btn_genOpen);
+        m_Interactors.push(btn_genOpen);
 
         
         sgl::GButton* btn_genDFS = new sgl::GButton("Run DFS");
@@ -142,6 +150,7 @@ namespace PFSim {
             data.EventCallback(event);
         });
         p_Generator.addInteractor(btn_genDFS);
+        m_Interactors.push(btn_genDFS);
 
 
         m_Window->addToRegion(p_Generator.getPanel(), sgl::GWindow::REGION_EAST);
@@ -151,6 +160,7 @@ namespace PFSim {
     {
         sgl::GLabel* lbl_spacer = new sgl::GLabel();
         panel.addInteractor(lbl_spacer);
+        m_Interactors.push(lbl_spacer);
     }
 
 }

@@ -8,6 +8,11 @@ namespace PFSim {
     {
         m_Window = std::unique_ptr<Window>(new Window());
         m_Window->setEventCallback(BIND_EVENT_FN(onEvent));
+        
+        m_Graph = std::unique_ptr<MazeGraph>(new MazeGraph());
+
+        m_Graph->setGeneratorOpen(DEFAULT_MAZE_LENGTH);
+        runAnimation();
     }
 
     Application::~Application() 
@@ -28,7 +33,7 @@ namespace PFSim {
         dispatcher.Dispatch<UpdateCheckpointEvent>(BIND_EVENT_FN(onCheckpointEvent));
         dispatcher.Dispatch<UpdatePathfinderEvent>(BIND_EVENT_FN(onPathfinderEvent));
         dispatcher.Dispatch<UpdateGeneratorEvent>(BIND_EVENT_FN(onGeneratorEvent));
-        dispatcher.Dispatch<UpdateMazeLengthEvent>(BIND_EVENT_FN(onMazeLengthEvent));
+        // dispatcher.Dispatch<UpdateMazeLengthEvent>(BIND_EVENT_FN(onMazeLengthEvent));
 
         std::cout << e << std::endl;
     }
@@ -59,29 +64,72 @@ namespace PFSim {
             
     bool Application::onGeneratorEvent(UpdateGeneratorEvent& e) 
     {
-        // run gen alg
+        int mazeLength = updateMazeLength();
 
-        // std::string s;
+        m_Window->getSimulationDisplay()->clearDisplay();
+
         if(e.getButtonCode() == ButtonCode::gen_Open) 
         {
-            // m_Window->getSimulationDisplay()->paintDisplay("blue");
+            m_Graph->setGeneratorOpen(mazeLength);
         }
         else if(e.getButtonCode() == ButtonCode::gen_DFS) 
         {
-            // m_Window->getSimulationDisplay()->paintDisplay("red");
+            // m_Graph->setGeneratorDFS(mazeLength);
         }
 
-        // std::cout << std::endl << std::endl << "RUNNING GENERATOR ALGORITHM\t\t" << s << std::endl << std::endl;
+        runAnimation();
 
         return true;
     }
 
-    bool Application::onMazeLengthEvent(UpdateMazeLengthEvent& e) 
-    {
-        // set new mazelength
-        // m_Window->getSimulationDisplay()->clearDisplay();
+    // bool Application::onMazeLengthEvent(UpdateMazeLengthEvent& e) 
+    // {
+    //     // set new mazelength
+    //     // m_Window->getSimulationDisplay()->clearDisplay();
 
-        return true;
+    //     return true;
+    // }
+    
+    void Application::runAnimation()
+    {
+        while(!m_Graph->isAnimationComplete()) {
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
+        }
+        std::cout << "Animation Finished" << std::endl;
+    }
+    
+    int Application::updateMazeLength() 
+    {
+        int mazeLength;
+        sgl::GTextField* gtf_MazeLength = m_Window->getGTFMazeLength();
+
+        if(isValidMazeLength(gtf_MazeLength))
+        {
+            mazeLength = std::stoi(gtf_MazeLength->getText());
+        }
+        else
+        {
+            mazeLength = m_Graph->getMazeLength();
+            gtf_MazeLength->setText(std::to_string(mazeLength));
+        }
+
+        return mazeLength;
+    }
+
+    bool Application::isValidMazeLength(sgl::GTextField*& gtf_MazeLength) const
+    {
+        if(gtf_MazeLength->getText().size() == 0) 
+        {
+            return false;
+        }
+        else 
+        {
+            bool isInteger = gtf_MazeLength->valueIsInteger();
+            bool isInsideLowerBound = MINIMUM_MAZE_LENGTH <= std::stoi(gtf_MazeLength->getText());
+            bool isInsideUpperBound = std::stoi(gtf_MazeLength->getText()) <= MAXIMUM_MAZE_LENGTH;
+
+            return (isInteger && isInsideLowerBound && isInsideUpperBound);
+        }
     }
 
 }
