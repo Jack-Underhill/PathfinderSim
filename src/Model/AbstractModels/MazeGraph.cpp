@@ -11,6 +11,8 @@ namespace PFSim {
         m_EndNode = nullptr;
 
         m_Animation = nullptr;
+
+        m_Pathfinder = PathfinderType::NoPathfinder;
         
         // foundTargetNode = nullptr;
         // m_IsComplete = false;
@@ -22,7 +24,7 @@ namespace PFSim {
     
     MazeGraph::~MazeGraph() 
     { 
-        disposeGraph(); 
+        disposeNodes(); 
 
         delete m_Animation;
     }
@@ -36,50 +38,51 @@ namespace PFSim {
     
     MazeNode*& MazeGraph::updateAnimation() 
     {
-        // if(m_Animation->getType() == Pathfind) {
-        //     // PathfinderTemplate* finder = (PathfinderTemplate*)m_Animation;
-        //     // return animatingPathfinder(finder);
-        // } else { 
+        int key = m_Animation->step();
+        MazeNode*& n = m_MappedNodes->at(key);
 
+        if(m_Animation->isComplete() && m_Animation->getType() == Reset) 
+        {
+            initPathfinder();
+        }
 
-            int key = m_Animation->step();
-            MazeNode*& n = m_MappedNodes->at(key);
-
-            return n;
-        // }
+        return n;
     }
     
     void MazeGraph::setGeneratorOpen(int mazeLength) 
     {
-        if(m_Animation != nullptr) 
-        {
-            delete m_Animation;
-            m_Animation = nullptr;
-        }
-
-        if(m_MappedNodes != nullptr && m_MappedNodes->size() > 0) 
-        {
-            disposeGraph();
-        }
-        m_MazeLength = mazeLength;
-        buildDisconnectedGraph();
-
-        findNodeToSetType(StartCell);
-        findNodeToSetType(EndCell);
-
-        m_Animation = new Generator::Open(m_MappedNodes, mazeLength);
+        initGeneratorOpen(mazeLength);
     }
 
     void MazeGraph::setPathfinderBFS()
     {
-        if(m_Animation != nullptr) 
+        if(m_Pathfinder != PathfinderType::NoPathfinder) // not newly generated
         {
-            delete m_Animation;
-            m_Animation = nullptr;
+            initResetNodes();
+        
+            m_Pathfinder = PathfinderType::BFS;
         }
-
-        m_Animation = new Pathfinder::BFS(m_StartNode, nullptr);    // nullptr is temp until checkpoints are implemented
+        else
+        {
+            initPathfinderBFS();
+        }
     }
+
+    // void MazeGraph::setPathfinderDFS()
+    // {
+    //     if(m_Pathfinder != PathfinderType::NoPathfinder) // not newly generated
+    //     {
+    //         initResetNodes();
+        
+    //         m_Pathfinder = PathfinderType::DFS;
+    //     }
+    //     else
+    //     {
+    //         initPathfinderDFS();
+    //     }
+    // }
+
+    /******************************************Private********************************************/
 
     void MazeGraph::buildDisconnectedGraph() 
     {
@@ -96,7 +99,7 @@ namespace PFSim {
         }
     }
 
-    void MazeGraph::disposeGraph() 
+    void MazeGraph::disposeNodes() 
     {
         // delete all mapped MazeNodes
         for(int row = 1; row <= m_MazeLength; row++) 
@@ -155,6 +158,70 @@ namespace PFSim {
         {
             node->setType(type);
         }
+    }
+
+    void MazeGraph::freeAllocatedAnimation()
+    {
+        if(m_Animation != nullptr) 
+        {
+            delete m_Animation;
+            m_Animation = nullptr;
+        }
+    }
+
+    void MazeGraph::initGenerator(int mazeLength)
+    {
+        if(m_MappedNodes != nullptr && m_MappedNodes->size() > 0) 
+        {
+            disposeNodes();
+        }
+        m_MazeLength = mazeLength;
+        buildDisconnectedGraph();
+
+        findNodeToSetType(StartCell);
+        findNodeToSetType(EndCell);
+
+        m_Pathfinder = PathfinderType::NoPathfinder;
+    }
+    
+    void MazeGraph::initGeneratorOpen(int mazeLength)
+    {
+        freeAllocatedAnimation();
+
+        initGenerator(mazeLength);
+
+        m_Animation = new Generator::Open(m_MappedNodes, mazeLength);
+    }
+
+    void MazeGraph::initPathfinder() 
+    {
+        switch (m_Pathfinder)
+        {
+        case(BFS):
+            initPathfinderBFS();
+            break;
+        case(DFS):
+            // initPathfinderDFS();
+            break;
+        case(NoPathfinder):
+            break;
+        }
+    }
+
+    void MazeGraph::initPathfinderBFS()
+    {
+        freeAllocatedAnimation();
+        
+        m_Pathfinder = PathfinderType::BFS;
+
+        m_Animation = new Pathfinder::BFS(m_StartNode, nullptr);    // nullptr is temp until checkpoints are implemented
+    }
+
+    void MazeGraph::initResetNodes() 
+    {
+        freeAllocatedAnimation();
+
+        m_Animation = new ResetNodes(m_MappedNodes, m_MazeLength);
     }
 
 }

@@ -11,6 +11,7 @@
 #include "AnimationObject.h"
 #include "Open.h"
 #include "BFS.h"
+#include "ResetNodes.h"
 
 namespace PFSim {
 
@@ -24,22 +25,27 @@ namespace PFSim {
         int getCellSize() const;
         
         // Returns true if the current animation is complete.
-        bool isAnimationComplete() const { return m_Animation->isComplete(); }       // special case of resetNodes isnt accounted for?
-                                                                                     // maybe do an && m_reseter->isComplete() onto the current solution?
+        bool isAnimationComplete() const { return m_Animation->isComplete(); }
 
         MazeNode*& updateAnimation();
 
         void setGeneratorOpen(int mazeLength);
+        // void setGeneratorDFS();
 
         void setPathfinderBFS();
+        // void setPathfinderDFS();
 
         void findNodeToSetType(CellType type);
 
     private:
         int m_MazeLength;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
+
         MazeNode* m_StartNode;
-        MazeNode* m_EndNode;
+        MazeNode* m_EndNode;         // Redundant storing the end? its identified when stepped upon... ?
+
+        AnimationObject* m_Animation;
+        PathfinderType m_Pathfinder;
 
         // std::unordered_set<NodePosition>* checkpointsToFind;
         // std::stack<NodePosition>* checkpointStack;
@@ -48,14 +54,6 @@ namespace PFSim {
         // MazeNode* foundTargetNode;
 
 
-
-        // this should contain an animation Object* for (Generators, pathfinders, Finalpath)
-        AnimationObject* m_Animation;
-        
-        // Then contain a reset object* for (resetMaze)
-
-        
-
         // Creates maze node's in a grid formation each with their own position.
         // The grid formation is a square of the gui's given mazeLength of nodes.
         // Each node is mapped to its position since this function is building a disconnected graph
@@ -63,14 +61,27 @@ namespace PFSim {
         void buildDisconnectedGraph();
 
         // Deletes all the heap allocated memory (PathNodes, CellTypes, MazeNodes, Map).
-        void disposeGraph();
-        
-        // void setStartAndEnd(AnimationObject* type);
+        void disposeNodes();
+
 
         void setNode(MazeNode* node, CellType type);
 
+        void freeAllocatedAnimation();
+
+
+        void initGenerator(int mazeLength);
+
+        void initGeneratorOpen(int mazeLength);
+        // void initGeneratorDFS();
+
+        void initPathfinder();
+
+        void initPathfinderBFS();
+        // void initPathfinderDFS();
+
+        void initResetNodes();
     };
 
-}
+} // namespace PFSim
 
 #endif

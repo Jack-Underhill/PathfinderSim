@@ -15,7 +15,7 @@ namespace Generator {
         Open(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength);
 
         //Returns the animation's title to be displayed on the GUI while it runs.
-        std::string getTitle() const;
+        std::string getTitle() const { return "Generating without Maze"; }
 
         //Connects the unlinked neighbors of the node at the current position.
         int step();

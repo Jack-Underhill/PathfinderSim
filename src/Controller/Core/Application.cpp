@@ -91,7 +91,7 @@ namespace PFSim {
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
 
-        // std::cout << "Animation Finished" << std::endl;
+        std::cout << "Animation Finished" << std::endl;
     }
 
 
