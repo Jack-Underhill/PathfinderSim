@@ -27,7 +27,7 @@ namespace PFSim {
     {
     public:
         //Constructor takes the start of the maze and the checkpoints it needs to find before the end.
-        PathfinderTemplate(std::unordered_set<NodePosition>* checkpointsToFind);
+        PathfinderTemplate(std::unordered_set<int>* targetList);
         
         //Empty virtual destructor. This class doesn't allocate any memory.
         virtual ~PathfinderTemplate();
@@ -40,11 +40,11 @@ namespace PFSim {
         //Sets the given node as a next node for the pathfinder to look at next.
         void setNext(MazeNode* curr);
 
-        //Sets a given node as the final node found by the pathfinder.
-        void setEndNode(MazeNode* node);
+        // //Sets a given node as the final node found by the pathfinder.
+        // void setTargetFound(MazeNode* node);
 
         //Returns the end node.
-        MazeNode* getEndNode() const;
+        MazeNode* getTargetNodeFound() const { return m_TargetNodeFound; }
 
         // //Sets the given set of checkpoints
         // //as the set of checkpoints for the pathfinder to find before the end.
@@ -58,10 +58,12 @@ namespace PFSim {
 
         //Returns the type of animation the object is. In this case PathFind.
         AnimationType getType() const;
+
+    protected:
+        std::unordered_set<int>* m_TargetList;
+        MazeNode* m_TargetNodeFound;
         
     private:
-        MazeNode* endNode;
-        // std::unordered_set<NodePosition>* checkpointsToFind;
         std::stack<MazeNode*> stackOfNextNodes;
         
         //Helps the step method by returning the next step for the pathfinder to take

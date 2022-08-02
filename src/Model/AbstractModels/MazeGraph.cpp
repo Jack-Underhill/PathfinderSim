@@ -9,22 +9,18 @@ namespace PFSim {
 
         m_StartNode = nullptr;
         m_EndNode = nullptr;
+        
+        m_TargetList = nullptr;
+        m_CheckpointStack = nullptr;
 
         m_Animation = nullptr;
 
         m_Pathfinder = PathfinderType::NoPathfinder;
-        
-        // foundTargetNode = nullptr;
-        // m_IsComplete = false;
-
-        m_CheckpointSet = new std::unordered_set<int>();
-        m_CheckpointStack = new std::stack<int>();
-        // currCheckpointsToFind = new std::unordered_set<NodePosition>();
     }
     
     MazeGraph::~MazeGraph() 
     { 
-        disposeNodes(); 
+        disposeGraph(); 
 
         delete m_Animation;
     }
@@ -39,14 +35,21 @@ namespace PFSim {
     MazeNode*& MazeGraph::updateAnimation() 
     {
         int key = m_Animation->step();
-        MazeNode*& n = m_MappedNodes->at(key);
+        MazeNode*& node = m_MappedNodes->at(key);
 
-        if(m_Animation->isComplete() && m_Animation->getType() == Reset) 
+        if(m_Animation->isComplete() && m_Animation->getType() == Reset)
         {
-            initPathfinder();
+            findPathfinderToInit();
+        }
+        else if(m_Animation->isComplete() && m_Animation->getType() == Pathfind && 
+                ((PathfinderTemplate*)m_Animation)->getTargetNodeFound()->getType() == CheckpointCell)
+        {
+            m_LastTargetFound = ((PathfinderTemplate*)m_Animation)->getTargetNodeFound();
+
+            initResetNodes();
         }
 
-        return n;
+        return node;
     }
     
     void MazeGraph::setGeneratorOpen(int mazeLength) 
@@ -56,6 +59,9 @@ namespace PFSim {
 
     void MazeGraph::setPathfinderBFS()
     {
+        initTargetList();
+        m_LastTargetFound = nullptr;
+
         if(m_Pathfinder != PathfinderType::NoPathfinder) // not newly generated
         {
             initResetNodes();
@@ -63,13 +69,16 @@ namespace PFSim {
             m_Pathfinder = PathfinderType::BFS;
         }
         else
-        {
+        {            
             initPathfinderBFS();
         }
     }
 
     // void MazeGraph::setPathfinderDFS()
     // {
+    //     initTargetList();
+    //     m_LastTargetFound = nullptr;
+
     //     if(m_Pathfinder != PathfinderType::NoPathfinder) // not newly generated
     //     {
     //         initResetNodes();
@@ -102,7 +111,7 @@ namespace PFSim {
     {
         MazeNode*& node = m_MappedNodes->at(m_CheckpointStack->top());
 
-        m_CheckpointSet->erase(m_CheckpointStack->top());
+        m_TargetList->erase(m_CheckpointStack->top());
         m_CheckpointStack->pop();
 
         node->setType(Blank);
@@ -125,9 +134,12 @@ namespace PFSim {
                 (*m_MappedNodes)[pos.positionKey] = node;
             }
         }
+
+        m_TargetList = new std::unordered_set<int>();
+        m_CheckpointStack = new std::stack<int>();
     }
 
-    void MazeGraph::disposeNodes() 
+    void MazeGraph::disposeGraph() 
     {
         // delete all mapped MazeNodes
         for(int row = 1; row <= m_MazeLength; row++) 
@@ -141,9 +153,9 @@ namespace PFSim {
 
         // delete the map
         delete m_MappedNodes;
-
-        m_StartNode = nullptr;
-        m_EndNode = nullptr;
+        
+        delete m_TargetList;
+        delete m_CheckpointStack;
     }
 
     void MazeGraph::setNode(MazeNode* node, CellType type) 
@@ -162,7 +174,6 @@ namespace PFSim {
         else if(type == CheckpointCell) 
         {
             node->setType(CheckpointCell);
-            m_CheckpointSet->insert(node->getPosition().positionKey);
             m_CheckpointStack->push(node->getPosition().positionKey);
         } 
         else 
@@ -184,15 +195,13 @@ namespace PFSim {
     {
         if(m_MappedNodes != nullptr && m_MappedNodes->size() > 0) 
         {
-            disposeNodes();
+            disposeGraph();
         }
         m_MazeLength = mazeLength;
         buildDisconnectedGraph();
 
         findNodeToSetType(StartCell);
         findNodeToSetType(EndCell);
-
-        // NEED TO IMPLEMENT: reset all checkpoints back to none.
 
         m_Pathfinder = PathfinderType::NoPathfinder;
     }
@@ -206,7 +215,7 @@ namespace PFSim {
         m_Animation = new Generator::Open(m_MappedNodes, mazeLength);
     }
 
-    void MazeGraph::initPathfinder() 
+    void MazeGraph::findPathfinderToInit() 
     {
         switch (m_Pathfinder)
         {
@@ -227,7 +236,14 @@ namespace PFSim {
         
         m_Pathfinder = PathfinderType::BFS;
 
-        m_Animation = new Pathfinder::BFS(m_StartNode, nullptr);    // nullptr is temp until checkpoints are implemented
+        if(m_LastTargetFound == nullptr) // isn't re-pathfinding from last target found. Is starting from the start node.
+        {
+            m_Animation = new Pathfinder::BFS(m_StartNode, m_TargetList);
+        }
+        else
+        {
+            m_Animation = new Pathfinder::BFS(m_LastTargetFound, m_TargetList);
+        }
     }
 
     void MazeGraph::initResetNodes() 
@@ -235,6 +251,26 @@ namespace PFSim {
         freeAllocatedAnimation();
 
         m_Animation = new ResetNodes(m_MappedNodes, m_MazeLength);
+    }
+
+    void MazeGraph::initTargetList() 
+    {
+        std::stack<int> temp;
+        int stackSize = m_CheckpointStack->size();
+
+        for(int i = 0; i < stackSize; i++)
+        {
+            m_TargetList->insert(m_CheckpointStack->top());
+
+            temp.push(m_CheckpointStack->top());
+            m_CheckpointStack->pop();
+        }
+
+        for(int i = 0; i < stackSize; i++)
+        {
+            m_CheckpointStack->push(temp.top());
+            temp.pop();
+        }
     }
 
 }

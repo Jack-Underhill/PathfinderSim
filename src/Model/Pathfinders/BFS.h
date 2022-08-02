@@ -5,11 +5,8 @@
 #ifndef _BFS_h_
 #define _BFS_h_
 
-#include <iostream>
 #include <string>
-#include <vector>
 #include <queue>
-#include <set>
 #include <unordered_set>
 #include <stack>
 
@@ -24,7 +21,7 @@ namespace Pathfinder {
     {
     public:
         //Constructor takes the start, end, and a list of checkpoints the pathfinder must hit.
-        BFS(MazeNode* startNode, std::unordered_set<NodePosition>* checkpointsToFind);
+        BFS(MazeNode* startNode, std::unordered_set<int>* targetList);
 
         //Returns the animation's title to be displayed on the GUI while it runs.
         std::string getTitle() const;

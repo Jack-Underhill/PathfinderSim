@@ -10,6 +10,7 @@ namespace PFSim {
     const int MINIMUM_MAZE_LENGTH = 4;
     const int MAXIMUM_MAZE_LENGTH = 70;
     const int CHECKPOINT_LIMIT = 5;
+    const double DEFAULT_ANIMATION_SPEED = 0.015;// second per frame
 
     const std::string BACKGROUND_WINDOW_COLOR = "black";
     const int WINDOW_WIDTH = 1280;

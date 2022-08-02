@@ -35,6 +35,9 @@ namespace PFSim {
         int updateMazeLength();
         bool isValidMazeLength(std::string gtf_MazeLength) const;
         bool isAnInteger(std::string str) const;
+
+        //Delays the animation accordingly to the time that animationDelay has been set to.
+        void runTimer(AnimationType type, int mazeLength) const;
     };
 
 }

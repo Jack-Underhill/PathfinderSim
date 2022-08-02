@@ -6,9 +6,9 @@
 
 namespace PFSim {
 
-    PathfinderTemplate::PathfinderTemplate(std::unordered_set<NodePosition>* checkpointsToFind) : AnimationObject() 
+    PathfinderTemplate::PathfinderTemplate(std::unordered_set<int>* targetList) : AnimationObject() 
     {
-        // this->checkpointsToFind = checkpointsToFind;
+        m_TargetList = targetList;
     }
 
     PathfinderTemplate::~PathfinderTemplate() {}
@@ -47,15 +47,15 @@ namespace PFSim {
         return Pathfind;
     }
 
-    void PathfinderTemplate::setEndNode(MazeNode* node)
-    {
-        this->endNode = node;
-    }
+    // void PathfinderTemplate::setTargetFound(MazeNode* node)
+    // {
+    //     this->m_NodeTargetFound = node;
+    // }
 
-    MazeNode* PathfinderTemplate::getEndNode() const
-    {
-        return endNode;
-    }
+    // MazeNode* PathfinderTemplate::getEndNode() const
+    // {
+    //     return m_NodeTargetFound;
+    // }
 
     // void PathfinderTemplate::setCheckpoints(std::unordered_set<NodePosition>* checkpointsToFind) 
     // {

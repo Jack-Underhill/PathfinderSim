@@ -25,6 +25,7 @@ namespace PFSim {
         int getCellSize() const;
         MazeNode*& getTopCheckpoint() const { return m_MappedNodes->at(m_CheckpointStack->top()); }
         int getCheckpointCount() { return m_CheckpointStack->size(); }
+        AnimationType getAnimationType() { return m_Animation->getType(); }
         
         // Returns true if the current animation is complete.
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
@@ -46,17 +47,14 @@ namespace PFSim {
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
 
         MazeNode* m_StartNode;
+        MazeNode* m_LastTargetFound;
         MazeNode* m_EndNode;         // Redundant storing the end? its identified when stepped upon... ?
 
         AnimationObject* m_Animation;
         PathfinderType m_Pathfinder;
 
-        std::unordered_set<int>* m_CheckpointSet;
+        std::unordered_set<int>* m_TargetList;
         std::stack<int>* m_CheckpointStack;
-
-        // std::unordered_set<NodePosition>* currCheckpointsToFind;
-        // MazeNode* foundTargetNode;
-
 
         // Creates maze node's in a grid formation each with their own position.
         // The grid formation is a square of the gui's given mazeLength of nodes.
@@ -65,7 +63,7 @@ namespace PFSim {
         void buildDisconnectedGraph();
 
         // Deletes all the heap allocated memory (PathNodes, CellTypes, MazeNodes, Map).
-        void disposeNodes();
+        void disposeGraph();
 
 
         void setNode(MazeNode* node, CellType type);
@@ -78,12 +76,14 @@ namespace PFSim {
         void initGeneratorOpen(int mazeLength);
         // void initGeneratorDFS();
 
-        void initPathfinder();
+        void findPathfinderToInit();
 
         void initPathfinderBFS();
         // void initPathfinderDFS();
 
         void initResetNodes();
+
+        void initTargetList();
     };
 
 } // namespace PFSim

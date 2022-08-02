@@ -89,6 +89,12 @@ namespace PFSim {
             
     bool Application::onGeneratorEvent(UpdateGeneratorEvent& e) 
     {
+        m_Window->setRemoveCPEnabled(false);
+        if(!m_Window->isAddCPEnabled())
+        {
+            m_Window->setAddCPEnabled(true);
+        }
+
         int mazeLength = updateMazeLength();
 
         m_Window->getSimulationDisplay()->clearDisplay();
@@ -110,6 +116,8 @@ namespace PFSim {
     void Application::runAnimation()
     {
         while(!m_Graph->isAnimationComplete()) {
+            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
 
@@ -174,6 +182,35 @@ namespace PFSim {
         }
 
         return true;
+    }
+
+
+
+    void Application::runTimer(AnimationType type, int mazeLength) const {
+        double lengthMultiplier;
+        double updateTime;
+
+        if(type == DrawPath) {
+            updateTime = DEFAULT_ANIMATION_SPEED * 2;
+            lengthMultiplier = 10 / pow((mazeLength), 1.05);
+        }
+        else if(type == Reset) {
+            updateTime = DEFAULT_ANIMATION_SPEED / 15;
+            lengthMultiplier = 10 / pow((mazeLength), 1.25);
+        }
+        else {//Generators and Pathfinders
+            updateTime = DEFAULT_ANIMATION_SPEED;
+            lengthMultiplier = 10 / pow((mazeLength), 1.25);
+        }
+        
+        // speed mulptiplier to account for the length of the maze.
+        if(lengthMultiplier != 0) {
+            updateTime *= lengthMultiplier;
+        }
+
+        updateTime *= CLOCKS_PER_SEC;
+        clock_t nowTime = clock();
+        while(clock() - nowTime < updateTime);
     }
 
 }
