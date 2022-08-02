@@ -23,6 +23,8 @@ namespace PFSim {
 
         int getMazeLength() const { return m_MazeLength; }
         int getCellSize() const;
+        MazeNode*& getTopCheckpoint() const { return m_MappedNodes->at(m_CheckpointStack->top()); }
+        int getCheckpointCount() { return m_CheckpointStack->size(); }
         
         // Returns true if the current animation is complete.
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
@@ -37,6 +39,8 @@ namespace PFSim {
 
         void findNodeToSetType(CellType type);
 
+        MazeNode*& removeTopCheckpoint();
+
     private:
         int m_MazeLength;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
@@ -47,8 +51,8 @@ namespace PFSim {
         AnimationObject* m_Animation;
         PathfinderType m_Pathfinder;
 
-        // std::unordered_set<NodePosition>* checkpointsToFind;
-        // std::stack<NodePosition>* checkpointStack;
+        std::unordered_set<int>* m_CheckpointSet;
+        std::stack<int>* m_CheckpointStack;
 
         // std::unordered_set<NodePosition>* currCheckpointsToFind;
         // MazeNode* foundTargetNode;

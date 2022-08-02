@@ -17,8 +17,8 @@ namespace PFSim {
         // foundTargetNode = nullptr;
         // m_IsComplete = false;
 
-        // checkpointsToFind = new std::unordered_set<NodePosition>();
-        // checkpointStack = new std::stack<NodePosition>();
+        m_CheckpointSet = new std::unordered_set<int>();
+        m_CheckpointStack = new std::stack<int>();
         // currCheckpointsToFind = new std::unordered_set<NodePosition>();
     }
     
@@ -82,6 +82,34 @@ namespace PFSim {
     //     }
     // }
 
+    void MazeGraph::findNodeToSetType(CellType type) 
+    {
+        NodePosition pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
+        MazeNode*& node = m_MappedNodes->at(pos.positionKey);
+        
+        // If curr node is already taken, then "reroll" position until curr node is not taken.
+        while(node->getType() != DefaultCell && node->getType() != Blank) 
+        {
+            pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
+            node = m_MappedNodes->at(pos.positionKey);
+        }
+
+        // Node found to host new CellType, set node.
+        setNode(node, type);
+    }
+    
+    MazeNode*& MazeGraph::removeTopCheckpoint() 
+    {
+        MazeNode*& node = m_MappedNodes->at(m_CheckpointStack->top());
+
+        m_CheckpointSet->erase(m_CheckpointStack->top());
+        m_CheckpointStack->pop();
+
+        node->setType(Blank);
+
+        return node;
+    }
+
     /******************************************Private********************************************/
 
     void MazeGraph::buildDisconnectedGraph() 
@@ -118,22 +146,6 @@ namespace PFSim {
         m_EndNode = nullptr;
     }
 
-    void MazeGraph::findNodeToSetType(CellType type) 
-    {
-        NodePosition pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
-        MazeNode*& node = m_MappedNodes->at(pos.positionKey);
-        
-        // If curr node is already taken, then "reroll" position until curr node is not taken.
-        while(node->getType() != DefaultCell && node->getType() != Blank) 
-        {
-            pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
-            node = m_MappedNodes->at(pos.positionKey);
-        }
-
-        // Node found to host new CellType, set node.
-        setNode(node, type);
-    }
-
     void MazeGraph::setNode(MazeNode* node, CellType type) 
     {
         node->setDirectionMovedIn(CENTER);
@@ -147,13 +159,12 @@ namespace PFSim {
             node->setType(EndCell);
             m_EndNode = node;
         }
-        // else if(type == CheckpointCell) 
-        // {
-        //     node->setType(CheckpointCell);
-        //     NodePosition pos = node->getPosition();
-        //     checkpointsToFind->insert(pos);
-        //     checkpointStack->push(pos);
-        // } 
+        else if(type == CheckpointCell) 
+        {
+            node->setType(CheckpointCell);
+            m_CheckpointSet->insert(node->getPosition().positionKey);
+            m_CheckpointStack->push(node->getPosition().positionKey);
+        } 
         else 
         {
             node->setType(type);
@@ -180,6 +191,8 @@ namespace PFSim {
 
         findNodeToSetType(StartCell);
         findNodeToSetType(EndCell);
+
+        // NEED TO IMPLEMENT: reset all checkpoints back to none.
 
         m_Pathfinder = PathfinderType::NoPathfinder;
     }

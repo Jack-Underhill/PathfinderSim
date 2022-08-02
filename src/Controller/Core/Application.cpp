@@ -41,9 +41,31 @@ namespace PFSim {
     {
         if(e.getButtonCode() == ButtonCode::cp_Add) 
         {
+            if(!m_Window->isRemoveCPEnabled())
+            {
+                m_Window->setRemoveCPEnabled(true);
+            }
+            if(m_Graph->getCheckpointCount() + 1 == CHECKPOINT_LIMIT)
+            {
+                m_Window->setAddCPEnabled(false);
+            }
+
+            m_Graph->findNodeToSetType(CheckpointCell);
+            
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->getTopCheckpoint(), m_Graph->getCellSize() );
         }
         else if(e.getButtonCode() == ButtonCode::cp_Subtract) 
         {
+            if(!m_Window->isAddCPEnabled())
+            {
+                m_Window->setAddCPEnabled(true);
+            }
+            if(m_Graph->getCheckpointCount() - 1 == 0)
+            {
+                m_Window->setRemoveCPEnabled(false);
+            }
+
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->removeTopCheckpoint(), m_Graph->getCellSize() );
         }
 
         return true;

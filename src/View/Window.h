@@ -48,16 +48,25 @@ namespace PFSim {
         unsigned int getHeight() { return m_Data.height; };
         sgl::GWindow* getNativeWindow() const { return m_Window; };
         SimulationDisplay*& getSimulationDisplay() { return m_SimDisplay; };
-        std::string getInputMazeLength() { return gtf_MazeLength->getText(); }
+        std::string getInputMazeLength() { return tf_MazeLength->getText(); }
+
+        bool isAddCPEnabled() { return btn_AddCP->isEnabled(); }
+        bool isRemoveCPEnabled() { return btn_RemoveCP->isEnabled(); }
+
+        void setAddCPEnabled(bool value) { btn_AddCP->setEnabled(value); }
+        void setRemoveCPEnabled(bool value) { btn_RemoveCP->setEnabled(value); }
 
 		void setEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
-        void setInputMazeLength(int length) { gtf_MazeLength->setText( std::to_string(length) ); }
+        void setInputMazeLength(int length) { tf_MazeLength->setText( std::to_string(length) ); }
 
     private:
         sgl::GWindow* m_Window;
         SimulationDisplay* m_SimDisplay;
-        sgl::GTextField* gtf_MazeLength;
         std::stack<sgl::GInteractor*> m_Interactors;
+
+        sgl::GButton* btn_AddCP;
+        sgl::GButton* btn_RemoveCP;
+        sgl::GTextField* tf_MazeLength;
 
         struct WindowData
         {

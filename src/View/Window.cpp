@@ -47,7 +47,7 @@ namespace PFSim {
         addSpacer(p_Checkpoint);
 
 
-        sgl::GButton* btn_AddCP = new sgl::GButton("Add Checkpoint");
+        btn_AddCP = new sgl::GButton("Add Checkpoint");
         btn_AddCP->setActionListener([this] 
         {
             WindowData& data = this->m_Data;
@@ -59,16 +59,17 @@ namespace PFSim {
         m_Interactors.push(btn_AddCP);
         
 
-        sgl::GButton* btn_SubtractCP = new sgl::GButton("Remove Checkpoint");
-        btn_SubtractCP->setActionListener([this] 
+        btn_RemoveCP = new sgl::GButton("Remove Checkpoint");
+        btn_RemoveCP->setActionListener([this] 
         {
             WindowData& data = this->m_Data; 
 
             UpdateCheckpointEvent event(ButtonCode::cp_Subtract);
             data.EventCallback(event);
         });
-        p_Checkpoint.addInteractor(btn_SubtractCP);
-        m_Interactors.push(btn_SubtractCP);
+        btn_RemoveCP->setEnabled(false);
+        p_Checkpoint.addInteractor(btn_RemoveCP);
+        m_Interactors.push(btn_RemoveCP);
 
         
         m_Window->addToRegion(p_Checkpoint.getPanel(), sgl::GWindow::REGION_EAST);
@@ -121,9 +122,9 @@ namespace PFSim {
         p_Generator.addInteractor(lbl_bounds);
         m_Interactors.push(lbl_bounds);
 
-        gtf_MazeLength = new sgl::GTextField(std::to_string(DEFAULT_MAZE_LENGTH));
-        p_Generator.addInteractor(gtf_MazeLength);
-        m_Interactors.push(gtf_MazeLength);
+        tf_MazeLength = new sgl::GTextField(std::to_string(DEFAULT_MAZE_LENGTH));
+        p_Generator.addInteractor(tf_MazeLength);
+        m_Interactors.push(tf_MazeLength);
 
 
         addSpacer(p_Generator);
