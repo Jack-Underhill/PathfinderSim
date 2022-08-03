@@ -18,9 +18,8 @@ namespace PFSim {
     //An additional type to differentiate between the pathfinders when constructing the maze.
     enum PathfinderType 
     {
-        NoPathfinder    = 0,
-        DFS             = 1, 
-        BFS             = 2
+        BFS             = 0,
+        DFS             = 1
     };
 
     class PathfinderTemplate : public AnimationObject 

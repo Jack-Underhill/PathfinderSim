@@ -16,7 +16,7 @@ namespace PFSim {
         ~SimulationDisplay() = default;
 
         void clearDisplay();
-        void updateResetMarkers(int x, int cellSize);
+        void updateResetMarkers(int x, int cellSize, int mazeLength);
         void updateMazeNode(MazeNode*& node, int cellSize);
         void updatePathNode(MazeNode*& node, int cellSize);
         void updateMazeNodeFiller(MazeNode*& node, int cellSize);

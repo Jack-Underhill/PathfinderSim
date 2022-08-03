@@ -36,5 +36,32 @@ namespace PFSim {
         //     setCount(algorithmTick, true);
         // }
     }
+    
+    void SimulationDisplay::updateResetMarkers(int x, int cellSize, int mazeLength)
+    {
+        int markerHeight = 13;
+
+        // clear past markers
+        m_Window->setColor(BACKGROUND_WINDOW_COLOR);
+        //top
+        m_Window->fillRect(DISPLAY_LEFT_BUFFER + (x - 2) * (cellSize + WALL_WIDTH) + WALL_WIDTH,
+                        DISPLAY_TOP_BUFFER - markerHeight, cellSize, markerHeight);
+        //bottom
+        m_Window->fillRect(DISPLAY_LEFT_BUFFER + (x - 2) * (cellSize + WALL_WIDTH) + WALL_WIDTH,
+                        DISPLAY_TOP_BUFFER + ((cellSize + WALL_WIDTH) * mazeLength) + WALL_WIDTH,
+                        cellSize, markerHeight);
+
+        // paint new markers
+        m_Window->setColor("red");
+        if(x <= mazeLength) {
+            //top
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + (x - 1) * (cellSize + WALL_WIDTH) + WALL_WIDTH,
+                            DISPLAY_TOP_BUFFER - markerHeight, cellSize, markerHeight);
+            //bottom
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + (x - 1) * (cellSize + WALL_WIDTH) + WALL_WIDTH,
+                            DISPLAY_TOP_BUFFER + ((cellSize + WALL_WIDTH) * mazeLength) + WALL_WIDTH,
+                            cellSize, markerHeight);
+        }
+    }
 
 }

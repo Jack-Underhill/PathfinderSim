@@ -5,17 +5,16 @@ namespace PFSim {
     MazeGraph::MazeGraph() 
     {
         m_MazeLength = DEFAULT_MAZE_LENGTH;
-        m_MappedNodes = nullptr;
 
         m_StartNode = nullptr;
         m_EndNode = nullptr;
-        
+        m_LastTargetFound = nullptr;
+
         m_TargetList = nullptr;
         m_CheckpointStack = nullptr;
+        m_MappedNodes = nullptr;
 
         m_Animation = nullptr;
-
-        m_Pathfinder = PathfinderType::NoPathfinder;
     }
     
     MazeGraph::~MazeGraph() 
@@ -32,64 +31,68 @@ namespace PFSim {
         return (removedWallSizeFromTotalSize / m_MazeLength);
     }
     
-    MazeNode*& MazeGraph::updateAnimation() 
-    {
-        int key = m_Animation->step();
-        MazeNode*& node = m_MappedNodes->at(key);
-
-        if(m_Animation->isComplete() && m_Animation->getType() == Reset)
+    CellType MazeGraph::getTargetFoundType() 
+    { 
+        if(m_LastTargetFound != nullptr) 
         {
-            findPathfinderToInit();
-        }
-        else if(m_Animation->isComplete() && m_Animation->getType() == Pathfind && 
-                ((PathfinderTemplate*)m_Animation)->getTargetNodeFound()->getType() == CheckpointCell)
-        {
-            m_LastTargetFound = ((PathfinderTemplate*)m_Animation)->getTargetNodeFound();
-
-            initResetNodes();
-        }
-
-        return node;
-    }
-    
-    void MazeGraph::setGeneratorOpen(int mazeLength) 
-    {
-        initGeneratorOpen(mazeLength);
-    }
-
-    void MazeGraph::setPathfinderBFS()
-    {
-        initTargetList();
-        m_LastTargetFound = nullptr;
-
-        if(m_Pathfinder != PathfinderType::NoPathfinder) // not newly generated
-        {
-            initResetNodes();
-        
-            m_Pathfinder = PathfinderType::BFS;
+            return m_LastTargetFound->getType(); 
         }
         else
-        {            
-            initPathfinderBFS();
+        {
+            return CellType::DefaultCell;
+        }
+    }
+    
+    MazeNode*& MazeGraph::updateAnimation() 
+    {
+        return m_MappedNodes->at(m_Animation->step());
+    }
+    
+    void MazeGraph::updateSimulationSetup()
+    {
+        m_LastTargetFound = nullptr;
+        
+        initTargetList();
+    }
+
+    void MazeGraph::setGenerator(GeneratorType type) 
+    {
+        generatorSetup();
+
+        switch(type)
+        {
+        case(Open):
+            initGeneratorOpen();
+            break;
+        case(DFSMaze):
+            // initPathfinderDFS();
+            break;
         }
     }
 
-    // void MazeGraph::setPathfinderDFS()
-    // {
-    //     initTargetList();
-    //     m_LastTargetFound = nullptr;
+    void MazeGraph::setPathfinder(PathfinderType type) 
+    {
+        pathfinderSetup();
 
-    //     if(m_Pathfinder != PathfinderType::NoPathfinder) // not newly generated
-    //     {
-    //         initResetNodes();
-        
-    //         m_Pathfinder = PathfinderType::DFS;
-    //     }
-    //     else
-    //     {
-    //         initPathfinderDFS();
-    //     }
-    // }
+        switch(type)
+        {
+        case(BFS):
+            initPathfinderBFS();
+            break;
+        case(DFS):
+            // initPathfinderDFS();
+            break;
+        }
+    }
+    
+    void MazeGraph::setGraphReset()
+    {
+        initResetNodes();
+    }
+
+    void MazeGraph::setPathSolution()
+    {
+    }
 
     void MazeGraph::findNodeToSetType(CellType type) 
     {
@@ -139,14 +142,15 @@ namespace PFSim {
         m_CheckpointStack = new std::stack<int>();
     }
 
-    void MazeGraph::disposeGraph() 
+    void MazeGraph::disposeGraph()
     {
         // delete all mapped MazeNodes
-        for(int row = 1; row <= m_MazeLength; row++) 
+        int mazeLength = std::sqrt(m_MappedNodes->size());
+        for(int row = 1; row <= mazeLength; row++) 
         {
-            for(int col = 1; col <= m_MazeLength; col++) 
+            for(int col = 1; col <= mazeLength; col++) 
             {
-                NodePosition pos(col, row, m_MazeLength);
+                NodePosition pos(col, row, mazeLength);
                 delete m_MappedNodes->at(pos.positionKey);
             }
         }   
@@ -191,51 +195,32 @@ namespace PFSim {
         }
     }
 
-    void MazeGraph::initGenerator(int mazeLength)
+    void MazeGraph::generatorSetup()
     {
+        freeAllocatedAnimation();
+
         if(m_MappedNodes != nullptr && m_MappedNodes->size() > 0) 
         {
             disposeGraph();
         }
-        m_MazeLength = mazeLength;
         buildDisconnectedGraph();
 
         findNodeToSetType(StartCell);
         findNodeToSetType(EndCell);
-
-        m_Pathfinder = PathfinderType::NoPathfinder;
     }
     
-    void MazeGraph::initGeneratorOpen(int mazeLength)
+    void MazeGraph::pathfinderSetup() 
     {
         freeAllocatedAnimation();
-
-        initGenerator(mazeLength);
-
-        m_Animation = new Generator::Open(m_MappedNodes, mazeLength);
     }
-
-    void MazeGraph::findPathfinderToInit() 
+    
+    void MazeGraph::initGeneratorOpen()
     {
-        switch (m_Pathfinder)
-        {
-        case(BFS):
-            initPathfinderBFS();
-            break;
-        case(DFS):
-            // initPathfinderDFS();
-            break;
-        case(NoPathfinder):
-            break;
-        }
+        m_Animation = new Generator::Open(m_MappedNodes, m_MazeLength);
     }
 
     void MazeGraph::initPathfinderBFS()
     {
-        freeAllocatedAnimation();
-        
-        m_Pathfinder = PathfinderType::BFS;
-
         if(m_LastTargetFound == nullptr) // isn't re-pathfinding from last target found. Is starting from the start node.
         {
             m_Animation = new Pathfinder::BFS(m_StartNode, m_TargetList);
@@ -274,4 +259,3 @@ namespace PFSim {
     }
 
 }
-

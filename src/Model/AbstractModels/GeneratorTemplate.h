@@ -15,12 +15,12 @@
 
 namespace PFSim {
 
-    // //An additional type to differentiate between the generators when constructing the maze.
-    // enum GeneratorType 
-    // {
-    //     NoMaze, 
-    //     RandomizedDFSMaze
-    // };
+    //An additional type to differentiate between the generators when constructing the maze.
+    enum GeneratorType 
+    {
+        Open, 
+        DFSMaze
+    };
 
     class GeneratorTemplate : public AnimationObject 
     {

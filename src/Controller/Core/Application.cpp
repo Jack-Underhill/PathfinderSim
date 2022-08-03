@@ -11,8 +11,7 @@ namespace PFSim {
         
         m_Graph = std::unique_ptr<MazeGraph>(new MazeGraph());
 
-        m_Graph->setGeneratorOpen(DEFAULT_MAZE_LENGTH);
-        runAnimation();
+        runGenerator(Open);
     }
 
     Application::~Application() 
@@ -21,10 +20,8 @@ namespace PFSim {
 
     void Application::run() 
     {
-        while(m_Window->isRunning())
-        {
-            // m_Window->OnUpdate();
-        }
+        //inifinitely keeping the project up
+        while(m_Window->isRunning()) {}
     }
 
     void Application::onEvent(Event& e) 
@@ -41,14 +38,7 @@ namespace PFSim {
     {
         if(e.getButtonCode() == ButtonCode::cp_Add) 
         {
-            if(!m_Window->isRemoveCPEnabled())
-            {
-                m_Window->setRemoveCPEnabled(true);
-            }
-            if(m_Graph->getCheckpointCount() + 1 == CHECKPOINT_LIMIT)
-            {
-                m_Window->setAddCPEnabled(false);
-            }
+            updateCPButtons(true);
 
             m_Graph->findNodeToSetType(CheckpointCell);
             
@@ -56,14 +46,7 @@ namespace PFSim {
         }
         else if(e.getButtonCode() == ButtonCode::cp_Subtract) 
         {
-            if(!m_Window->isAddCPEnabled())
-            {
-                m_Window->setAddCPEnabled(true);
-            }
-            if(m_Graph->getCheckpointCount() - 1 == 0)
-            {
-                m_Window->setRemoveCPEnabled(false);
-            }
+            updateCPButtons(false);
 
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->removeTopCheckpoint(), m_Graph->getCellSize() );
         }
@@ -73,56 +56,123 @@ namespace PFSim {
 
     bool Application::onPathfinderEvent(UpdatePathfinderEvent& e)
     {
+        PathfinderType type;
+
         if(e.getButtonCode() == ButtonCode::pf_BFS) 
         {
-            m_Graph->setPathfinderBFS();
+            type = BFS;
         }
         else if(e.getButtonCode() == ButtonCode::pf_DFS) 
         {
-            // m_Graph->setPathfinderDFS();
+            type = DFS;
         }
 
-        runAnimation();
+        runPathfindingSimulation(type);
 
         return true;
     }
             
     bool Application::onGeneratorEvent(UpdateGeneratorEvent& e) 
     {
-        m_Window->setRemoveCPEnabled(false);
-        if(!m_Window->isAddCPEnabled())
-        {
-            m_Window->setAddCPEnabled(true);
-        }
-
-        int mazeLength = updateMazeLength();
-
-        m_Window->getSimulationDisplay()->clearDisplay();
+        GeneratorType type;
 
         if(e.getButtonCode() == ButtonCode::gen_Open) 
         {
-            m_Graph->setGeneratorOpen(mazeLength);
+            type = Open;
         }
         else if(e.getButtonCode() == ButtonCode::gen_DFS) 
         {
-            // m_Graph->setGeneratorDFS(mazeLength);
+            type = DFSMaze;
         }
 
-        runAnimation();
+        runGenerator(type);
 
         return true;
     }
     
-    void Application::runAnimation()
+    void Application::runGenerator(GeneratorType type)
     {
-        while(!m_Graph->isAnimationComplete()) {
-            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+        m_Graph->setMazeLength( updateMazeLength() );     // the updateMazeLength() full logic might need to be moved into graph
+        m_Graph->setGenerator(type);
+        
+        updateCPButtons(false);
+        
+        m_Window->getSimulationDisplay()->clearDisplay();
 
+        while(!m_Graph->isAnimationComplete()) 
+        {
+            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+            
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
+        }
+        
+        std::cout << "Generation Finished" << std::endl;
+    }
+
+    void Application::runPathfindingSimulation(PathfinderType type)
+    {
+        m_Graph->updateSimulationSetup();
+
+        while(m_Graph->getTargetFoundType() != EndCell) 
+        {
+            runPathfinder(type);
+            runGraphReset();
+        }
+        
+        std::cout << "Simulation Finished" << std::endl;
+    }
+    
+    void Application::runPathfinder(PathfinderType type)
+    {
+        m_Graph->setPathfinder(type);
+
+        while(!m_Graph->isAnimationComplete()) 
+        {
+            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+            
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
 
-        std::cout << "Animation Finished" << std::endl;
+        m_Graph->updatePathfinderStart();
+        
+        std::cout << "Pathfinding Finished" << std::endl;
     }
+
+    void Application::runGraphReset()
+    {
+        m_Graph->setGraphReset();
+
+        while(!m_Graph->isAnimationComplete()) 
+        {
+            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+
+            MazeNode*& node = m_Graph->updateAnimation();
+            
+            m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updateResetMarkers( node->getPosition().x, m_Graph->getCellSize(), m_Graph->getMazeLength() );
+        }
+        
+        //clear leftover markers
+        m_Window->getSimulationDisplay()->updateResetMarkers( m_Graph->getMazeLength() + 1, m_Graph->getCellSize(), m_Graph->getMazeLength() );
+        
+        std::cout << "Reseting Finished" << std::endl;
+    }
+
+    void Application::runPathSolution()
+    {
+        // set path solution animation
+
+        while(!m_Graph->isAnimationComplete()) 
+        {
+            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+
+            // path solution update
+        }
+
+        // finishing touches of a  path solution sesh
+    }
+
+
 
 
 
@@ -182,6 +232,31 @@ namespace PFSim {
         }
 
         return true;
+    }
+
+    
+    void Application::updateCPButtons(bool isIncrementingPositively)
+    {        
+        // enable if currently disabled
+        if(!isIncrementingPositively && !m_Window->isAddCPEnabled())
+        {
+            m_Window->setAddCPEnabled(true);
+        }
+        else if(isIncrementingPositively && !m_Window->isRemoveCPEnabled())
+        {
+            m_Window->setRemoveCPEnabled(true);
+        }
+
+        // check to disable addCP
+        if(m_Graph->getCheckpointCount() == CHECKPOINT_LIMIT - 1 && isIncrementingPositively)
+        {
+            m_Window->setAddCPEnabled(false);
+        }
+        // check to disable removeCP
+        else if(m_Graph->getCheckpointCount() <= 1 && !isIncrementingPositively)
+        {
+            m_Window->setRemoveCPEnabled(false);
+        }
     }
 
 

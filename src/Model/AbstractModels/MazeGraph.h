@@ -9,6 +9,8 @@
 
 #include "MazeNode.h"
 #include "AnimationObject.h"
+#include "PathfinderTemplate.h"
+#include "GeneratorTemplate.h"
 #include "Open.h"
 #include "BFS.h"
 #include "ResetNodes.h"
@@ -26,11 +28,20 @@ namespace PFSim {
         MazeNode*& getTopCheckpoint() const { return m_MappedNodes->at(m_CheckpointStack->top()); }
         int getCheckpointCount() { return m_CheckpointStack->size(); }
         AnimationType getAnimationType() { return m_Animation->getType(); }
+        CellType getTargetFoundType();
         
         // Returns true if the current animation is complete.
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
 
         MazeNode*& updateAnimation();
+        void updatePathfinderStart() { m_LastTargetFound = ((PathfinderTemplate*)m_Animation)->getTargetNodeFound(); }
+        void updateSimulationSetup();
+        
+        void setGenerator(GeneratorType type);
+        void setPathfinder(PathfinderType type);
+        void setGraphReset(); 
+        void setPathSolution(); 
+        void setMazeLength(int length) { m_MazeLength = length; }
 
         void setGeneratorOpen(int mazeLength);
         // void setGeneratorDFS();
@@ -71,12 +82,11 @@ namespace PFSim {
         void freeAllocatedAnimation();
 
 
-        void initGenerator(int mazeLength);
+        void generatorSetup();
+        void pathfinderSetup();
 
-        void initGeneratorOpen(int mazeLength);
+        void initGeneratorOpen();
         // void initGeneratorDFS();
-
-        void findPathfinderToInit();
 
         void initPathfinderBFS();
         // void initPathfinderDFS();
