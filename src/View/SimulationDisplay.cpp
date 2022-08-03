@@ -75,8 +75,8 @@ namespace PFSim {
 
         m_Window->setColor(node->getColor());
 
-        // // connect between curr node and past node
-        // drawPathFiller(node);
+        // connect between curr node and past node
+        updatePathNodeFiller(node, cellSize);
 
         // fill cell
         m_Window->fillOval(DISPLAY_LEFT_BUFFER + xOfGraphRegion + WALL_WIDTH + (reduceSizeBy / 2), 
@@ -89,6 +89,49 @@ namespace PFSim {
         //     pathTick++;
         //     setCount(pathTick, false); 
         // }
+    }
+
+    void SimulationDisplay::updatePathNodeFiller(MazeNode*& node, int cellSize) 
+    {
+        NodePosition currentPos = node->getPosition();
+        double reduceSizeBy = cellSize * .65;
+
+        int cellAndWallSize = cellSize + WALL_WIDTH;
+        int xOfGraphRegion = (currentPos.x - 1) * cellAndWallSize;
+        int yOfGraphRegion = (currentPos.y - 1) * cellAndWallSize;
+
+        if(node != nullptr && node->getType() != StartCell) 
+        {
+            // fill filler space (where a wall was) between cells. If movedIn = CENTER, this is skipped
+            if(node->getDirectionMovedIn() == NORTH) 
+            {
+                //south wall
+                m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion + (WALL_WIDTH / 2) + (reduceSizeBy / 2),
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion + (WALL_WIDTH / 2) + (cellSize / 2),
+                                cellSize - reduceSizeBy + (WALL_WIDTH / 2), cellAndWallSize);
+            }
+            else if(node->getDirectionMovedIn() == WEST) 
+            {    
+                //east wall
+                m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion + (WALL_WIDTH / 2) + (cellSize / 2),
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion + (WALL_WIDTH / 2) + (reduceSizeBy / 2),
+                                cellAndWallSize, cellSize - reduceSizeBy + (WALL_WIDTH / 2));
+            }
+            else if(node->getDirectionMovedIn() == SOUTH) 
+            {    
+                //north wall
+                m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion + (WALL_WIDTH / 2) + (reduceSizeBy / 2), 
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion - (cellSize / 2),
+                                cellSize - reduceSizeBy + (WALL_WIDTH / 2), cellAndWallSize);
+            }
+            else if(node->getDirectionMovedIn() == EAST) 
+            {    
+                //west wall
+                m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion - (cellSize / 2),
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion + (WALL_WIDTH / 2) + (reduceSizeBy / 2),
+                                cellAndWallSize, cellSize - reduceSizeBy + (WALL_WIDTH / 2));
+            }   
+        }
     }
 
 }
