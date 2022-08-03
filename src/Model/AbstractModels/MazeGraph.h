@@ -60,7 +60,7 @@ namespace PFSim {
         MazeNode* m_LastTargetFound;
 
         AnimationObject* m_Animation;
-        AnimationObject* m_PathSolution;
+        PathSolution* m_PathSolution;
         PathfinderType m_Pathfinder;
 
         std::unordered_set<int>* m_TargetList;
@@ -78,9 +78,9 @@ namespace PFSim {
         void disposeGraph();
 
 
-        void findNodeToSetType(CellType type);
+        void setAvailableNodeCellType(CellType type);
 
-        void setNode(MazeNode* node, CellType type);
+        void setNodeCellType(MazeNode* node, CellType type);
 
         void freeAllocatedAnimation();
 

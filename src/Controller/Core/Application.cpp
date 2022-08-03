@@ -96,9 +96,8 @@ namespace PFSim {
     
     void Application::runGenerator(GeneratorType type)
     {
-        m_Graph->setMazeLength( updateMazeLength() );     // the updateMazeLength() full logic might need to be moved into graph
+        updateMazeLength();             // the updateMazeLength() full logic might need to be moved into graph
         m_Graph->setGenerator(type);
-        
         updateCPButtons(false);
         
         m_Window->getSimulationDisplay()->clearDisplay();
@@ -152,6 +151,7 @@ namespace PFSim {
     {
         m_Graph->setGraphReset();
 
+        int lastMarkerPosition = 0;
         while(!m_Graph->isAnimationComplete()) 
         {
             runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
@@ -159,7 +159,13 @@ namespace PFSim {
             MazeNode*& node = m_Graph->updateAnimation();
             
             m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize() );
-            m_Window->getSimulationDisplay()->updateResetMarkers( node->getPosition().x, m_Graph->getCellSize(), m_Graph->getMazeLength() );
+            
+            // update markers only when needed
+            if(lastMarkerPosition < node->getPosition().x)  
+            {
+                m_Window->getSimulationDisplay()->updateResetMarkers( node->getPosition().x, m_Graph->getCellSize(), m_Graph->getMazeLength() );
+                lastMarkerPosition = node->getPosition().x;
+            }
         }
         
         //clear leftover markers
@@ -180,8 +186,6 @@ namespace PFSim {
             // path solution update
             m_Window->getSimulationDisplay()->updatePathNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
-
-        // finishing touches of a  path solution sesh
     }
 
 
@@ -193,7 +197,7 @@ namespace PFSim {
 
     /***********************************************************************************************************/
     
-    int Application::updateMazeLength() 
+    void Application::updateMazeLength() 
     {
         int mazeLength;
         std::string gtf_MazeLength = m_Window->getInputMazeLength();
@@ -208,7 +212,7 @@ namespace PFSim {
             m_Window->setInputMazeLength(mazeLength);
         }
 
-        return mazeLength;
+        m_Graph->setMazeLength(mazeLength);
     }
 
     bool Application::isValidMazeLength(std::string gtf_MazeLength) const
@@ -238,9 +242,7 @@ namespace PFSim {
         for(char c : str) 
         {
             if(!isdigit(c))
-            {
                 return false;
-            }
         }
 
         return true;

@@ -58,6 +58,9 @@ namespace PFSim {
         PathNode* front;
         PathNode* previous;
         bool isHeadOfPath;
+
+        void headStep(MazeNode*& currNode);
+        void bodyStep(MazeNode*& currNode);
         
     };
     

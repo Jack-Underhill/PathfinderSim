@@ -14,9 +14,9 @@ namespace Generator {
     {
         MazeNode*& node = m_MappedNodes->at(m_CurrPos.positionKey);
 
-        if(node->getType() == DefaultCell)
+        if(node->getType() == GenerationCell)
         {
-            node->setType(Blank);
+            node->setType(BlankCell);
         }
         node->setDirectionMovedIn(CENTER);
 

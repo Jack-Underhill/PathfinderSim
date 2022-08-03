@@ -35,7 +35,7 @@ namespace PFSim {
         void runPathSolution();
 
 
-        int updateMazeLength();
+        void updateMazeLength();
         bool isValidMazeLength(std::string gtf_MazeLength) const;
         bool isAnInteger(std::string str) const;
 

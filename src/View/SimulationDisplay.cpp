@@ -52,7 +52,7 @@ namespace PFSim {
         m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion, DISPLAY_TOP_BUFFER + yOfGraphRegion,
                         cellSize, cellSize);
 
-        // if(!isOpenMode) {
+        // if(!isOpenMode) {    // rename to isMazeGenerated
         //     drawNodeFiller(node);
         // }
 

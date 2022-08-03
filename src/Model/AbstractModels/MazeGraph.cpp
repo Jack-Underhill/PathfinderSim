@@ -41,7 +41,7 @@ namespace PFSim {
         }
         else
         {
-            return CellType::DefaultCell;
+            return CellType::GenerationCell;
         }
     }
     
@@ -54,7 +54,7 @@ namespace PFSim {
     { 
         m_LastTargetFound = ((PathfinderTemplate*)m_Animation)->getTargetNodeFound(); 
 
-        ((PathSolution*)m_PathSolution)->addCurrentSolution(m_LastTargetFound);
+        m_PathSolution->addCurrentSolution(m_LastTargetFound);
     }
     
     void MazeGraph::updateSimulationSetup()
@@ -106,27 +106,27 @@ namespace PFSim {
         initPathSolution();
     }
 
-    void MazeGraph::findNodeToSetType(CellType type) 
+    void MazeGraph::setAvailableNodeCellType(CellType type) 
     {
         NodePosition pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
         MazeNode*& node = m_MappedNodes->at(pos.positionKey);
         
         // If curr node is already taken, then "reroll" position until curr node is not taken.
-        while(node->getType() != DefaultCell && node->getType() != Blank) 
+        while(node->getType() == StartCell || node->getType() == EndCell || node->getType() == CheckpointCell) 
         {
             pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
             node = m_MappedNodes->at(pos.positionKey);
         }
 
         // Node found to host new CellType, set node.
-        setNode(node, type);
+        setNodeCellType(node, type);
     }
 
     MazeNode*& MazeGraph::addCheckpoint() 
     { 
         m_IsReadyForSimulation = true;
 
-        findNodeToSetType(CheckpointCell); 
+        setAvailableNodeCellType(CheckpointCell); 
 
         return m_MappedNodes->at(m_CheckpointStack->top());
     }
@@ -140,7 +140,7 @@ namespace PFSim {
         m_TargetList->erase(m_CheckpointStack->top());
         m_CheckpointStack->pop();
 
-        node->setType(Blank);
+        node->setType(BlankCell);
 
         return node;
     }
@@ -185,7 +185,7 @@ namespace PFSim {
         delete m_CheckpointStack;
     }
 
-    void MazeGraph::setNode(MazeNode* node, CellType type) 
+    void MazeGraph::setNodeCellType(MazeNode* node, CellType type) 
     {
         node->setDirectionMovedIn(CENTER);
         if(type == StartCell) 
@@ -227,8 +227,8 @@ namespace PFSim {
         }
         buildDisconnectedGraph();
 
-        findNodeToSetType(StartCell);
-        findNodeToSetType(EndCell);
+        setAvailableNodeCellType(StartCell);
+        setAvailableNodeCellType(EndCell);
         
         m_IsReadyForSimulation = true;
     }
@@ -264,7 +264,7 @@ namespace PFSim {
 
     void MazeGraph::initPathSolution()
     {
-        ((PathSolution*)m_PathSolution)->reversePath();
+        m_PathSolution->reversePath();
 
         freeAllocatedAnimation();
 

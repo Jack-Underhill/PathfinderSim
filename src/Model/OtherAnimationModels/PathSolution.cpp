@@ -42,40 +42,12 @@ namespace PFSim {
         //step to highlight the head of the path
         if(isHeadOfPath) 
         {
-            //this gives the highlight step a head start in front of the true path.
-            if(previous == nullptr) 
-            {
-                previous = front;
-            }
-            else 
-            {
-                isHeadOfPath = false;
-            }
-            // change the node to a highlighted pathcell
-            front->node->setIsPath(true);// front->node->setType(PathCell);
-            front->node->setDirectionMovedIn(front->movedIn);
-            front->node->setIsNext(true);
-
-            currNode = front->node;
-
-            front = front->next;
+            headStep(currNode);
         }
         //step to paint in the true path color
         else 
         {
-            //allow the true path to catch up to the highlighted step at the end of the list.
-            if(front != nullptr) 
-            {
-                isHeadOfPath = true;
-            }
-            //unhighlight the node
-            previous->node->setIsNext(false);
-
-            currNode = previous->node;
-
-            PathNode* temp = previous;
-            previous = previous->next;
-            delete temp;
+            bodyStep(currNode);
         }
 
         // when both step types end, the animation is complete
@@ -134,6 +106,44 @@ namespace PFSim {
             curr = next;
         }
         front = prev;
+    }
+    
+    void PathSolution::headStep(MazeNode*& currNode)
+    {
+        //this gives the highlight step a head start in front of the true path.
+        if(previous == nullptr) 
+        {
+            previous = front;
+        }
+        else 
+        {
+            isHeadOfPath = false;
+        }
+        // change the node to a highlighted pathcell
+        front->node->setIsPath(true);// front->node->setType(PathCell);
+        front->node->setDirectionMovedIn(front->movedIn);
+        front->node->setIsNext(true);
+
+        currNode = front->node;
+
+        front = front->next;
+    }
+
+    void PathSolution::bodyStep(MazeNode*& currNode)
+    {
+        //allow the true path to catch up to the highlighted step at the end of the list.
+        if(front != nullptr) 
+        {
+            isHeadOfPath = true;
+        }
+        //unhighlight the node
+        previous->node->setIsNext(false);
+
+        currNode = previous->node;
+
+        PathNode* temp = previous;
+        previous = previous->next;
+        delete temp;
     }
     
 } // namespace PFSim

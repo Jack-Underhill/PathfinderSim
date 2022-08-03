@@ -8,12 +8,11 @@ namespace PFSim {
     // Representation of different cell types on the maze.
     enum CellType 
     {
-        PathCell,
-        DefaultCell,
+        GenerationCell, // DefaultCell,
+        BlankCell,
         EndCell,
         CheckpointCell,
-        StartCell,
-        Blank
+        StartCell
     };
 
     // Directions to move in.
@@ -30,19 +29,13 @@ namespace PFSim {
     {
         int x;
         int y;
-
         int positionKey;
-
-        // // sets (x, y) coordinates to (0, 0).
-        // NodePosition();
 
         // sets (x, y) coordinates.
         NodePosition(int x = 0, int y = 0, int mazeLength = -1) : x(x), y(y) 
         { 
             if(mazeLength > -1)     // current flagger for if constructed with mazeLength or not.
-            {
                 updatePositionKey(mazeLength); 
-            }
         }
 
         void updatePositionKey(int mazeLength) 
@@ -52,27 +45,8 @@ namespace PFSim {
 
         // // overload `<` operator to use a `Node` object as a key in a `std::map`
         // // It returns true if the current object appears before the specified object
-        // bool operator < (const NodePosition& pos) const;
+        // bool operator < (const NodePosition& pos) const { return x < pos.x || (x == pos.x && y < pos.y); } 
     };
-
-    // struct NodePosition_Hash
-    // {
-    //     template <class T1, class T2>
-    //     std::size_t operator() (const std::NodePosition<T1, T2> &NodePosition) const
-    //     {
-    //         return std::hash<T1>()(NodePosition.first) ^ std::hash<T2>()(NodePosition.second);
-    //     }
-    // };
-
-    // typedef std::pair<int, int> pair;
-
-    // struct pair_hash
-    // {
-    //     template <class T1, class T2>
-    //     std::size_t operator() (const std::pair<T1, T2> &pair) const {
-    //         return std::hash<T1>()(pair.first) ^ std::hash<T2>()(pair.second);
-    //     }
-    // };
 
     class MazeNode 
     {
@@ -113,7 +87,6 @@ namespace PFSim {
         NodePosition m_Position;
         DirectionMoved m_MovedIn;
 
-        // these bools are cell characteristics, they stack onto CellTypes.
         bool m_IsVisited;
         bool m_IsNext;
         bool m_IsPath;
