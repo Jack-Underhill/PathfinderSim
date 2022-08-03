@@ -21,6 +21,7 @@ namespace PFSim  {
         m_CellType = DefaultCell;
         m_IsVisited = false;
         m_IsNext = false;
+        m_IsPath = false;
     }
 
     std::string MazeNode::getTypeString() const 
@@ -40,14 +41,18 @@ namespace PFSim  {
                 //     return "Path Head";
                 // } 
                 // else {
-                    return "Path Cell";
+                    // return "Path Cell";
                 // }
             default:
-                if(this->isNext()) 
+                if(isPath()) 
+                {
+                    return "Path Cell";
+                } 
+                else if(isNext()) 
                 {
                     return "Next Cell";
                 } 
-                if(this->isVisited()) 
+                else if(isVisited()) 
                 {
                     return "Visited Cell";
                 } 
@@ -60,6 +65,18 @@ namespace PFSim  {
 
     std::string MazeNode::getColor() const
     {
+        if(m_IsPath)
+        {
+            if(m_IsNext)
+            {
+                return "cyan";
+            }
+            else
+            {
+                return "#123D73";// dark blue
+            }
+        }
+
         switch(m_CellType) 
         {
             case(StartCell):
@@ -71,7 +88,7 @@ namespace PFSim  {
             case(DefaultCell):
                 return "#A7A7A7";//gray
             case(PathCell):
-                if(this->isNext()) 
+                if(isNext()) 
                 {
                     // return "#84B6C5";//glacier blue
                     // return "#207d9c";// gray blue
@@ -82,11 +99,19 @@ namespace PFSim  {
                     return "#123D73";// dark blue
                 }
             default:
-                if(this->isNext()) 
+                // if(isPath() && isNext())
+                // {
+                //     return "cyan";
+                // }
+                // else if(isPath())
+                // {
+                //     return "#123D73";// dark blue
+                // }
+                 if(isNext()) 
                 {
                     return "#207d9c";// gray blue
                 } 
-                else if(this->isVisited()) 
+                else if(isVisited()) 
                 {
                     return "cyan";
                 } 

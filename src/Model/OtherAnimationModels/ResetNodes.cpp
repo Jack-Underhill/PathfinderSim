@@ -15,13 +15,14 @@ namespace PFSim {
 
         node->setIsVisited(false);
         node->setIsNext(false);
+        node->setIsPath(false);
         node->parent = nullptr;
 
-        // Reset cell to a blank cell in case of it being a path cell or was a next cell.
-        CellType type = node->getType();
-        if(type == PathCell) {
-            node->setType(Blank);
-        }
+        // // Reset cell to a blank cell in case of it being a path cell or was a next cell.
+        // CellType type = node->getType();
+        // if(type == PathCell) {
+        //     node->setType(Blank);
+        // }
         
         if(m_CurrPos.y < m_MazeLength) {
             m_CurrPos.y++;

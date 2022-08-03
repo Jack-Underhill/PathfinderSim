@@ -36,13 +36,17 @@ namespace PFSim {
 
     bool Application::onCheckpointEvent(UpdateCheckpointEvent& e)
     {
+        if(!m_Graph->isReadyForSimulation())
+        {
+            runGraphReset();
+        }
+
+
         if(e.getButtonCode() == ButtonCode::cp_Add) 
         {
             updateCPButtons(true);
-
-            m_Graph->findNodeToSetType(CheckpointCell);
             
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->getTopCheckpoint(), m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->addCheckpoint(), m_Graph->getCellSize() );
         }
         else if(e.getButtonCode() == ButtonCode::cp_Subtract) 
         {
@@ -113,11 +117,17 @@ namespace PFSim {
     {
         m_Graph->updateSimulationSetup();
 
+        if(!m_Graph->isReadyForSimulation())
+        {
+            runGraphReset();
+        }
+
         while(m_Graph->getTargetFoundType() != EndCell) 
         {
             runPathfinder(type);
             runGraphReset();
         }
+        runPathSolution();
         
         std::cout << "Simulation Finished" << std::endl;
     }
@@ -161,12 +171,14 @@ namespace PFSim {
     void Application::runPathSolution()
     {
         // set path solution animation
+        m_Graph->setPathSolution();
 
         while(!m_Graph->isAnimationComplete()) 
         {
             runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
 
             // path solution update
+            m_Window->getSimulationDisplay()->updatePathNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
 
         // finishing touches of a  path solution sesh

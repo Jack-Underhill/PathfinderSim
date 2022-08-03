@@ -14,6 +14,7 @@
 #include "Open.h"
 #include "BFS.h"
 #include "ResetNodes.h"
+#include "PathSolution.h"
 
 namespace PFSim {
 
@@ -25,16 +26,15 @@ namespace PFSim {
 
         int getMazeLength() const { return m_MazeLength; }
         int getCellSize() const;
-        MazeNode*& getTopCheckpoint() const { return m_MappedNodes->at(m_CheckpointStack->top()); }
         int getCheckpointCount() { return m_CheckpointStack->size(); }
         AnimationType getAnimationType() { return m_Animation->getType(); }
         CellType getTargetFoundType();
         
-        // Returns true if the current animation is complete.
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
+        bool isReadyForSimulation() const { return m_IsReadyForSimulation; }
 
         MazeNode*& updateAnimation();
-        void updatePathfinderStart() { m_LastTargetFound = ((PathfinderTemplate*)m_Animation)->getTargetNodeFound(); }
+        void updatePathfinderStart();
         void updateSimulationSetup();
         
         void setGenerator(GeneratorType type);
@@ -49,8 +49,7 @@ namespace PFSim {
         void setPathfinderBFS();
         // void setPathfinderDFS();
 
-        void findNodeToSetType(CellType type);
-
+        MazeNode*& addCheckpoint();
         MazeNode*& removeTopCheckpoint();
 
     private:
@@ -59,13 +58,15 @@ namespace PFSim {
 
         MazeNode* m_StartNode;
         MazeNode* m_LastTargetFound;
-        MazeNode* m_EndNode;         // Redundant storing the end? its identified when stepped upon... ?
 
         AnimationObject* m_Animation;
+        AnimationObject* m_PathSolution;
         PathfinderType m_Pathfinder;
 
         std::unordered_set<int>* m_TargetList;
         std::stack<int>* m_CheckpointStack;
+
+        bool m_IsReadyForSimulation;
 
         // Creates maze node's in a grid formation each with their own position.
         // The grid formation is a square of the gui's given mazeLength of nodes.
@@ -76,6 +77,8 @@ namespace PFSim {
         // Deletes all the heap allocated memory (PathNodes, CellTypes, MazeNodes, Map).
         void disposeGraph();
 
+
+        void findNodeToSetType(CellType type);
 
         void setNode(MazeNode* node, CellType type);
 
@@ -92,6 +95,8 @@ namespace PFSim {
         // void initPathfinderDFS();
 
         void initResetNodes();
+
+        void initPathSolution();
 
         void initTargetList();
     };

@@ -97,6 +97,7 @@ namespace PFSim {
 
         bool isVisited() const { return m_IsVisited; }
         bool isNext() const { return m_IsNext; }
+        bool isPath() const { return m_IsPath; }
 
         // Returns true if the cell has not been visited and is not a StartCell.
         bool isAvailableToMoveInto();
@@ -105,6 +106,7 @@ namespace PFSim {
         void setDirectionMovedIn(DirectionMoved Dir) { m_MovedIn = Dir; }
         void setIsVisited(bool isVisited) { m_IsVisited = isVisited; }
         void setIsNext(bool isNext) { m_IsNext = isNext; }
+        void setIsPath(bool isPath) { m_IsPath = isPath; }
 
     private:
         CellType m_CellType;
@@ -114,6 +116,7 @@ namespace PFSim {
         // these bools are cell characteristics, they stack onto CellTypes.
         bool m_IsVisited;
         bool m_IsNext;
+        bool m_IsPath;
     };
 
 }
