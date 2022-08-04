@@ -26,7 +26,7 @@ namespace PFSim {
     {
     public:
         //Constructor which takes a unordered_map of all the existing nodes to their NodePositions.
-        GeneratorTemplate(std::unordered_map<int, MazeNode*>*& unordered_mappedNodes, int mazeLength);
+        GeneratorTemplate(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength);
 
         //Empty virtual destructor. This class doesn't allocate any memory.
         virtual ~GeneratorTemplate() = default;
@@ -36,12 +36,6 @@ namespace PFSim {
 
         //Returns the animation's title to be displayed on the GUI while it runs.
         virtual std::string getTitle() const = 0;
-
-        // //Returns the unordered_map of all the existing nodes to their NodePositions.
-        // std::unordered_map<int, MazeNode*>* getMappedNodes() const { return m_MappedNodes; }
-        
-        // //Retuns the lenght of the maze.
-        // int getMazeLength() const { return m_MazeLength; }
 
         //Verifies the given NodePosition is a valid maze NodePosition (inside its bounds). 
         //Returns true if valid.

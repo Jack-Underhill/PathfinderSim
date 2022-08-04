@@ -39,18 +39,8 @@ namespace PFSim {
         //Sets the given node as a next node for the pathfinder to look at next.
         void setNext(MazeNode* curr);
 
-        // //Sets a given node as the final node found by the pathfinder.
-        // void setTargetFound(MazeNode* node);
-
         //Returns the end node.
         MazeNode* getTargetNodeFound() const { return m_TargetNodeFound; }
-
-        // //Sets the given set of checkpoints
-        // //as the set of checkpoints for the pathfinder to find before the end.
-        // void setCheckpoints(std::unordered_set<NodePosition>* checkpointsToFind);
-
-        // //Returns the set of checkpoints the pathfinder needs to find before the end.
-        // std::unordered_set<NodePosition>* getCheckpoints() const;
 
         //Returns the animation's title to be displayed on the GUI while it runs.
         virtual std::string getTitle() const = 0;

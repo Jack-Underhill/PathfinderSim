@@ -35,7 +35,7 @@ namespace PFSim {
         }
     }
 
-    void SimulationDisplay::updateMazeNode(MazeNode*& node, int cellSize) {
+    void SimulationDisplay::updateMazeNode(MazeNode*& node, int cellSize, bool isMazeGenerated) {
         m_Window->setColor(node->getColor());
 
         NodePosition currentPos = node->getPosition();
@@ -44,21 +44,19 @@ namespace PFSim {
         int xOfGraphRegion = WALL_WIDTH + ((currentPos.x - 1) * cellAndWallSize);
         int yOfGraphRegion = WALL_WIDTH + ((currentPos.y - 1) * cellAndWallSize);
 
-        // std::cout << node->getTypeString() << ":" << node->getColor() << ":" << cellSize << ":" << WALL_WIDTH << "\t";//
-        // std::cout << currentPos.x << ", " << currentPos.y << "\t";//
-        // std::cout << xOfGraphRegion << ", " << yOfGraphRegion << std::endl;//
-
         // fill cell
         m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion, DISPLAY_TOP_BUFFER + yOfGraphRegion,
                         cellSize, cellSize);
 
-        // if(!isOpenMode) {    // rename to isMazeGenerated
-        //     drawNodeFiller(node);
-        // }
+        if(isMazeGenerated) 
+        {
+            updateMazeNodeFiller(node, cellSize);
+        }
 
         // Update Algorithm tick by 1 if the curr celltype is a default cell or a blank visited cell.
         // CellType type = node->getType();
-        // if(type == DefaultCell || (type == Blank && !node->isNext())) {
+        // if(type == DefaultCell || (type == Blank && !node->isNext())) 
+        // {
         //     algorithmTick++;
         //     setCount(algorithmTick, true);
         // }
@@ -89,6 +87,45 @@ namespace PFSim {
         //     pathTick++;
         //     setCount(pathTick, false); 
         // }
+    }
+    
+    void SimulationDisplay::updateMazeNodeFiller(MazeNode*& node, int cellSize)
+    {
+        NodePosition currentPos = node->getPosition();
+    
+        int cellAndWallSize = cellSize + WALL_WIDTH;
+        int xOfGraphRegion = (currentPos.x - 1) * cellAndWallSize;
+        int yOfGraphRegion = (currentPos.y - 1) * cellAndWallSize;
+
+        // fill filler space (where a wall was) between cells. If movedIn = CENTER, this is skipped
+        if(node->getDirectionMovedIn() == NORTH) 
+        {    
+            //south wall
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion + WALL_WIDTH,
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion + cellAndWallSize,
+                                cellSize, WALL_WIDTH);
+        }
+        else if(node->getDirectionMovedIn() == WEST) 
+        {    
+            //east wall
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion + cellAndWallSize,
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion + WALL_WIDTH, 
+                                WALL_WIDTH, cellSize);
+        }
+        else if(node->getDirectionMovedIn() == SOUTH) 
+        {    
+            //north wall
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion + WALL_WIDTH, 
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion,
+                                cellSize, WALL_WIDTH);
+        }
+        else if(node->getDirectionMovedIn() == EAST) 
+        {    
+            //west wall
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfGraphRegion, 
+                                DISPLAY_TOP_BUFFER + yOfGraphRegion + WALL_WIDTH, 
+                                WALL_WIDTH, cellSize);
+        }
     }
 
     void SimulationDisplay::updatePathNodeFiller(MazeNode*& node, int cellSize) 

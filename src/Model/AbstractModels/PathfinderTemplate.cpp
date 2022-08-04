@@ -47,24 +47,4 @@ namespace PFSim {
         return Pathfind;
     }
 
-    // void PathfinderTemplate::setTargetFound(MazeNode* node)
-    // {
-    //     this->m_NodeTargetFound = node;
-    // }
-
-    // MazeNode* PathfinderTemplate::getEndNode() const
-    // {
-    //     return m_NodeTargetFound;
-    // }
-
-    // void PathfinderTemplate::setCheckpoints(std::unordered_set<NodePosition>* checkpointsToFind) 
-    // {
-    //     this->checkpointsToFind = checkpointsToFind;
-    // }
-
-    // std::unordered_set<NodePosition>* PathfinderTemplate::getCheckpoints() const 
-    // {
-    //     return checkpointsToFind;
-    // }
-
 } // namespace PFSim

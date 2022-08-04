@@ -17,7 +17,7 @@ namespace PFSim {
 
         void clearDisplay();
         void updateResetMarkers(int x, int cellSize, int mazeLength);
-        void updateMazeNode(MazeNode*& node, int cellSize);
+        void updateMazeNode(MazeNode*& node, int cellSize, bool isMazeGenerated);
         void updatePathNode(MazeNode*& node, int cellSize);
         void updateMazeNodeFiller(MazeNode*& node, int cellSize);
         void updatePathNodeFiller(MazeNode*& node, int cellSize);

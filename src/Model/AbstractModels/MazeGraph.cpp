@@ -70,13 +70,16 @@ namespace PFSim {
     {
         generatorSetup();
 
+        m_IsMazeGenerated = true;
+
         switch(type)
         {
         case(Open):
+            m_IsMazeGenerated = false;
             initGeneratorOpen();
             break;
         case(DFSMaze):
-            // initPathfinderDFS();
+            initGeneratorDFS();
             break;
         }
     }
@@ -91,7 +94,7 @@ namespace PFSim {
             initPathfinderBFS();
             break;
         case(DFS):
-            // initPathfinderDFS();
+            initPathfinderDFS();
             break;
         }
     }
@@ -242,6 +245,11 @@ namespace PFSim {
     {
         m_Animation = new Generator::Open(m_MappedNodes, m_MazeLength);
     }
+    
+    void MazeGraph::initGeneratorDFS()
+    {
+        m_Animation = new Generator::DFSMaze(m_MappedNodes, m_MazeLength, m_StartNode);
+    }
 
     void MazeGraph::initPathfinderBFS()
     {
@@ -252,6 +260,18 @@ namespace PFSim {
         else
         {
             m_Animation = new Pathfinder::BFS(m_LastTargetFound, m_TargetList);
+        }
+    }
+    
+    void MazeGraph::initPathfinderDFS()
+    {
+        if(m_LastTargetFound == nullptr) // isn't re-pathfinding from last target found. Is starting from the start node.
+        {
+            m_Animation = new Pathfinder::DFS(m_StartNode, m_TargetList);
+        }
+        else
+        {
+            m_Animation = new Pathfinder::DFS(m_LastTargetFound, m_TargetList);
         }
     }
 

@@ -12,7 +12,9 @@
 #include "PathfinderTemplate.h"
 #include "GeneratorTemplate.h"
 #include "Open.h"
+#include "DFSMaze.h"
 #include "BFS.h"
+#include "DFS.h"
 #include "ResetNodes.h"
 #include "PathSolution.h"
 
@@ -32,6 +34,7 @@ namespace PFSim {
         
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
         bool isReadyForSimulation() const { return m_IsReadyForSimulation; }
+        bool isMazeGenerated() const { return m_IsMazeGenerated; }
 
         MazeNode*& updateAnimation();
         void updatePathfinderStart();
@@ -42,12 +45,6 @@ namespace PFSim {
         void setGraphReset(); 
         void setPathSolution(); 
         void setMazeLength(int length) { m_MazeLength = length; }
-
-        void setGeneratorOpen(int mazeLength);
-        // void setGeneratorDFS();
-
-        void setPathfinderBFS();
-        // void setPathfinderDFS();
 
         MazeNode*& addCheckpoint();
         MazeNode*& removeTopCheckpoint();
@@ -67,6 +64,7 @@ namespace PFSim {
         std::stack<int>* m_CheckpointStack;
 
         bool m_IsReadyForSimulation;
+        bool m_IsMazeGenerated;
 
         // Creates maze node's in a grid formation each with their own position.
         // The grid formation is a square of the gui's given mazeLength of nodes.
@@ -89,10 +87,10 @@ namespace PFSim {
         void pathfinderSetup();
 
         void initGeneratorOpen();
-        // void initGeneratorDFS();
+        void initGeneratorDFS();
 
         void initPathfinderBFS();
-        // void initPathfinderDFS();
+        void initPathfinderDFS();
 
         void initResetNodes();
 

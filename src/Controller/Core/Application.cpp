@@ -46,13 +46,13 @@ namespace PFSim {
         {
             updateCPButtons(true);
             
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->addCheckpoint(), m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->addCheckpoint(), m_Graph->getCellSize(), false );
         }
         else if(e.getButtonCode() == ButtonCode::cp_Subtract) 
         {
             updateCPButtons(false);
 
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->removeTopCheckpoint(), m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->removeTopCheckpoint(), m_Graph->getCellSize(), false );
         }
 
         return true;
@@ -106,7 +106,7 @@ namespace PFSim {
         {
             runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
             
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
         
         std::cout << "Generation Finished" << std::endl;
@@ -139,7 +139,7 @@ namespace PFSim {
         {
             runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
             
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
 
         m_Graph->updatePathfinderStart();
@@ -158,7 +158,7 @@ namespace PFSim {
 
             MazeNode*& node = m_Graph->updateAnimation();
             
-            m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
             
             // update markers only when needed
             if(lastMarkerPosition < node->getPosition().x)  
