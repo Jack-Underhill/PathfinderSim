@@ -1,5 +1,8 @@
 #include "Window.h"
 
+// #include <Qt>
+// class QEvent;
+
 namespace PFSim {
 
     Window::Window(const WindowProps& props) 
@@ -39,6 +42,7 @@ namespace PFSim {
         loadPanelCheckpoint();
         loadPanelPathfinder();
         loadPanelGenerator();
+        loadMouseListeners();
     }
 
     void Window::loadPanelCheckpoint() 
@@ -162,6 +166,34 @@ namespace PFSim {
         sgl::GLabel* lbl_spacer = new sgl::GLabel();
         panel.addInteractor(lbl_spacer);
         m_Interactors.push(lbl_spacer);
+    }
+    
+    void Window::loadMouseListeners()
+    {
+        m_Window->setMouseListener([this](sgl::GEvent e)
+        {
+            if(e.getEventType() == sgl::MOUSE_PRESSED)
+            {
+                WindowData& data = this->m_Data; 
+
+                MouseButtonPressedEvent event(MouseCode::MousePressed, e.getX(), e.getY());
+                data.EventCallback(event);
+            }
+            else if(e.getEventType() == sgl::MOUSE_RELEASED) 
+            {
+                WindowData& data = this->m_Data; 
+
+                MouseButtonReleasedEvent event(MouseCode::MouseReleased, e.getX(), e.getY());
+                data.EventCallback(event);
+            }
+            else if(e.getEventType() == sgl::MOUSE_MOVED) 
+            {
+                WindowData& data = this->m_Data; 
+
+                MouseMovedEvent event(MouseCode::MouseMoved, e.getX(), e.getY());
+                data.EventCallback(event);
+            }
+        });
     }
 
 }

@@ -1,16 +1,18 @@
 #ifndef _ButtonEvent_h_
 #define _ButtonEvent_h_
 
+#include <sstream>
+
 #include "Event.h"
 #include "ButtonCodes.h"
-#include <vector>
-#include <sstream>
 
 namespace PFSim {
     
     class ButtonEvent : public Event
     {
     public:
+        ButtonEvent(const ButtonCode ButtonCode) : m_ButtonCode(ButtonCode) {}
+
         ButtonCode getButtonCode() const { return m_ButtonCode; }
 
         virtual int getCategoryFlags() const override { return EventCategory::EventCategoryButton; }
@@ -19,17 +21,13 @@ namespace PFSim {
         virtual std::string toString() const { return getName(); }; // debug tool
 
     protected:
-        ButtonEvent(const ButtonCode ButtonCode) 
-                        : m_ButtonCode(ButtonCode) {}
-
         ButtonCode m_ButtonCode;
     };
 
     class UpdateGeneratorEvent : public ButtonEvent
     {
     public:
-        UpdateGeneratorEvent(const ButtonCode ButtonCode) 
-                            : ButtonEvent(ButtonCode) 
+        UpdateGeneratorEvent(const ButtonCode ButtonCode) : ButtonEvent(ButtonCode) 
         {
         }
         
@@ -51,8 +49,7 @@ namespace PFSim {
     class UpdatePathfinderEvent : public ButtonEvent
     {
     public:
-        UpdatePathfinderEvent(const ButtonCode ButtonCode) 
-                            : ButtonEvent(ButtonCode) 
+        UpdatePathfinderEvent(const ButtonCode ButtonCode) : ButtonEvent(ButtonCode) 
         {
         }
         
@@ -74,8 +71,7 @@ namespace PFSim {
     class UpdateCheckpointEvent : public ButtonEvent
     {
     public:
-        UpdateCheckpointEvent(const ButtonCode ButtonCode) 
-                            : ButtonEvent(ButtonCode) 
+        UpdateCheckpointEvent(const ButtonCode ButtonCode) : ButtonEvent(ButtonCode) 
         {
         }
         

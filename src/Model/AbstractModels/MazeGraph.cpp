@@ -17,6 +17,7 @@ namespace PFSim {
         m_PathSolution = nullptr;
 
         m_IsReadyForSimulation = true;
+        m_IsMousePressed = false;
     }
     
     MazeGraph::~MazeGraph() 
@@ -108,6 +109,63 @@ namespace PFSim {
     {
         initPathSolution();
     }
+    
+    void MazeGraph::setMousePressed(int x, int y)
+    {
+        m_MousePositionKey = getKeyConversion(x, y);
+        m_IsMousePressed = true;
+
+        // animate node clicked
+        // std::cout << "Animate MousePressed: (" << x << ", " << y << ")" << std::endl;
+    }
+
+    void MazeGraph::setMouseMoved(int x, int y)
+    {
+        if(m_NodesToSwap.size() > 0)
+        {
+            m_NodesToSwap.pop();
+            m_NodesToSwap.pop();
+        }
+
+        if(isNewPosition(x, y))
+        {
+            //swap cell types
+            CellType temp = m_MappedNodes->at(m_LastMousePositionKey)->getType();
+            m_MappedNodes->at(m_LastMousePositionKey)->setType( m_MappedNodes->at(m_MousePositionKey)->getType() );
+            m_MappedNodes->at(m_MousePositionKey)->setType( temp );
+
+            //update start
+            if(m_MappedNodes->at(m_LastMousePositionKey)->getType() == StartCell)
+            {
+                m_StartNode = m_MappedNodes->at(m_LastMousePositionKey);
+            }
+            else if(m_MappedNodes->at(m_MousePositionKey)->getType() == StartCell)
+            {
+                m_StartNode = m_MappedNodes->at(m_MousePositionKey);
+            }
+
+            //update checkpoints
+            if((m_MappedNodes->at(m_LastMousePositionKey)->getType() == CheckpointCell) &&
+               (m_MappedNodes->at(m_MousePositionKey)->getType() == CheckpointCell)) 
+            {
+                int temp = m_LastMousePositionKey;
+                m_LastMousePositionKey = m_MousePositionKey;
+                m_MousePositionKey = temp;
+            }
+            else if(m_MappedNodes->at(m_LastMousePositionKey)->getType() == CheckpointCell)
+            {
+                updateSwappedCheckpoints(m_LastMousePositionKey, m_MousePositionKey);
+            }
+            else if(m_MappedNodes->at(m_MousePositionKey)->getType() == CheckpointCell)
+            {
+                updateSwappedCheckpoints(m_MousePositionKey, m_LastMousePositionKey);
+            }
+
+            // add to stack to be animated
+            m_NodesToSwap.push(m_MappedNodes->at(m_LastMousePositionKey));
+            m_NodesToSwap.push(m_MappedNodes->at(m_MousePositionKey));            
+        }
+    }
 
     void MazeGraph::setAvailableNodeCellType(CellType type) 
     {
@@ -186,6 +244,38 @@ namespace PFSim {
         
         delete m_TargetList;
         delete m_CheckpointStack;
+    }
+
+    bool MazeGraph::isNewPosition(int x, int y)
+    {
+        int checkPositionKey = getKeyConversion(x, y);
+
+        bool isNew = m_MousePositionKey != checkPositionKey;
+
+        if(isNew)
+        {
+            m_LastMousePositionKey = m_MousePositionKey;
+            m_MousePositionKey = checkPositionKey;
+        }
+
+        // compare
+        return isNew;
+    }
+
+    int MazeGraph::getKeyConversion(int x, int y)
+    {
+        //convert pixel coords to node position.
+        int xPos = (x - DISPLAY_LEFT_BUFFER - WALL_WIDTH) / (getCellSize() + WALL_WIDTH);
+        xPos += (x - DISPLAY_LEFT_BUFFER - WALL_WIDTH) % (getCellSize() + WALL_WIDTH) > 0;
+        
+        int yPos = (y - DISPLAY_TOP_BUFFER - WALL_WIDTH) / (getCellSize() + WALL_WIDTH);
+        yPos += (y - DISPLAY_TOP_BUFFER - WALL_WIDTH) % (getCellSize() + WALL_WIDTH) > 0;
+
+        int key = NodePosition(xPos, yPos, m_MazeLength).positionKey;
+        
+        // std::cout << m_MousePositionKey << ": (" << xPos << ", " << yPos << ") = " << key << std::endl;
+
+        return key;
     }
 
     void MazeGraph::setNodeCellType(MazeNode* node, CellType type) 
@@ -308,6 +398,27 @@ namespace PFSim {
         }
 
         for(int i = 0; i < stackSize; i++)
+        {
+            m_CheckpointStack->push(temp.top());
+            temp.pop();
+        }
+    }
+    
+    void MazeGraph::updateSwappedCheckpoints(int newKey, int oldKey)
+    {
+        std::stack<int> temp;
+        while(m_CheckpointStack->top() != oldKey)
+        {
+            temp.push(m_CheckpointStack->top());
+            m_CheckpointStack->pop();
+        }
+
+        //found old key to remove
+        m_CheckpointStack->pop();
+        m_CheckpointStack->push(newKey);
+
+        //put all keys back into place
+        while(temp.size() > 0)
         {
             m_CheckpointStack->push(temp.top());
             temp.pop();

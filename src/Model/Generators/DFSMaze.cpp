@@ -26,6 +26,7 @@ namespace Generator {
             if(currNode->getType() == StartCell) 
             {
                 setIsComplete(true);
+                currNode->setIsVisited(false);
 
                 return currNode->getPosition().positionKey;
             }

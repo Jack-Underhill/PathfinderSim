@@ -18,6 +18,8 @@
 #include "event.h"
 #include "buttonevent.h"
 #include "buttoncodes.h"
+#include "MouseEvent.h"
+#include "MouseCodes.h"
 
 namespace PFSim {
 
@@ -83,6 +85,8 @@ namespace PFSim {
         void loadPanelPathfinder();
         void loadPanelGenerator();
         void addSpacer(Panel& panel);
+
+        void loadMouseListeners();
     };
 
 }

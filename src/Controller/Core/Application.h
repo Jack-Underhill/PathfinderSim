@@ -6,6 +6,7 @@
 #include "gevent.h"
 
 #include "Event.h"
+// #include "MouseEvent.h"
 #include "Window.h"
 #include "MazeGraph.h"
 
@@ -27,6 +28,9 @@ namespace PFSim {
         bool onCheckpointEvent(UpdateCheckpointEvent& e);
         bool onPathfinderEvent(UpdatePathfinderEvent& e);
         bool onGeneratorEvent(UpdateGeneratorEvent& e);
+        bool onMousePressedEvent(MouseButtonPressedEvent& e);
+        bool onMouseReleasedEvent(MouseButtonReleasedEvent& e);
+        bool onMouseMovedEvent(MouseMovedEvent& e);
 
         void runPathfindingSimulation(PathfinderType type);
         void runGenerator(GeneratorType type);
@@ -34,6 +38,12 @@ namespace PFSim {
         void runGraphReset();
         void runPathSolution();
 
+        void runMousePressed(int x, int y);
+        void runMouseReleased();
+        void runMouseMoved(int x, int y);
+
+
+        bool isMouseInsideSimBounds(int x, int y);
 
         void updateMazeLength();
         bool isValidMazeLength(std::string gtf_MazeLength) const;

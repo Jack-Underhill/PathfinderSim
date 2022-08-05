@@ -31,10 +31,12 @@ namespace PFSim {
         int getCheckpointCount() { return m_CheckpointStack->size(); }
         AnimationType getAnimationType() { return m_Animation->getType(); }
         CellType getTargetFoundType();
+        std::stack<MazeNode*> getNodesToSwap() { return m_NodesToSwap; }
         
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
         bool isReadyForSimulation() const { return m_IsReadyForSimulation; }
         bool isMazeGenerated() const { return m_IsMazeGenerated; }
+        bool isMouseInteractive() const { return m_IsMousePressed; }
 
         MazeNode*& updateAnimation();
         void updatePathfinderStart();
@@ -45,11 +47,20 @@ namespace PFSim {
         void setGraphReset(); 
         void setPathSolution(); 
         void setMazeLength(int length) { m_MazeLength = length; }
+        void setIsReadyForSimulation(bool val) { m_IsReadyForSimulation = val; }
+
+        void setMousePressed(int x, int y);
+        void setMouseReleased() { m_IsMousePressed = false; }
+        void setMouseMoved(int x, int y);
 
         MazeNode*& addCheckpoint();
         MazeNode*& removeTopCheckpoint();
 
     private:
+        int m_MousePositionKey;
+        int m_LastMousePositionKey;
+        std::stack<MazeNode*> m_NodesToSwap;
+
         int m_MazeLength;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
 
@@ -65,6 +76,7 @@ namespace PFSim {
 
         bool m_IsReadyForSimulation;
         bool m_IsMazeGenerated;
+        bool m_IsMousePressed;
 
         // Creates maze node's in a grid formation each with their own position.
         // The grid formation is a square of the gui's given mazeLength of nodes.
@@ -74,6 +86,9 @@ namespace PFSim {
 
         // Deletes all the heap allocated memory (PathNodes, CellTypes, MazeNodes, Map).
         void disposeGraph();
+
+        bool isNewPosition(int x, int y);
+        int getKeyConversion(int x, int y);
 
 
         void setAvailableNodeCellType(CellType type);
@@ -97,6 +112,8 @@ namespace PFSim {
         void initPathSolution();
 
         void initTargetList();
+
+        void updateSwappedCheckpoints(int newKey, int oldKey);
     };
 
 } // namespace PFSim

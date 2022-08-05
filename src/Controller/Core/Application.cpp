@@ -26,9 +26,13 @@ namespace PFSim {
 
     void Application::onEvent(Event& e) 
     {
-        std::cout << "Event Fired: " << e << std::endl;
+        // std::cout << "Event Fired: " << e << std::endl;
 
         EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(onMousePressedEvent));
+        dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(onMouseReleasedEvent));
+        dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMovedEvent));
+        
         dispatcher.Dispatch<UpdateCheckpointEvent>(BIND_EVENT_FN(onCheckpointEvent));
         dispatcher.Dispatch<UpdatePathfinderEvent>(BIND_EVENT_FN(onPathfinderEvent));
         dispatcher.Dispatch<UpdateGeneratorEvent>(BIND_EVENT_FN(onGeneratorEvent));
@@ -94,6 +98,61 @@ namespace PFSim {
         return true;
     }
     
+    bool Application::onMousePressedEvent(MouseButtonPressedEvent& e)
+    {
+        if(!m_Graph->isReadyForSimulation())
+        {
+            runGraphReset();
+            m_Graph->setIsReadyForSimulation(true);
+        }
+
+        if(isMouseInsideSimBounds( e.getX(), e.getY() ))
+        {
+            runMousePressed( e.getX(), e.getY() );
+        }
+
+        return true;
+    }
+
+    bool Application::onMouseReleasedEvent(MouseButtonReleasedEvent& e)
+    {
+        if(m_Graph->isMouseInteractive())
+        {
+            runMouseReleased();
+        }
+
+        return true;
+    }
+
+    bool Application::onMouseMovedEvent(MouseMovedEvent& e)
+    {
+        if(m_Graph->isMouseInteractive())
+        {   
+            if(isMouseInsideSimBounds( e.getX(), e.getY() ))
+            {
+                runMouseMoved( e.getX(), e.getY() );
+
+                std::stack<MazeNode*> swapCells = m_Graph->getNodesToSwap();
+
+                if(swapCells.size() > 0)
+                {
+                    MazeNode* node = swapCells.top();
+                    swapCells.pop();
+
+                    m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), false );
+                    m_Window->getSimulationDisplay()->updateMazeNode( swapCells.top(), m_Graph->getCellSize(), false );
+                }
+            }
+            else
+            {
+                runMouseReleased();
+            }
+            
+        }
+
+        return true;
+    }
+
     void Application::runGenerator(GeneratorType type)
     {
         updateMazeLength();             // the updateMazeLength() full logic might need to be moved into graph
@@ -187,6 +246,21 @@ namespace PFSim {
             m_Window->getSimulationDisplay()->updatePathNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
     }
+    
+    void Application::runMousePressed(int x, int y)
+    {
+        m_Graph->setMousePressed(x, y);
+    }
+
+    void Application::runMouseReleased()
+    {
+        m_Graph->setMouseReleased();
+    }
+
+    void Application::runMouseMoved(int x, int y)
+    {
+        m_Graph->setMouseMoved(x, y);
+    }
 
 
 
@@ -196,6 +270,14 @@ namespace PFSim {
 
 
     /***********************************************************************************************************/
+    
+    bool Application::isMouseInsideSimBounds(int x, int y)
+    {
+        bool isInsideXBounds = (DISPLAY_LEFT_BUFFER < x && x < DISPLAY_RIGHT_BUFFER);
+        bool isInsideYBounds = (DISPLAY_TOP_BUFFER < y && y < DISPLAY_BOTTOM_BUFFER);
+
+        return (isInsideXBounds && isInsideYBounds);
+    }
     
     void Application::updateMazeLength() 
     {
