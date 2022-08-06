@@ -125,9 +125,17 @@ namespace Generator {
 
     bool DFSMaze::isAvailableMove(NodePosition checkPos) const 
     {
-        return (isInsideMaze(checkPos, m_MazeLength) && 
-                m_MappedNodes->at(checkPos.positionKey)->getType() != BlankCell &&
-                m_MappedNodes->at(checkPos.positionKey)->isAvailableToMoveInto());
+        if(isInsideMaze(checkPos, m_MazeLength)) 
+        {
+            MazeNode* node = m_MappedNodes->at(checkPos.positionKey);
+            CellType type = node->getType();
+
+            return (!node->isVisited() && type != BlankCell);
+        }
+        else 
+        {
+            return false;
+        }
     }
 
     std::string DFSMaze::getTitle() const
@@ -139,10 +147,7 @@ namespace Generator {
     {
         if(currNode->isVisited()) 
         {
-            if(currNode->getType() != EndCell)
-            {
-                currNode->setType(BlankCell);
-            }
+            currNode->setType(BlankCell);
             currNode->setIsVisited(false);
         }
         else 
@@ -163,10 +168,7 @@ namespace Generator {
 
     int DFSMaze::stepBacktrack()
     {
-        if(currNode->getType() != EndCell)
-        {
-            currNode->setType(BlankCell);
-        }
+        currNode->setType(BlankCell);
         currNode->setIsVisited(false);
 
         MazeNode* temp = currNode;

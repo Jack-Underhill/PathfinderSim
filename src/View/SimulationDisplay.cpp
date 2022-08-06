@@ -52,14 +52,6 @@ namespace PFSim {
         {
             updateMazeNodeFiller(node, cellSize);
         }
-
-        // Update Algorithm tick by 1 if the curr celltype is a default cell or a blank visited cell.
-        // CellType type = node->getType();
-        // if(type == DefaultCell || (type == Blank && !node->isNext())) 
-        // {
-        //     algorithmTick++;
-        //     setCount(algorithmTick, true);
-        // }
     }
     
     void SimulationDisplay::updatePathNode(MazeNode*& node, int cellSize)
@@ -80,13 +72,6 @@ namespace PFSim {
         m_Window->fillOval(DISPLAY_LEFT_BUFFER + xOfGraphRegion + WALL_WIDTH + (reduceSizeBy / 2), 
                            DISPLAY_TOP_BUFFER + yOfGraphRegion + WALL_WIDTH + (reduceSizeBy / 2),
                            cellSize - reduceSizeBy, cellSize - reduceSizeBy); 
-
-        // // Update Path tick by 1 as long as the curr celltype is not a Start or an End cell.
-        // CellType type = node->getType();
-        // if(type == PathCell && !node->isNext()) {
-        //     pathTick++;
-        //     setCount(pathTick, false); 
-        // }
     }
     
     void SimulationDisplay::updateMazeNodeFiller(MazeNode*& node, int cellSize)

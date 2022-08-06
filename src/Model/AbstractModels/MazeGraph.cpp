@@ -18,6 +18,7 @@ namespace PFSim {
 
         m_IsReadyForSimulation = true;
         m_IsMousePressed = false;
+        m_IsMazeGenerated = true;
     }
     
     MazeGraph::~MazeGraph() 
@@ -167,7 +168,7 @@ namespace PFSim {
         }
     }
 
-    void MazeGraph::setAvailableNodeCellType(CellType type) 
+    int MazeGraph::setAvailableNodeCellType(CellType type) 
     {
         NodePosition pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
         MazeNode*& node = m_MappedNodes->at(pos.positionKey);
@@ -181,6 +182,8 @@ namespace PFSim {
 
         // Node found to host new CellType, set node.
         setNodeCellType(node, type);
+
+        return pos.positionKey;
     }
 
     MazeNode*& MazeGraph::addCheckpoint() 
@@ -320,8 +323,7 @@ namespace PFSim {
         }
         buildDisconnectedGraph();
 
-        setAvailableNodeCellType(StartCell);
-        setAvailableNodeCellType(EndCell);
+        setAvailableNodeCellType(StartCell);        
         
         m_IsReadyForSimulation = true;
     }

@@ -48,6 +48,7 @@ namespace PFSim {
         void setPathSolution(); 
         void setMazeLength(int length) { m_MazeLength = length; }
         void setIsReadyForSimulation(bool val) { m_IsReadyForSimulation = val; }
+        MazeNode*& setEndNode() { return m_MappedNodes->at( setAvailableNodeCellType(EndCell) ); }
 
         void setMousePressed(int x, int y);
         void setMouseReleased() { m_IsMousePressed = false; }
@@ -91,7 +92,7 @@ namespace PFSim {
         int getKeyConversion(int x, int y);
 
 
-        void setAvailableNodeCellType(CellType type);
+        int setAvailableNodeCellType(CellType type);
 
         void setNodeCellType(MazeNode* node, CellType type);
 

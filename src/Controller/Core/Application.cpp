@@ -126,28 +126,20 @@ namespace PFSim {
 
     bool Application::onMouseMovedEvent(MouseMovedEvent& e)
     {
-        if(m_Graph->isMouseInteractive())
+        if(m_Graph->isMouseInteractive() && isMouseInsideSimBounds( e.getX(), e.getY() ))
         {   
-            if(isMouseInsideSimBounds( e.getX(), e.getY() ))
+            runMouseMoved( e.getX(), e.getY() );
+
+            std::stack<MazeNode*> swapCells = m_Graph->getNodesToSwap();
+
+            if(swapCells.size() > 0)
             {
-                runMouseMoved( e.getX(), e.getY() );
+                MazeNode* node = swapCells.top();
+                swapCells.pop();
 
-                std::stack<MazeNode*> swapCells = m_Graph->getNodesToSwap();
-
-                if(swapCells.size() > 0)
-                {
-                    MazeNode* node = swapCells.top();
-                    swapCells.pop();
-
-                    m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), false );
-                    m_Window->getSimulationDisplay()->updateMazeNode( swapCells.top(), m_Graph->getCellSize(), false );
-                }
-            }
-            else
-            {
-                runMouseReleased();
-            }
-            
+                m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+                m_Window->getSimulationDisplay()->updateMazeNode( swapCells.top(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+            }       
         }
 
         return true;
@@ -167,6 +159,10 @@ namespace PFSim {
             
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
+
+        runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+
+        m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->setEndNode(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         
         std::cout << "Generation Finished" << std::endl;
     }
@@ -273,8 +269,11 @@ namespace PFSim {
     
     bool Application::isMouseInsideSimBounds(int x, int y)
     {
-        bool isInsideXBounds = (DISPLAY_LEFT_BUFFER < x && x < DISPLAY_RIGHT_BUFFER);
-        bool isInsideYBounds = (DISPLAY_TOP_BUFFER < y && y < DISPLAY_BOTTOM_BUFFER);
+        // actual displayed size 
+        int displayLengthUsed = (WALL_WIDTH + m_Graph->getCellSize()) * m_Graph->getMazeLength();
+
+        bool isInsideXBounds = (DISPLAY_LEFT_BUFFER + WALL_WIDTH < x && x < DISPLAY_LEFT_BUFFER + displayLengthUsed);
+        bool isInsideYBounds = (DISPLAY_TOP_BUFFER + WALL_WIDTH < y && y < DISPLAY_TOP_BUFFER + displayLengthUsed);
 
         return (isInsideXBounds && isInsideYBounds);
     }
@@ -357,7 +356,7 @@ namespace PFSim {
 
 
 
-    void Application::runTimer(AnimationType type, int mazeLength) const {
+    void Application::runTimer(AnimationType type, int mazeLength) const {  // When Redoing this, make a switch statement for each animation type's speed.
         double lengthMultiplier;
         double updateTime;
 
