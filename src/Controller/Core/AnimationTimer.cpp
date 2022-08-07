@@ -56,7 +56,7 @@ namespace PFSim {
     {
         if(type == Open)
         {
-            m_Time = 6001;
+            m_Time = 5001;
         }
         else // maze
         {

@@ -27,21 +27,19 @@ namespace Pathfinder {
         DFS(MazeNode* startNode, std::unordered_set<int>* targetList);
 
         //Returns the animation's title to be displayed on the GUI while it runs
-        std::string getTitle() const;
+        std::string getTitle() const { return "DFS Pathfinding"; }
 
         PathfinderType getPathfinderType() const { return PathfinderType::DFS; }
         
     private:
-        std::stack<MazeNode*> nodeStack;
+        std::stack<MazeNode*> m_NodeStack;
 
         //Searches through the maze graph until it reaches a deadend (no current-neighboring 
         //unvisited-cells). Then it backtrack its steps until it can move into a unvisited cell.
         //Search ends when it has found all checkpoints (if any), then finds the end node.
         int currStep();
-
-        //Helper function which modifies the given stack to be
-        //a collection of unvisited neighbors of the given node
-        void stackAvailableMoves(std::stack<MazeNode*>& nodeStack, MazeNode*& curr);
+        
+        void addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir);
     };
     
 } // namespace Pathfinder

@@ -31,14 +31,6 @@ namespace PFSim {
         //Empty virtual destructor. This class doesn't allocate any memory.
         virtual ~PathfinderTemplate();
 
-        //Progresses the animation one tick either by
-        //returning a node to be diplayed as next in the path finding
-        //or by progressing the path finding forward one step and returning the updated node.
-        virtual int step();
-
-        //Sets the given node as a next node for the pathfinder to look at next.
-        void setNext(MazeNode* curr);
-
         //Returns the end node.
         MazeNode* getTargetNodeFound() const { return m_TargetNodeFound; }
 
@@ -49,6 +41,18 @@ namespace PFSim {
         AnimationType getType() const;
 
         virtual PathfinderType getPathfinderType() const = 0;
+
+        //Progresses the animation one tick either by
+        //returning a node to be diplayed as next in the path finding
+        //or by progressing the path finding forward one step and returning the updated node.
+        virtual int step();
+
+        //Sets the given node as a next node for the pathfinder to look at next.
+        void setNext(MazeNode* curr);
+        
+        void addAvailableMoves(MazeNode*& curr);
+
+        virtual void addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir) = 0;
 
     protected:
         std::unordered_set<int>* m_TargetList;

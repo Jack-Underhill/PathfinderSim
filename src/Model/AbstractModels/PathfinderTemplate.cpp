@@ -25,6 +25,11 @@ namespace PFSim {
         }
     }
 
+    AnimationType PathfinderTemplate::getType() const 
+    {
+        return Pathfind;
+    }
+
     int PathfinderTemplate::nextStep() 
     {
         MazeNode* nextNode = stackOfNextNodes.top();
@@ -34,17 +39,26 @@ namespace PFSim {
 
     void PathfinderTemplate::setNext(MazeNode* curr) 
     {
-        if(curr->getType() != EndCell) 
+        if(curr->getType() == BlankCell)
         {
             curr->setIsNext(true);
-            curr->setIsVisited(true);
             stackOfNextNodes.push(curr);
         }
     }
 
-    AnimationType PathfinderTemplate::getType() const 
+    void PathfinderTemplate::addAvailableMoves(MazeNode*& curr) 
     {
-        return Pathfind;
+        // NORTH neighboring cell checked to add.
+        addIfAvailable(curr->N, curr, NORTH);
+
+        // WEST neighbor
+        addIfAvailable(curr->W, curr, WEST);
+
+        // SOUTH neighbor
+        addIfAvailable(curr->S, curr, SOUTH);
+
+        // EAST neighbor
+        addIfAvailable(curr->E, curr, EAST);
     }
 
 } // namespace PFSim
