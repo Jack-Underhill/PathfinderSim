@@ -35,6 +35,8 @@ namespace Generator {
         //Returns the animation's title to be displayed on the GUI while it runs.
         std::string getTitle() const;
 
+        GeneratorType getGeneratorType() const { return GeneratorType::DFSMaze; }
+
     private:
         std::stack<MazeNode*> nodeStack;
         MazeNode* currNode; 

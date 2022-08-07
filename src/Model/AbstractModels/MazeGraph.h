@@ -32,6 +32,9 @@ namespace PFSim {
         AnimationType getAnimationType() { return m_Animation->getType(); }
         CellType getTargetFoundType();
         std::stack<MazeNode*> getNodesToSwap() { return m_NodesToSwap; }
+
+        // PathfinderType getPathfinderType() { return ((PathfinderTemplate*)m_Animation)->getPathfinderType(); }
+        GeneratorType getGeneratorType() { return m_Generated; }
         
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
         bool isReadyForSimulation() const { return m_IsReadyForSimulation; }
@@ -70,7 +73,7 @@ namespace PFSim {
 
         AnimationObject* m_Animation;
         PathSolution* m_PathSolution;
-        PathfinderType m_Pathfinder;
+        GeneratorType m_Generated;
 
         std::unordered_set<int>* m_TargetList;
         std::stack<int>* m_CheckpointStack;

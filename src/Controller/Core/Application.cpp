@@ -153,23 +153,28 @@ namespace PFSim {
         
         m_Window->getSimulationDisplay()->clearDisplay();
 
+        AnimationTimer timer(AnimationType::Generate, m_Graph->getMazeLength(), type);
+
         while(!m_Graph->isAnimationComplete()) 
         {
-            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+            timer.run();
             
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
 
-        runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
-
+        //setEndNode
+        timer.run();
         m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->setEndNode(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         
-        std::cout << "Generation Finished" << std::endl;
+        std::cout << "Generation Finished\t";
+        timer.printElapsedTime();
+        std::cout << "\n";
     }
 
     void Application::runPathfindingSimulation(PathfinderType type)
     {
         m_Graph->updateSimulationSetup();
+        Timer timer;
 
         if(!m_Graph->isReadyForSimulation())
         {
@@ -183,33 +188,38 @@ namespace PFSim {
         }
         runPathSolution();
         
-        std::cout << "Simulation Finished" << std::endl;
+        std::cout << "Simulation Finished\t";
+        timer.printElapsedTime();
+        std::cout << "\n";
     }
     
     void Application::runPathfinder(PathfinderType type)
     {
         m_Graph->setPathfinder(type);
+        AnimationTimer timer(AnimationType::Pathfind, m_Graph->getMazeLength(), m_Graph->getGeneratorType());
 
         while(!m_Graph->isAnimationComplete()) 
         {
-            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+            timer.run();
             
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
 
         m_Graph->updatePathfinderStart();
         
-        std::cout << "Pathfinding Finished" << std::endl;
+        std::cout << "Pathfinding Finished\t";
+        timer.printElapsedTime();
     }
 
     void Application::runGraphReset()
     {
         m_Graph->setGraphReset();
+        AnimationTimer timer(AnimationType::Reset, m_Graph->getMazeLength());
 
         int lastMarkerPosition = 0;
         while(!m_Graph->isAnimationComplete()) 
         {
-            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+            timer.run();
 
             MazeNode*& node = m_Graph->updateAnimation();
             
@@ -226,21 +236,26 @@ namespace PFSim {
         //clear leftover markers
         m_Window->getSimulationDisplay()->updateResetMarkers( m_Graph->getMazeLength() + 1, m_Graph->getCellSize(), m_Graph->getMazeLength() );
         
-        std::cout << "Reseting Finished" << std::endl;
+        std::cout << "Resetting Finished\t";
+        timer.printElapsedTime();
     }
 
     void Application::runPathSolution()
     {
         // set path solution animation
         m_Graph->setPathSolution();
+        AnimationTimer timer(AnimationType::DrawPath, m_Graph->getMazeLength());
 
         while(!m_Graph->isAnimationComplete()) 
         {
-            runTimer( m_Graph->getAnimationType(), m_Graph->getMazeLength() );  // Commenting this out removes the Window Not Responding Freezing Error
+            timer.run();
 
             // path solution update
             m_Window->getSimulationDisplay()->updatePathNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
+
+        std::cout << "Path Solution Finished\t";
+        timer.printElapsedTime();
     }
     
     void Application::runMousePressed(int x, int y)
@@ -352,35 +367,6 @@ namespace PFSim {
         {
             m_Window->setRemoveCPEnabled(false);
         }
-    }
-
-
-
-    void Application::runTimer(AnimationType type, int mazeLength) const {  // When Redoing this, make a switch statement for each animation type's speed.
-        double lengthMultiplier;
-        double updateTime;
-
-        if(type == DrawPath) {
-            updateTime = DEFAULT_ANIMATION_SPEED * 2;
-            lengthMultiplier = 10 / pow((mazeLength), 1.05);
-        }
-        else if(type == Reset) {
-            updateTime = DEFAULT_ANIMATION_SPEED / 15;
-            lengthMultiplier = 10 / pow((mazeLength), 1.25);
-        }
-        else {//Generators and Pathfinders
-            updateTime = DEFAULT_ANIMATION_SPEED;
-            lengthMultiplier = 10 / pow((mazeLength), 1.25);
-        }
-        
-        // speed mulptiplier to account for the length of the maze.
-        if(lengthMultiplier != 0) {
-            updateTime *= lengthMultiplier;
-        }
-
-        updateTime *= CLOCKS_PER_SEC;
-        clock_t nowTime = clock();
-        while(clock() - nowTime < updateTime);
     }
 
 }

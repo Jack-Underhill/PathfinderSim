@@ -2,11 +2,13 @@
 #define _Application_h_
 
 #include <memory>
+#include <chrono>
+#include <thread>
 
 #include "gevent.h"
 
 #include "Event.h"
-// #include "MouseEvent.h"
+#include "AnimationTimer.h"
 #include "Window.h"
 #include "MazeGraph.h"
 
@@ -50,9 +52,6 @@ namespace PFSim {
         bool isAnInteger(std::string str) const;
 
         void updateCPButtons(bool isIncrementingPositively);
-
-        //Delays the animation accordingly to the time that animationDelay has been set to.
-        void runTimer(AnimationType type, int mazeLength) const;
     };
 
 }

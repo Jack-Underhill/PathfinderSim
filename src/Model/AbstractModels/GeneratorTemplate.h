@@ -34,6 +34,8 @@ namespace PFSim {
         //Returns the type of animation being done. In this case Generate.
         AnimationType getType() const { return Generate; }
 
+        virtual GeneratorType getGeneratorType() const = 0;
+
         //Returns the animation's title to be displayed on the GUI while it runs.
         virtual std::string getTitle() const = 0;
 

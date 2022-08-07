@@ -43,6 +43,10 @@ namespace PFSim {
         //Takes the given boolean parameter and sets the complete status to that parameter.
         void setIsComplete(bool isComplete) { m_IsComplete = isComplete; }
 
+    protected:
+        // int m_stepCount;
+        // long long m_timeComputed; //milliseconds
+
     private:
         bool m_IsComplete;
 

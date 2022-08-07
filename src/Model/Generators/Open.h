@@ -20,6 +20,8 @@ namespace Generator {
         //Connects the unlinked neighbors of the node at the current position.
         int step();
 
+        GeneratorType getGeneratorType() const { return GeneratorType::Open; }
+
     private:
         NodePosition m_CurrPos;
 

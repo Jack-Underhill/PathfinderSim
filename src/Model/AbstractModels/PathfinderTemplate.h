@@ -48,6 +48,8 @@ namespace PFSim {
         //Returns the type of animation the object is. In this case PathFind.
         AnimationType getType() const;
 
+        virtual PathfinderType getPathfinderType() const = 0;
+
     protected:
         std::unordered_set<int>* m_TargetList;
         MazeNode* m_TargetNodeFound;

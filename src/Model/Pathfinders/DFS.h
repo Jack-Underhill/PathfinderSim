@@ -28,6 +28,8 @@ namespace Pathfinder {
 
         //Returns the animation's title to be displayed on the GUI while it runs
         std::string getTitle() const;
+
+        PathfinderType getPathfinderType() const { return PathfinderType::DFS; }
         
     private:
         std::stack<MazeNode*> nodeStack;

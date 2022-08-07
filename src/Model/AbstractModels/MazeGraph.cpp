@@ -71,6 +71,7 @@ namespace PFSim {
     void MazeGraph::setGenerator(GeneratorType type) 
     {
         generatorSetup();
+        m_Generated = type;
 
         m_IsMazeGenerated = true;
 
