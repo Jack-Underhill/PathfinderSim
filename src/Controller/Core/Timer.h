@@ -12,7 +12,7 @@ namespace PFSim {
         // Prints to the console how long, in milliseconds, that this object is in scope.
         Timer() { m_Start = std::chrono::high_resolution_clock::now(); }
 
-        double getElapsedTime() const
+        long long getElapsedTime() const
         {
             auto endTime = std::chrono::high_resolution_clock::now();
 

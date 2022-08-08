@@ -34,8 +34,10 @@ namespace PFSim {
         // //high thread(cpu) demanding (allows more accurate than ms)
         // else
         // {
+
             auto end = std::chrono::high_resolution_clock::now() + std::chrono::microseconds(m_Time);
             while(std::chrono::high_resolution_clock::now() < end);
+            
         // }
     }
 

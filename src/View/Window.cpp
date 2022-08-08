@@ -9,6 +9,7 @@ namespace PFSim {
     { 
         Init(props); 
         m_SimDisplay = new SimulationDisplay(m_Window);
+        m_StatDisplay = new StatisticsDisplay(m_Window);
     }
 
     Window::~Window()

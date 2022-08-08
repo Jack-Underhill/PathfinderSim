@@ -11,7 +11,7 @@ namespace Generator {
     }
 
     int Open::step() 
-    {
+    {        
         MazeNode*& node = m_MappedNodes->at(m_CurrPos.positionKey);
 
         if(node->getType() == GenerationCell)
@@ -34,6 +34,8 @@ namespace Generator {
         }
 
         m_CurrPos.updatePositionKey(m_MazeLength);
+
+        m_stepCount++;
 
         return node->getPosition().positionKey;
     }

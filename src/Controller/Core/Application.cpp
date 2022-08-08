@@ -151,6 +151,7 @@ namespace PFSim {
         m_Graph->setGenerator(type);
         updateCPButtons(false);
         
+        m_Window->getStatisticsDisplay()->updateTitle( Generate, m_Graph->getAnimationTitle() );
         m_Window->getSimulationDisplay()->clearDisplay();
 
         AnimationTimer timer(AnimationType::Generate, m_Graph->getMazeLength(), type);
@@ -162,17 +163,22 @@ namespace PFSim {
             m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
 
-        //setEndNode
+        //set EndNode
         timer.run();
         m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->setEndNode(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         
-        std::cout << "Generation Finished\t";
-        timer.printElapsedTime();
-        std::cout << "\n";
+        //update Stats
+        m_Window->getStatisticsDisplay()->updateStepCount( Generate, m_Graph->getStepCount() );
+        m_Window->getStatisticsDisplay()->updateTimeRan( Generate, timer.getElapsedTime() );
+
+        // std::cout << "Generation Finished\tTime Ran (" << timer.getElapsedTime() << "ms)\t Stepped (" << m_Graph->getStepCount() << ")\t\n";
+        // std::cout << "\n";
     }
 
     void Application::runPathfindingSimulation(PathfinderType type)
     {
+        m_Window->getStatisticsDisplay()->resetPathingStats();
+
         m_Graph->updateSimulationSetup();
         Timer timer;
 
@@ -188,15 +194,16 @@ namespace PFSim {
         }
         runPathSolution();
         
-        std::cout << "Simulation Finished\t";
-        timer.printElapsedTime();
-        std::cout << "\n";
+        // std::cout << "Simulation Finished\tTime Ran (" << timer.getElapsedTime() << "ms)\n";
+        // std::cout << "\n";
     }
     
     void Application::runPathfinder(PathfinderType type)
     {
         m_Graph->setPathfinder(type);
         AnimationTimer timer(AnimationType::Pathfind, m_Graph->getMazeLength(), m_Graph->getGeneratorType());
+
+        m_Window->getStatisticsDisplay()->updateTitle( Pathfind, m_Graph->getAnimationTitle() );
 
         while(!m_Graph->isAnimationComplete()) 
         {
@@ -207,8 +214,11 @@ namespace PFSim {
 
         m_Graph->updatePathfinderStart();
         
-        std::cout << "Pathfinding Finished\t";
-        timer.printElapsedTime();
+        //update Stats
+        m_Window->getStatisticsDisplay()->updateStepCount( Pathfind, m_Graph->getStepCount() );
+        m_Window->getStatisticsDisplay()->updateTimeRan( Pathfind, timer.getElapsedTime() );
+        
+        // std::cout << "Pathfinding Finished\tTime Ran (" << timer.getElapsedTime() << "ms)\t Stepped (" << m_Graph->getStepCount() << ")\n";
     }
 
     void Application::runGraphReset()
@@ -236,15 +246,15 @@ namespace PFSim {
         //clear leftover markers
         m_Window->getSimulationDisplay()->updateResetMarkers( m_Graph->getMazeLength() + 1, m_Graph->getCellSize(), m_Graph->getMazeLength() );
         
-        std::cout << "Resetting Finished\t";
-        timer.printElapsedTime();
+        // std::cout << "Resetting Finished\tTime Ran (" << timer.getElapsedTime() << "ms)\t Stepped (" << m_Graph->getStepCount() << ")\n";
     }
 
     void Application::runPathSolution()
     {
-        // set path solution animation
         m_Graph->setPathSolution();
         AnimationTimer timer(AnimationType::DrawPath, m_Graph->getMazeLength());
+
+        m_Window->getStatisticsDisplay()->updateTitle( DrawPath, m_Graph->getAnimationTitle() );
 
         while(!m_Graph->isAnimationComplete()) 
         {
@@ -253,9 +263,12 @@ namespace PFSim {
             // path solution update
             m_Window->getSimulationDisplay()->updatePathNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
         }
+        
+        //update Stats
+        m_Window->getStatisticsDisplay()->updateStepCount( DrawPath, m_Graph->getStepCount() );
+        m_Window->getStatisticsDisplay()->updateTimeRan( DrawPath, timer.getElapsedTime() );
 
-        std::cout << "Path Solution Finished\t";
-        timer.printElapsedTime();
+        // std::cout << "Path Solution Finished\tTime Ran (" << timer.getElapsedTime() << "ms)\t Stepped (" << m_Graph->getStepCount() << ")\n";
     }
     
     void Application::runMousePressed(int x, int y)

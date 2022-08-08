@@ -28,6 +28,6 @@ namespace PFSim {
 
     };
 
-}
+} // namespace PFSim
 
 #endif

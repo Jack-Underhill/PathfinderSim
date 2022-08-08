@@ -8,8 +8,10 @@
 #ifndef _AnimationObject_H
 #define _AnimationObject_H
 
-#include "MazeNode.h"
 #include <iostream>
+
+#include "MazeNode.h"
+#include "Timer.h"
 
 namespace PFSim {
 
@@ -25,7 +27,12 @@ namespace PFSim {
     class AnimationObject 
     {
     public:
-        AnimationObject() { m_IsComplete = false; }
+        AnimationObject() 
+        { 
+            m_IsComplete = false; 
+            m_stepCount = 0;
+        }
+
         virtual ~AnimationObject() = default;
 
         //Returns the animation's title to be displayed on the GUI while it runs.
@@ -33,6 +40,9 @@ namespace PFSim {
 
         //Returns the type of animation the object is.
         virtual AnimationType getType() const = 0;
+
+        //Returns steps of visited cells.
+        int getStepCount() const { return m_stepCount; }
 
         //Returns if the animation has been completed.
         bool isComplete() const { return m_IsComplete; }
@@ -44,8 +54,7 @@ namespace PFSim {
         void setIsComplete(bool isComplete) { m_IsComplete = isComplete; }
 
     protected:
-        // int m_stepCount;
-        // long long m_timeComputed; //milliseconds
+        int m_stepCount;
 
     private:
         bool m_IsComplete;

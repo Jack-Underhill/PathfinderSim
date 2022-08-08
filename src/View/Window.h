@@ -14,6 +14,7 @@
 #include "Constants.h"
 
 #include "SimulationDisplay.h"
+#include "StatisticsDisplay.h"
 #include "panel.h"
 #include "event.h"
 #include "buttonevent.h"
@@ -50,6 +51,7 @@ namespace PFSim {
         unsigned int getHeight() { return m_Data.height; };
         sgl::GWindow* getNativeWindow() const { return m_Window; };
         SimulationDisplay*& getSimulationDisplay() { return m_SimDisplay; };
+        StatisticsDisplay*& getStatisticsDisplay() { return m_StatDisplay; };
         std::string getInputMazeLength() { return tf_MazeLength->getText(); }
 
         bool isAddCPEnabled() { return btn_AddCP->isEnabled(); }
@@ -64,6 +66,7 @@ namespace PFSim {
     private:
         sgl::GWindow* m_Window;
         SimulationDisplay* m_SimDisplay;
+        StatisticsDisplay* m_StatDisplay;
         std::stack<sgl::GInteractor*> m_Interactors;
 
         sgl::GButton* btn_AddCP;

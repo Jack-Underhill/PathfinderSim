@@ -44,7 +44,7 @@ namespace PFSim {
         AnimationType getType() const;
 
         //Returns the animation's title to be displayed on the GUI while it runs.
-        std::string getTitle() const;
+        std::string getTitle() const { return "Path Solution"; }
 
         // Creates PathNodes to store: the parent link of mazenodes (going from end/checkpoint node
         // to starting node). The directions of where the path moved in to get the current node is

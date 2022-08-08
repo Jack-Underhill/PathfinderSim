@@ -35,6 +35,9 @@ namespace PFSim {
 
         // PathfinderType getPathfinderType() { return ((PathfinderTemplate*)m_Animation)->getPathfinderType(); }
         GeneratorType getGeneratorType() { return m_Generated; }
+
+        std::string getAnimationTitle() { return m_Animation->getTitle(); }
+        int getStepCount() const { return m_Animation->getStepCount(); }
         
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
         bool isReadyForSimulation() const { return m_IsReadyForSimulation; }

@@ -33,7 +33,7 @@ namespace Generator {
         int step();
 
         //Returns the animation's title to be displayed on the GUI while it runs.
-        std::string getTitle() const;
+        std::string getTitle() const { return "Random DFS Maze"; }
 
         GeneratorType getGeneratorType() const { return GeneratorType::DFSMaze; }
 

@@ -17,8 +17,10 @@ namespace Generator {
     int DFSMaze::step() 
     {
         std::vector<DirectionMoved> availableMoves = getAvailableMoves(currNode);
+        
         if(availableMoves.size() > 0) 
         {
+            m_stepCount++;
             return stepNew(availableMoves);
         }
         else 
@@ -136,11 +138,6 @@ namespace Generator {
         {
             return false;
         }
-    }
-
-    std::string DFSMaze::getTitle() const
-    {
-        return "Generating Maze with DFS";
     }
     
     int DFSMaze::stepNew(std::vector<DirectionMoved> availableMoves)

@@ -42,6 +42,7 @@ namespace PFSim {
         //step to highlight the head of the path
         if(isHeadOfPath) 
         {
+            m_stepCount++;
             headStep(currNode);
         }
         //step to paint in the true path color
@@ -62,11 +63,6 @@ namespace PFSim {
     AnimationType PathSolution::getType() const 
     {
         return DrawPath;
-    }
-
-    std::string PathSolution::getTitle() const 
-    {
-        return "Drawing Found Path";
     }
 
     void PathSolution::addCurrentSolution(MazeNode* currEndNode) 

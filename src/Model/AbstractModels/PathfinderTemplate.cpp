@@ -21,6 +21,7 @@ namespace PFSim {
         }
         else 
         {
+            m_stepCount++;
             return currStep();
         }
     }

@@ -24,7 +24,7 @@ namespace Pathfinder {
         BFS(MazeNode* startNode, std::unordered_set<int>* targetList);
 
         //Returns the animation's title to be displayed on the GUI while it runs.
-        std::string getTitle() const { return "BFS Pathfinding"; }
+        std::string getTitle() const { return "BFS"; }
 
         PathfinderType getPathfinderType() const { return PathfinderType::BFS; }
 
