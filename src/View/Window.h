@@ -10,6 +10,7 @@
 #include "gbutton.h"
 #include "glabel.h"
 #include "gtextfield.h"
+#include "gslider.h"
 
 #include "Constants.h"
 
@@ -17,10 +18,12 @@
 #include "StatisticsDisplay.h"
 #include "panel.h"
 #include "event.h"
-#include "buttonevent.h"
-#include "buttoncodes.h"
+#include "ButtonEvent.h"
+#include "ButtonCodes.h"
 #include "MouseEvent.h"
 #include "MouseCodes.h"
+#include "SliderEvent.h"
+#include "SliderCodes.h"
 
 namespace PFSim {
 
@@ -52,7 +55,9 @@ namespace PFSim {
         sgl::GWindow* getNativeWindow() const { return m_Window; };
         SimulationDisplay*& getSimulationDisplay() { return m_SimDisplay; };
         StatisticsDisplay*& getStatisticsDisplay() { return m_StatDisplay; };
+
         std::string getInputMazeLength() { return tf_MazeLength->getText(); }
+        int getAnimationSpeedValue() { return sld_Speed->getValue(); }
 
         bool isAddCPEnabled() { return btn_AddCP->isEnabled(); }
         bool isRemoveCPEnabled() { return btn_RemoveCP->isEnabled(); }
@@ -62,6 +67,7 @@ namespace PFSim {
 
 		void setEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
         void setInputMazeLength(int length) { tf_MazeLength->setText( std::to_string(length) ); }
+        void setSpeedText(int value);
 
     private:
         sgl::GWindow* m_Window;
@@ -72,6 +78,8 @@ namespace PFSim {
         sgl::GButton* btn_AddCP;
         sgl::GButton* btn_RemoveCP;
         sgl::GTextField* tf_MazeLength;
+        sgl::GSlider* sld_Speed;
+        sgl::GLabel* lbl_SpeedValue;
 
         struct WindowData
         {
@@ -87,6 +95,7 @@ namespace PFSim {
         void loadPanelCheckpoint();
         void loadPanelPathfinder();
         void loadPanelGenerator();
+        void loadPanelSpeed();
         void addSpacer(Panel& panel);
 
         void loadMouseListeners();

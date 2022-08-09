@@ -13,6 +13,11 @@ namespace PFSim {
     {
         MazeNode*& node = m_MappedNodes->at(m_CurrPos.positionKey);
 
+        if(node->getType() == StartCell)
+        {
+            node->setDirectionMovedIn(CENTER);
+        }
+
         node->setIsVisited(false);
         node->setIsNext(false);
         node->setIsPath(false);

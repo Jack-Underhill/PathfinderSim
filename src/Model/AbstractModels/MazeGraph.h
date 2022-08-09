@@ -36,7 +36,7 @@ namespace PFSim {
         // PathfinderType getPathfinderType() { return ((PathfinderTemplate*)m_Animation)->getPathfinderType(); }
         GeneratorType getGeneratorType() { return m_Generated; }
 
-        std::string getAnimationTitle() { return m_Animation->getTitle(); }
+        std::string getAnimationTitle() const { return m_Animation->getTitle(); }
         int getStepCount() const { return m_Animation->getStepCount(); }
         
         bool isAnimationComplete() const { return m_Animation->isComplete(); }
@@ -45,7 +45,7 @@ namespace PFSim {
         bool isMouseInteractive() const { return m_IsMousePressed; }
 
         MazeNode*& updateAnimation();
-        void updatePathfinderStart();
+        void updateTargetFound();
         void updateSimulationSetup();
         
         void setGenerator(GeneratorType type);

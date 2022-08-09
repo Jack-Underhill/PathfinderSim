@@ -11,6 +11,8 @@ namespace PFSim {
         
         m_Graph = std::unique_ptr<MazeGraph>(new MazeGraph());
 
+        m_AnimationTimer = AnimationTimer();
+
         runGenerator(Open);
     }
 
@@ -32,10 +34,12 @@ namespace PFSim {
         dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(onMousePressedEvent));
         dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(onMouseReleasedEvent));
         dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMovedEvent));
-        
+
         dispatcher.Dispatch<UpdateCheckpointEvent>(BIND_EVENT_FN(onCheckpointEvent));
         dispatcher.Dispatch<UpdatePathfinderEvent>(BIND_EVENT_FN(onPathfinderEvent));
         dispatcher.Dispatch<UpdateGeneratorEvent>(BIND_EVENT_FN(onGeneratorEvent));
+        
+        dispatcher.Dispatch<SliderMovedEvent>(BIND_EVENT_FN(onSliderEvent));
     }
 
     bool Application::onCheckpointEvent(UpdateCheckpointEvent& e)
@@ -130,7 +134,7 @@ namespace PFSim {
         {   
             runMouseMoved( e.getX(), e.getY() );
 
-            std::stack<MazeNode*> swapCells = m_Graph->getNodesToSwap();
+            std::stack<MazeNode*> swapCells = m_Graph->getNodesToSwap(); // change to array
 
             if(swapCells.size() > 0)
             {
@@ -144,6 +148,17 @@ namespace PFSim {
 
         return true;
     }
+    
+    bool Application::onSliderEvent(SliderMovedEvent& e)
+    {
+        int speedPercent = m_Window->getAnimationSpeedValue();
+        m_Window->setSpeedText(speedPercent);
+
+        //update animation timer
+        m_AnimationTimer.updatePercentage(speedPercent);
+
+        return true;
+    }
 
     void Application::runGenerator(GeneratorType type)
     {
@@ -154,17 +169,19 @@ namespace PFSim {
         m_Window->getStatisticsDisplay()->updateTitle( Generate, m_Graph->getAnimationTitle() );
         m_Window->getSimulationDisplay()->clearDisplay();
 
-        AnimationTimer timer(AnimationType::Generate, m_Graph->getMazeLength(), type);
+        m_AnimationTimer.updateAnimation(AnimationType::Generate, m_Graph->getMazeLength(), type);
+        Timer timer;
 
         while(!m_Graph->isAnimationComplete()) 
         {
-            timer.run();
+            MazeNode*& node = m_Graph->updateAnimation();
+            handleAnimationTimer(node);
             
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+            m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
 
         //set EndNode
-        timer.run();
+        m_AnimationTimer.run();
         m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->setEndNode(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         
         //update Stats
@@ -180,7 +197,7 @@ namespace PFSim {
         m_Window->getStatisticsDisplay()->resetPathingStats();
 
         m_Graph->updateSimulationSetup();
-        Timer timer;
+        // Timer timer;
 
         if(!m_Graph->isReadyForSimulation())
         {
@@ -201,18 +218,20 @@ namespace PFSim {
     void Application::runPathfinder(PathfinderType type)
     {
         m_Graph->setPathfinder(type);
-        AnimationTimer timer(AnimationType::Pathfind, m_Graph->getMazeLength(), m_Graph->getGeneratorType());
+        m_AnimationTimer.updateAnimation(AnimationType::Pathfind, m_Graph->getMazeLength(), m_Graph->getGeneratorType());
+        Timer timer;
 
         m_Window->getStatisticsDisplay()->updateTitle( Pathfind, m_Graph->getAnimationTitle() );
 
         while(!m_Graph->isAnimationComplete()) 
         {
-            timer.run();
+            MazeNode*& node = m_Graph->updateAnimation();
+            handleAnimationTimer(node);
             
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateAnimation(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+            m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
 
-        m_Graph->updatePathfinderStart();
+        m_Graph->updateTargetFound();
         
         //update Stats
         m_Window->getStatisticsDisplay()->updateStepCount( Pathfind, m_Graph->getStepCount() );
@@ -224,14 +243,14 @@ namespace PFSim {
     void Application::runGraphReset()
     {
         m_Graph->setGraphReset();
-        AnimationTimer timer(AnimationType::Reset, m_Graph->getMazeLength());
+        m_AnimationTimer.updateAnimation(AnimationType::Reset, m_Graph->getMazeLength());
+        Timer timer;
 
         int lastMarkerPosition = 0;
         while(!m_Graph->isAnimationComplete()) 
         {
-            timer.run();
-
             MazeNode*& node = m_Graph->updateAnimation();
+            handleAnimationTimer(node);
             
             m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
             
@@ -252,16 +271,18 @@ namespace PFSim {
     void Application::runPathSolution()
     {
         m_Graph->setPathSolution();
-        AnimationTimer timer(AnimationType::DrawPath, m_Graph->getMazeLength());
+        m_AnimationTimer.updateAnimation(AnimationType::DrawPath, m_Graph->getMazeLength());
+        Timer timer;
 
         m_Window->getStatisticsDisplay()->updateTitle( DrawPath, m_Graph->getAnimationTitle() );
 
         while(!m_Graph->isAnimationComplete()) 
         {
-            timer.run();
+            MazeNode*& node = m_Graph->updateAnimation();
+            handleAnimationTimer(node);
 
             // path solution update
-            m_Window->getSimulationDisplay()->updatePathNode( m_Graph->updateAnimation(), m_Graph->getCellSize() );
+            m_Window->getSimulationDisplay()->updatePathNode( node, m_Graph->getCellSize() );
         }
         
         //update Stats
@@ -284,6 +305,14 @@ namespace PFSim {
     void Application::runMouseMoved(int x, int y)
     {
         m_Graph->setMouseMoved(x, y);
+    }
+    
+    void Application::handleAnimationTimer(MazeNode*& node)
+    {
+        if(!node->isNext() && m_Window->getAnimationSpeedValue() != 100)
+        {
+            m_AnimationTimer.run();
+        }
     }
 
 

@@ -2,15 +2,27 @@
 
 namespace PFSim {
 
-    AnimationTimer::AnimationTimer(AnimationType aType, int mazeLength, GeneratorType gType)
+    AnimationTimer::AnimationTimer()
+    {
+        m_Percentage = 50;
+        m_RawTime = 1000;
+    }
+    
+    void AnimationTimer::run()
+    {
+        auto end = std::chrono::high_resolution_clock::now() + std::chrono::microseconds(m_AppliedTime);
+        while(std::chrono::high_resolution_clock::now() < end);
+    }
+    
+    void AnimationTimer::updateAnimation(AnimationType aType, int mazeLength, GeneratorType gType)
     {
         switch (aType)
         {
         case(DrawPath):
-            m_Time = 18000;
+            m_RawTime = 18000;
             break;
         case(Reset):
-            m_Time = 4000;
+            m_RawTime = 4000;
             break;
         case(Generate):
             setGeneratorTimer(gType);
@@ -20,37 +32,33 @@ namespace PFSim {
             break;
         }
 
-        // scale timer to the mazelength
-        m_Time *= (std::pow(DEFAULT_MAZE_LENGTH, 1.05) / std::pow(mazeLength, 1.1));
-    }
-    
-    void AnimationTimer::run()
-    {
-        // //non thread(cpu) demanding (fastest speed for this, which is slow).
-        // if(m_Time % 1000 == 0)
-        // {
-            // std::this_thread::sleep_for(std::chrono::milliseconds(m_Time / 1000)); 
-        // }
-        // //high thread(cpu) demanding (allows more accurate than ms)
-        // else
-        // {
+        scaleToLength(mazeLength);
 
-            auto end = std::chrono::high_resolution_clock::now() + std::chrono::microseconds(m_Time);
-            while(std::chrono::high_resolution_clock::now() < end);
-            
-        // }
+        if(aType != Reset)
+        {
+            scaleToPercentage();
+        }
+        else
+        {
+            m_AppliedTime = m_RawTime;
+        }
+    }
+
+    void AnimationTimer::updatePercentage(int value)
+    {
+        m_Percentage = value;
+        scaleToPercentage();
     }
 
     void AnimationTimer::setGeneratorTimer(GeneratorType type)
     {
-        switch (type)
+        if(type == Open)
         {
-        case(Open):
-            m_Time = 3500;
-            break;
-        case(DFSMaze):
-            m_Time = 25001;
-            break;
+            m_RawTime = 3500;
+        }
+        else // maze
+        {
+            m_RawTime = 25001;
         }
     }
 
@@ -58,11 +66,43 @@ namespace PFSim {
     {
         if(type == Open)
         {
-            m_Time = 5001;
+            m_RawTime = 5001;
         }
         else // maze
         {
-            m_Time = 34001;
+            m_RawTime = 34001;
+        }
+    }
+    
+    void AnimationTimer::scaleToLength(int length)
+    {
+        m_RawTime *= (std::pow(DEFAULT_MAZE_LENGTH, 1.05) / std::pow(length, 1.1));
+    }
+    
+    void AnimationTimer::scaleToPercentage()
+    {
+        if(m_Percentage != 50)
+        {
+            if(m_Percentage < 3) // capping at 3
+            {
+                m_Percentage = 3;
+            }
+
+            int exponent;
+            if(m_Percentage > 50)
+            {
+                exponent = 4;
+            }
+            else
+            {
+                exponent = 2;
+            }
+
+            m_AppliedTime = m_RawTime / pow((m_Percentage / 50.0), exponent);
+        }
+        else //no Percentage
+        {
+            m_AppliedTime = m_RawTime;
         }
     }
 

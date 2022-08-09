@@ -128,7 +128,7 @@ namespace PFSim {
 
         pathSize += 2;
 
-        if(node != nullptr && node->getType() != StartCell) 
+        if(node != nullptr) 
         {
             // filler space (where a wall was) between cells. If movedIn = CENTER, this is skipped
             if(node->getDirectionMovedIn() == NORTH) 

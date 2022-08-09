@@ -16,7 +16,7 @@ namespace PFSim {
         delete m_PathSolution;
     }
 
-    void StatisticsDisplay::updateTitle(AnimationType type, std::string title)
+    void StatisticsDisplay::updateTitle(AnimationType type, const std::string& title)
     {
         if(type == Generate)
         {
@@ -70,7 +70,7 @@ namespace PFSim {
         m_PathSolution->reset();
     }
     
-    void StatisticsDisplay::setTitle(DisplayCategory*& category, std::string title)
+    void StatisticsDisplay::setTitle(DisplayCategory*& category, const std::string& title)
     {
         if(category == m_Generator)
         {
@@ -108,7 +108,7 @@ namespace PFSim {
         updateFontSize();
     }
 
-    void DisplayCategory::updateTitle(std::string title)
+    void DisplayCategory::updateTitle(const std::string& title)
     {
         if(title != m_Title) {
             m_Title = title;
@@ -172,36 +172,36 @@ namespace PFSim {
             type = "";
         }
 
-        std::stringstream str;
-        str << type << m_Title;
+        std::stringstream ss;
+        ss << type << m_Title;
 
         //repaint
         m_Window->setColor(STRING_COLOR);
-        m_Window->drawString(str.str(), getX(0), getY());
+        m_Window->drawString(ss.str(), getX(0), getY());
     }
 
     void DisplayCategory::displayCount()
     {
         clearCount();
 
-        std::stringstream str;
-        str << "Cells Visited: " << m_Count;
+        std::stringstream ss;
+        ss << "Cells Visited: " << m_Count;
         
         //repaint
         m_Window->setColor(STRING_COLOR);
-        m_Window->drawString(str.str(), getX(1), getY());
+        m_Window->drawString(ss.str(), getX(1), getY());
     }
 
     void DisplayCategory::displayTime()
     {
         clearTime();
 
-        std::stringstream str;
-        str << "Time Ran: (" << m_Time << "ms)";
+        std::stringstream ss;
+        ss << "Time Ran: (" << m_Time << "ms)";
         
         //repaint
         m_Window->setColor(STRING_COLOR);
-        m_Window->drawString(str.str(), getX(2), getY());
+        m_Window->drawString(ss.str(), getX(2), getY());
     }
 
     double DisplayCategory::getX(int section)

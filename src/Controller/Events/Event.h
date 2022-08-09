@@ -10,6 +10,7 @@ namespace PFSim {
     {
         None = 0,
         MouseButtonPressed, MouseButtonReleased, MouseMoved,
+        SliderMoved,
         // WindowResize,
         UpdateGenerator, UpdatePathfinder, UpdateCheckpoint
     };
@@ -18,7 +19,8 @@ namespace PFSim {
     {
         None = 0,
         EventCategoryMouse          = (1 << 0),
-        EventCategoryButton         = (1 << 1)
+        EventCategoryButton         = (1 << 1),
+        EventCategorySlider         = (1 << 2)
     };
     
     class Event 

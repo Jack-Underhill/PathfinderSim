@@ -52,7 +52,7 @@ namespace PFSim {
         return m_MappedNodes->at(m_Animation->step());
     }
 
-    void MazeGraph::updatePathfinderStart() 
+    void MazeGraph::updateTargetFound() 
     { 
         m_LastTargetFound = ((PathfinderTemplate*)m_Animation)->getTargetNodeFound(); 
 
@@ -116,9 +116,6 @@ namespace PFSim {
     {
         m_MousePositionKey = getKeyConversion(x, y);
         m_IsMousePressed = true;
-
-        // animate node clicked
-        // std::cout << "Animate MousePressed: (" << x << ", " << y << ")" << std::endl;
     }
 
     void MazeGraph::setMouseMoved(int x, int y)
@@ -140,10 +137,12 @@ namespace PFSim {
             if(m_MappedNodes->at(m_LastMousePositionKey)->getType() == StartCell)
             {
                 m_StartNode = m_MappedNodes->at(m_LastMousePositionKey);
+                m_StartNode->setDirectionMovedIn(CENTER);
             }
             else if(m_MappedNodes->at(m_MousePositionKey)->getType() == StartCell)
             {
                 m_StartNode = m_MappedNodes->at(m_MousePositionKey);
+                m_StartNode->setDirectionMovedIn(CENTER);
             }
 
             //update checkpoints

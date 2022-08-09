@@ -19,7 +19,8 @@ namespace PFSim {
     enum GeneratorType 
     {
         Open, 
-        DFSMaze
+        DFSMaze,
+        Prims
     };
 
     class GeneratorTemplate : public AnimationObject 

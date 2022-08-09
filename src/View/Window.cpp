@@ -14,13 +14,14 @@ namespace PFSim {
 
     Window::~Window()
     {
-        delete m_SimDisplay;
-
         while(!m_Interactors.empty()) 
         {
             delete m_Interactors.top();
             m_Interactors.pop();
         }
+
+        delete m_SimDisplay;
+        delete m_StatDisplay;
 
         delete m_Window;
     }
@@ -43,6 +44,7 @@ namespace PFSim {
         loadPanelCheckpoint();
         loadPanelPathfinder();
         loadPanelGenerator();
+        loadPanelSpeed();
         loadMouseListeners();
     }
 
@@ -161,6 +163,34 @@ namespace PFSim {
 
         m_Window->addToRegion(p_Generator.getPanel(), sgl::GWindow::REGION_EAST);
     }
+    
+    void Window::loadPanelSpeed()
+    {
+        Panel p_Speed("Animation Speed");
+
+        addSpacer(p_Speed);
+
+        int defaultSpeedValue = 50;
+        std::stringstream ss;
+        ss << defaultSpeedValue << "%";
+        
+        lbl_SpeedValue = new sgl::GLabel(ss.str());
+        p_Speed.addInteractor(lbl_SpeedValue);
+        m_Interactors.push(lbl_SpeedValue);
+
+        sld_Speed = new sgl::GSlider(1, 100, defaultSpeedValue);
+        sld_Speed->setActionListener([this] 
+        {
+            WindowData& data = this->m_Data; 
+
+            SliderMovedEvent event(SliderCode::SliderMoved);
+            data.EventCallback(event);
+        });
+        p_Speed.addInteractor(sld_Speed);
+        m_Interactors.push(sld_Speed);
+
+        m_Window->addToRegion(p_Speed.getPanel(), sgl::GWindow::REGION_EAST);
+    }
 
     void Window::addSpacer(Panel& panel) 
     {
@@ -195,6 +225,13 @@ namespace PFSim {
                 data.EventCallback(event);
             }
         });
+    }
+
+    void Window::setSpeedText(int value) 
+    { 
+        std::stringstream ss;
+        ss << value << "%";
+        lbl_SpeedValue->setText(ss.str()); 
     }
 
 }

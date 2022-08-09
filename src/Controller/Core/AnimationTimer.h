@@ -8,25 +8,29 @@
 #include "PathfinderTemplate.h"
 #include "GeneratorTemplate.h"
 #include "Constants.h"
-#include "Timer.h"
 
 namespace PFSim {
 
-    class AnimationTimer : public Timer
+    class AnimationTimer
     {
     public:
-        AnimationTimer(AnimationType aType, int mazeLength, GeneratorType gType = Open);
+        AnimationTimer();
         
         void run();
 
-        // void updateMultiplier();
+        void updateAnimation(AnimationType aType, int mazeLength, GeneratorType gType = Open);
+        void updatePercentage(int value);
 
     private:
-        long long m_Time; // microseconds
-        // int m_Multiplier;
+        long long m_RawTime; // microseconds
+        long long m_AppliedTime; // microseconds
+        int m_Percentage;
 
         void setGeneratorTimer(GeneratorType type);
         void setPathfinderTimer(GeneratorType type);
+
+        void scaleToLength(int length);
+        void scaleToPercentage();
     };
 
 } // namespace PFSim
