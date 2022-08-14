@@ -12,7 +12,8 @@ namespace PFSim {
         BlankCell,
         EndCell,
         CheckpointCell,
-        StartCell
+        StartCell,
+        WallCell
     };
 
     // Directions to move in.

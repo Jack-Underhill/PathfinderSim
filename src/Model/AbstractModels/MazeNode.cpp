@@ -22,6 +22,8 @@ namespace PFSim  {
     {
         switch(m_CellType) 
         {
+        case(WallCell):
+            return "Wall Cell";
         case(StartCell):
             return "Maze Start";
         case(EndCell):
@@ -62,6 +64,8 @@ namespace PFSim  {
 
         switch(m_CellType) 
         {
+        case(WallCell):
+            return "dark gray";
         case(StartCell):
             return "#77F032";// green
         case(EndCell):

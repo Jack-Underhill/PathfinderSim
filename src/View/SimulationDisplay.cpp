@@ -35,7 +35,8 @@ namespace PFSim {
         }
     }
 
-    void SimulationDisplay::updateMazeNode(MazeNode*& node, int cellSize, bool isMazeGenerated) {
+    void SimulationDisplay::updateMazeNode(MazeNode*& node, int cellSize, bool isMazeGenerated) 
+    {
         m_Window->setColor(node->getColor());
 
         NodePosition currentPos = node->getPosition();
@@ -48,7 +49,7 @@ namespace PFSim {
         m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay, DISPLAY_TOP_BUFFER + yOfSimDisplay,
                         cellSize, cellSize);
 
-        if(isMazeGenerated) 
+        if(isMazeGenerated)
         {
             updateMazeNodeFiller(node, cellSize);
         }
@@ -86,7 +87,7 @@ namespace PFSim {
 
         // filler space (where a wall was) between cells. If movedIn = CENTER, this is skipped
         if(node->getDirectionMovedIn() == NORTH) 
-        {    
+        {
             //south wall fill
             m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay + WALL_WIDTH,
                                 DISPLAY_TOP_BUFFER + yOfSimDisplay + cellAndWallSize,

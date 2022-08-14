@@ -21,6 +21,7 @@ namespace PFSim {
         Generate,
         Pathfind,
         Reset,
+        WallClear,
         DrawPath
     };
 
@@ -31,6 +32,7 @@ namespace PFSim {
         { 
             m_IsComplete = false; 
             m_stepCount = 0;
+            m_IsAnimating = true;
         }
 
         virtual ~AnimationObject() = default;
@@ -52,9 +54,12 @@ namespace PFSim {
 
         //Takes the given boolean parameter and sets the complete status to that parameter.
         void setIsComplete(bool isComplete) { m_IsComplete = isComplete; }
+        
+        void setIsAnimating(bool isAnimating) { m_IsAnimating = isAnimating; }
 
     protected:
         int m_stepCount;
+        bool m_IsAnimating;
 
     private:
         bool m_IsComplete;

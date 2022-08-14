@@ -9,6 +9,7 @@ namespace PFSim {
     PathfinderTemplate::PathfinderTemplate(std::unordered_set<int>* targetList) : AnimationObject() 
     {
         m_TargetList = targetList;
+        m_IsStillSearching = true;
     }
 
     PathfinderTemplate::~PathfinderTemplate() {}
@@ -40,7 +41,7 @@ namespace PFSim {
 
     void PathfinderTemplate::setNext(MazeNode* curr) 
     {
-        if(curr->getType() == BlankCell)
+        if(m_IsAnimating && curr->getType() == BlankCell)
         {
             curr->setIsNext(true);
             stackOfNextNodes.push(curr);
@@ -60,6 +61,11 @@ namespace PFSim {
 
         // EAST neighbor
         addIfAvailable(curr->E, curr, EAST);
+    }
+    
+    bool PathfinderTemplate::isAvailableMove(MazeNode*& curr) const
+    {
+        return (curr != nullptr && curr->getType() != WallCell && !curr->isVisited());
     }
 
 } // namespace PFSim

@@ -40,7 +40,7 @@ namespace PFSim {
     {
         MazeNode* currNode;
         //step to highlight the head of the path
-        if(isHeadOfPath) 
+        if(!m_IsAnimating || isHeadOfPath) 
         {
             m_stepCount++;
             headStep(currNode);
@@ -52,7 +52,7 @@ namespace PFSim {
         }
 
         // when both step types end, the animation is complete
-        if(front == nullptr && previous == nullptr) 
+        if(front == nullptr && (!m_IsAnimating || previous == nullptr)) 
         {
             setIsComplete(true);
         }
@@ -107,18 +107,26 @@ namespace PFSim {
     void PathSolution::headStep(MazeNode*& currNode)
     {
         //this gives the highlight step a head start in front of the true path.
-        if(previous == nullptr) 
+        if(m_IsAnimating && previous == nullptr)
         {
             previous = front;
         }
-        else 
+        else if(m_IsAnimating)
         {
             isHeadOfPath = false;
         }
         // change the node to a highlighted pathcell
-        front->node->setIsPath(true);// front->node->setType(PathCell);
+        front->node->setIsPath(true);
         front->node->setDirectionMovedIn(front->movedIn);
-        front->node->setIsNext(true);
+        
+        if(m_IsAnimating)
+        {
+            front->node->setIsNext(true);
+        }
+        else
+        {
+            front->node->setIsNext(false);
+        }
 
         currNode = front->node;
 

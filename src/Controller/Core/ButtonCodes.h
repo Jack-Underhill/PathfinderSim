@@ -12,7 +12,9 @@ namespace PFSim {
         pf_DFS,
 
         gen_Open,
-        gen_DFS
+        gen_DFS, 
+        
+        WallCellClear
     };
 
 }

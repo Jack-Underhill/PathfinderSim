@@ -64,7 +64,6 @@ FILE(GLOB LibHeaders
 FILE(GLOB ProjectSources
 	src/*.cpp
 
-	# src/Model/*.cpp
 	src/Model/AbstractModels/*.cpp
 	src/Model/Generators/*.cpp
 	src/Model/OtherAnimationModels/*.cpp
@@ -72,15 +71,11 @@ FILE(GLOB ProjectSources
 
 	src/View/*.cpp
 
-	# src/Controller/*.cpp
 	src/Controller/Core/*.cpp
-	# src/Controller/Events/*.cpp
+	src/Controller/Simulations/*.cpp
 )
 
 FILE(GLOB ProjectHeaders
-	# src/*.h
-
-	# src/Model/*.h
 	src/Model/AbstractModels/*.h
 	src/Model/Generators/*.h
 	src/Model/OtherAnimationModels/*.h
@@ -88,8 +83,8 @@ FILE(GLOB ProjectHeaders
 
 	src/View/*.h
 
-	# src/Controller/*.h
 	src/Controller/Core/*.h
+	src/Controller/Simulations/*.h
 	src/Controller/Events/*.h
 )
 
@@ -136,7 +131,6 @@ target_include_directories(StarterProject
 	lib/SGL/
 	src/
 
-	# src/Model/
 	src/Model/AbstractModels/
 	src/Model/Generators/
 	src/Model/OtherAnimationModels/
@@ -144,8 +138,8 @@ target_include_directories(StarterProject
 
 	src/View/
 
-	# src/Controller/
 	src/Controller/Core/
+	src/Controller/Simulations/
 	src/Controller/Events/
 )
 

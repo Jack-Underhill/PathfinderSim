@@ -19,9 +19,9 @@ namespace PFSim {
         AnimationType getType() const { return AnimationType::Reset; }
 
         //Takes one step of animation and returns the updates node.
-        int step();
+        virtual int step();
 
-    private:
+    protected:
         int m_MazeLength;
         NodePosition m_CurrPos;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;

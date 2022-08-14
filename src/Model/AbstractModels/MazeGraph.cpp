@@ -91,6 +91,8 @@ namespace PFSim {
     {
         pathfinderSetup();
 
+        m_Pathfinder = type;
+
         switch(type)
         {
         case(BFS):
@@ -106,6 +108,11 @@ namespace PFSim {
     {
         initResetNodes();
     }
+    
+    void MazeGraph::setWallClear()
+    {
+        initClearWalls();
+    }
 
     void MazeGraph::setPathSolution()
     {
@@ -120,51 +127,44 @@ namespace PFSim {
 
     void MazeGraph::setMouseMoved(int x, int y)
     {
-        if(m_NodesToSwap.size() > 0)
+        while(m_MouseUpdatedNodes.size() > 0)
         {
-            m_NodesToSwap.pop();
-            m_NodesToSwap.pop();
+            m_MouseUpdatedNodes.pop();
         }
 
-        if(isNewPosition(x, y))
+        if(m_IsDrawWallsMode || m_IsEraseWallsMode)
         {
-            //swap cell types
-            CellType temp = m_MappedNodes->at(m_LastMousePositionKey)->getType();
-            m_MappedNodes->at(m_LastMousePositionKey)->setType( m_MappedNodes->at(m_MousePositionKey)->getType() );
-            m_MappedNodes->at(m_MousePositionKey)->setType( temp );
+            handlePaintOver(x, y);
+        }
+        else
+        {
+            handleDraggedNode(x, y);   
+        }
+    }
+    
+    void MazeGraph::setDrawWallsMode(bool val) 
+    {
+        m_IsDrawWallsMode = val; 
 
-            //update start
-            if(m_MappedNodes->at(m_LastMousePositionKey)->getType() == StartCell)
-            {
-                m_StartNode = m_MappedNodes->at(m_LastMousePositionKey);
-                m_StartNode->setDirectionMovedIn(CENTER);
-            }
-            else if(m_MappedNodes->at(m_MousePositionKey)->getType() == StartCell)
-            {
-                m_StartNode = m_MappedNodes->at(m_MousePositionKey);
-                m_StartNode->setDirectionMovedIn(CENTER);
-            }
+        if(m_IsDrawWallsMode) 
+        {
+            MazeNode*& node = m_MappedNodes->at(m_MousePositionKey);
+            node->setType(WallCell);
 
-            //update checkpoints
-            if((m_MappedNodes->at(m_LastMousePositionKey)->getType() == CheckpointCell) &&
-               (m_MappedNodes->at(m_MousePositionKey)->getType() == CheckpointCell)) 
-            {
-                int temp = m_LastMousePositionKey;
-                m_LastMousePositionKey = m_MousePositionKey;
-                m_MousePositionKey = temp;
-            }
-            else if(m_MappedNodes->at(m_LastMousePositionKey)->getType() == CheckpointCell)
-            {
-                updateSwappedCheckpoints(m_LastMousePositionKey, m_MousePositionKey);
-            }
-            else if(m_MappedNodes->at(m_MousePositionKey)->getType() == CheckpointCell)
-            {
-                updateSwappedCheckpoints(m_MousePositionKey, m_LastMousePositionKey);
-            }
+            m_MouseUpdatedNodes.push(node);
+        }
+    }
 
-            // add to stack to be animated
-            m_NodesToSwap.push(m_MappedNodes->at(m_LastMousePositionKey));
-            m_NodesToSwap.push(m_MappedNodes->at(m_MousePositionKey));            
+    void MazeGraph::setEraseWallsMode(bool val) 
+    {
+        m_IsEraseWallsMode = val; 
+
+        if(m_IsEraseWallsMode) 
+        {
+            MazeNode*& node = m_MappedNodes->at(m_MousePositionKey);
+            node->setType(BlankCell);
+
+            m_MouseUpdatedNodes.push(node);
         }
     }
 
@@ -174,7 +174,7 @@ namespace PFSim {
         MazeNode*& node = m_MappedNodes->at(pos.positionKey);
         
         // If curr node is already taken, then "reroll" position until curr node is not taken.
-        while(node->getType() == StartCell || node->getType() == EndCell || node->getType() == CheckpointCell) 
+        while(node->getType() == StartCell || node->getType() == EndCell || node->getType() == CheckpointCell || node->getType() == WallCell) 
         {
             pos = NodePosition(rand() % m_MazeLength + 1, rand() % m_MazeLength + 1, m_MazeLength);
             node = m_MappedNodes->at(pos.positionKey);
@@ -249,23 +249,14 @@ namespace PFSim {
         delete m_CheckpointStack;
     }
 
-    bool MazeGraph::isNewPosition(int x, int y)
+    bool MazeGraph::isNewPosition(int x, int y) const
     {
         int checkPositionKey = getKeyConversion(x, y);
-
-        bool isNew = m_MousePositionKey != checkPositionKey;
-
-        if(isNew)
-        {
-            m_LastMousePositionKey = m_MousePositionKey;
-            m_MousePositionKey = checkPositionKey;
-        }
-
-        // compare
-        return isNew;
+        
+        return (m_MousePositionKey != checkPositionKey);
     }
 
-    int MazeGraph::getKeyConversion(int x, int y)
+    int MazeGraph::getKeyConversion(int x, int y) const
     {
         //convert pixel coords to node position.
         int xPos = (x - DISPLAY_LEFT_BUFFER - WALL_WIDTH) / (getCellSize() + WALL_WIDTH);
@@ -275,8 +266,6 @@ namespace PFSim {
         yPos += (y - DISPLAY_TOP_BUFFER - WALL_WIDTH) % (getCellSize() + WALL_WIDTH) > 0;
 
         int key = NodePosition(xPos, yPos, m_MazeLength).positionKey;
-        
-        // std::cout << m_MousePositionKey << ": (" << xPos << ", " << yPos << ") = " << key << std::endl;
 
         return key;
     }
@@ -374,6 +363,15 @@ namespace PFSim {
         m_Animation = new ResetNodes(m_MappedNodes, m_MazeLength);
     }
 
+    void MazeGraph::initClearWalls() 
+    {
+        freeAllocatedAnimation();
+
+        m_IsReadyForSimulation = true;
+
+        m_Animation = new ClearWalls(m_MappedNodes, m_MazeLength);
+    }
+
     void MazeGraph::initPathSolution()
     {
         m_PathSolution->reversePath();
@@ -406,6 +404,7 @@ namespace PFSim {
         }
     }
     
+    //optimization to this function: change m_CheckpointStack to an array (still use like a stack by using a pointer to the last element).
     void MazeGraph::updateSwappedCheckpoints(int newKey, int oldKey)
     {
         std::stack<int> temp;
@@ -415,7 +414,7 @@ namespace PFSim {
             m_CheckpointStack->pop();
         }
 
-        //found old key to remove
+        //replace oldKey with newKey
         m_CheckpointStack->pop();
         m_CheckpointStack->push(newKey);
 
@@ -424,6 +423,82 @@ namespace PFSim {
         {
             m_CheckpointStack->push(temp.top());
             temp.pop();
+        }
+    }
+    
+    void MazeGraph::handlePaintOver(int x, int y)
+    {
+        int checkPositionKey = getKeyConversion(x, y);
+        MazeNode*& node = m_MappedNodes->at(checkPositionKey);
+
+        CellType type = node->getType();
+        if(type != CheckpointCell && type != StartCell && type != EndCell) 
+        {
+            if(m_IsDrawWallsMode)
+            {
+                node->setType(WallCell);
+            }
+            else if(m_IsEraseWallsMode)
+            {
+                node->setType(BlankCell);
+            }
+
+            m_MouseUpdatedNodes.push(node);
+        }
+    }
+
+    void MazeGraph::handleDraggedNode(int x, int y)
+    {
+        int checkPositionKey = getKeyConversion(x, y);
+        MazeNode*& node = m_MappedNodes->at(checkPositionKey);
+
+        CellType type = node->getType();
+        if(type != WallCell)//no swapping with a wallcell
+        {
+            //update keys
+            m_LastMousePositionKey = m_MousePositionKey;
+            m_MousePositionKey = checkPositionKey;
+
+            MazeNode*& currNode = m_MappedNodes->at(m_MousePositionKey);
+            MazeNode*& prevNode = m_MappedNodes->at(m_LastMousePositionKey);
+
+            //swap cell types
+            CellType temp = currNode->getType();
+            currNode->setType( prevNode->getType() );
+            prevNode->setType(temp);
+
+            m_MouseUpdatedNodes.push(currNode);   
+            m_MouseUpdatedNodes.push(prevNode);
+            updateTrackedNodesDragged(currNode, prevNode);
+        }
+    }
+    
+    void MazeGraph::updateTrackedNodesDragged(MazeNode*& currNode, MazeNode*& prevNode)
+    {
+        //update start
+        if(currNode->getType() == StartCell)
+        {
+            m_StartNode = currNode;
+        }
+        else if(prevNode->getType() == StartCell)
+        {
+            m_StartNode = prevNode;
+        }
+
+        //update checkpoints
+        if(currNode->getType() == CheckpointCell && prevNode->getType() == CheckpointCell) 
+        {
+            int temp = m_LastMousePositionKey;
+            m_LastMousePositionKey = m_MousePositionKey;
+            m_MousePositionKey = temp;
+        }
+        else if(currNode->getType() == CheckpointCell)
+        {
+            updateSwappedCheckpoints(m_MousePositionKey, m_LastMousePositionKey);
+        }
+        else if(prevNode->getType() == CheckpointCell)
+        {
+            updateSwappedCheckpoints(m_LastMousePositionKey, m_MousePositionKey);
         }
     }
 

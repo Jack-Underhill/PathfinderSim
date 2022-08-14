@@ -10,9 +10,10 @@ namespace PFSim {
     {
         None = 0,
         MouseButtonPressed, MouseButtonReleased, MouseMoved,
-        SliderMoved,
+        UpdateGenerator, UpdatePathfinder, UpdateCheckpoint, WallCellClear,
         // WindowResize,
-        UpdateGenerator, UpdatePathfinder, UpdateCheckpoint
+        SliderMoved,
+        InstantPathUpdating
     };
 
     enum EventCategory 
@@ -20,7 +21,8 @@ namespace PFSim {
         None = 0,
         EventCategoryMouse          = (1 << 0),
         EventCategoryButton         = (1 << 1),
-        EventCategorySlider         = (1 << 2)
+        EventCategorySlider         = (1 << 2),
+        EventCategoryCheckbox       = (1 << 3)
     };
     
     class Event 

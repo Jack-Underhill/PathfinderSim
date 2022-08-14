@@ -25,7 +25,6 @@ namespace PFSim {
         
         void updateMazeNodeFiller(MazeNode*& node, int cellSize);
         void updatePathNodeFiller(MazeNode*& node, int cellSize);
-
     };
 
 } // namespace PFSim

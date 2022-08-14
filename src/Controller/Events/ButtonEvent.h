@@ -11,7 +11,7 @@ namespace PFSim {
     class ButtonEvent : public Event
     {
     public:
-        ButtonEvent(const ButtonCode ButtonCode) : m_ButtonCode(ButtonCode) {}
+        ButtonEvent(const ButtonCode buttonCode) : m_ButtonCode(buttonCode) {}
 
         ButtonCode getButtonCode() const { return m_ButtonCode; }
 
@@ -27,7 +27,7 @@ namespace PFSim {
     class UpdateGeneratorEvent : public ButtonEvent
     {
     public:
-        UpdateGeneratorEvent(const ButtonCode ButtonCode) : ButtonEvent(ButtonCode) 
+        UpdateGeneratorEvent(const ButtonCode buttonCode) : ButtonEvent(buttonCode) 
         {
         }
         
@@ -41,15 +41,12 @@ namespace PFSim {
             ss << "ButtonEvent: " << m_ButtonCode << " = " << getName();
             return ss.str();
         }
-
-    private:
-    
     };
 
     class UpdatePathfinderEvent : public ButtonEvent
     {
     public:
-        UpdatePathfinderEvent(const ButtonCode ButtonCode) : ButtonEvent(ButtonCode) 
+        UpdatePathfinderEvent(const ButtonCode buttonCode) : ButtonEvent(buttonCode) 
         {
         }
         
@@ -63,15 +60,12 @@ namespace PFSim {
             ss << "ButtonEvent: " << m_ButtonCode << " = " << getName();
             return ss.str();
         }
-
-    private:
-    
     };
 
     class UpdateCheckpointEvent : public ButtonEvent
     {
     public:
-        UpdateCheckpointEvent(const ButtonCode ButtonCode) : ButtonEvent(ButtonCode) 
+        UpdateCheckpointEvent(const ButtonCode buttonCode) : ButtonEvent(buttonCode) 
         {
         }
         
@@ -84,10 +78,26 @@ namespace PFSim {
             std::stringstream ss;
             ss << "ButtonEvent: " << m_ButtonCode << " = " << getName();
             return ss.str();
-        }
+        }    
+    };
 
-    private:
-    
+    class WallCellClearEvent : public ButtonEvent
+    {
+    public:
+        WallCellClearEvent(const ButtonCode buttonCode) : ButtonEvent(buttonCode) 
+        {
+        }
+        
+        static EventType getStaticType() { return EventType::WallCellClear; }
+        virtual EventType getEventType() const override { return getStaticType(); }
+        virtual const char* getName() const override { return "WallCellClear"; }
+
+        std::string toString() const override
+        {
+            std::stringstream ss;
+            ss << "ButtonEvent: " << m_ButtonCode << " = " << getName();
+            return ss.str();
+        }    
     };
 
 }

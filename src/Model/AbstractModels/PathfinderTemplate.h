@@ -45,7 +45,7 @@ namespace PFSim {
         //Progresses the animation one tick either by
         //returning a node to be diplayed as next in the path finding
         //or by progressing the path finding forward one step and returning the updated node.
-        virtual int step();
+        int step();
 
         //Sets the given node as a next node for the pathfinder to look at next.
         void setNext(MazeNode* curr);
@@ -54,9 +54,14 @@ namespace PFSim {
 
         virtual void addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir) = 0;
 
+        bool isAvailableMove(MazeNode*& curr) const;
+
+        bool isStillSearching() const { return m_IsStillSearching; }
+
     protected:
         std::unordered_set<int>* m_TargetList;
         MazeNode* m_TargetNodeFound;
+        bool m_IsStillSearching;
         
     private:
         std::stack<MazeNode*> stackOfNextNodes;

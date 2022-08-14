@@ -37,6 +37,11 @@ namespace Pathfinder {
             currNode->setIsNext(false);
 
             addAvailableMoves(currNode);
+
+            if(m_NodeStack.empty())
+            {
+                m_IsStillSearching = false;
+            }
         }
 
         return currNode->getPosition().positionKey;
@@ -44,7 +49,7 @@ namespace Pathfinder {
     
     void DFS::addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir)
     {
-        if(curr != nullptr && !curr->isVisited()) 
+        if(PathfinderTemplate::isAvailableMove(curr)) 
         {
             m_NodeStack.push(curr);
 

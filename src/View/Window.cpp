@@ -45,6 +45,7 @@ namespace PFSim {
         loadPanelPathfinder();
         loadPanelGenerator();
         loadPanelSpeed();
+        loadPanelCheckboxes();
         loadMouseListeners();
     }
 
@@ -190,6 +191,42 @@ namespace PFSim {
         m_Interactors.push(sld_Speed);
 
         m_Window->addToRegion(p_Speed.getPanel(), sgl::GWindow::REGION_EAST);
+    }
+    
+    void Window::loadPanelCheckboxes()
+    {
+        Panel p_Checkboxes("Extra Settings");
+        addSpacer(p_Checkboxes);
+
+        // sgl::GLabel* lbl_desc = new sgl::GLabel("Triggered from moving cells after simulated.");
+        // p_Checkboxes.addInteractor(lbl_desc);
+        // m_Interactors.push(lbl_desc);
+
+        cb_InstantSim = new sgl::GCheckBox("Enable Instant Path Updating");
+        cb_InstantSim->setActionListener([this](sgl::GEvent e)
+        {
+            WindowData& data = this->m_Data; 
+
+            InstantPathUpdatingEvent event(CheckboxCode::InstantPathUpdating, this->cb_InstantSim->isChecked());
+            data.EventCallback(event);
+        });
+        p_Checkboxes.addInteractor(cb_InstantSim);
+        m_Interactors.push(cb_InstantSim);
+        
+        addSpacer(p_Checkboxes);
+        
+        sgl::GButton* btn_ClearWalls = new sgl::GButton("Clear Wall Cells");
+        btn_ClearWalls->setActionListener([this] 
+        {
+            WindowData& data = this->m_Data; 
+
+            WallCellClearEvent event(ButtonCode::WallCellClear);
+            data.EventCallback(event);
+        });
+        p_Checkboxes.addInteractor(btn_ClearWalls);
+        m_Interactors.push(btn_ClearWalls);
+
+        m_Window->addToRegion(p_Checkboxes.getPanel(), sgl::GWindow::REGION_EAST);
     }
 
     void Window::addSpacer(Panel& panel) 

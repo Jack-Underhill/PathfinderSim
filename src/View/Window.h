@@ -11,6 +11,7 @@
 #include "glabel.h"
 #include "gtextfield.h"
 #include "gslider.h"
+#include "gcheckbox.h"
 
 #include "Constants.h"
 
@@ -24,6 +25,8 @@
 #include "MouseCodes.h"
 #include "SliderEvent.h"
 #include "SliderCodes.h"
+#include "CheckboxEvent.h"
+#include "CheckboxCodes.h"
 
 namespace PFSim {
 
@@ -80,6 +83,7 @@ namespace PFSim {
         sgl::GTextField* tf_MazeLength;
         sgl::GSlider* sld_Speed;
         sgl::GLabel* lbl_SpeedValue;
+        sgl::GCheckBox* cb_InstantSim;
 
         struct WindowData
         {
@@ -96,6 +100,7 @@ namespace PFSim {
         void loadPanelPathfinder();
         void loadPanelGenerator();
         void loadPanelSpeed();
+        void loadPanelCheckboxes();
         void addSpacer(Panel& panel);
 
         void loadMouseListeners();

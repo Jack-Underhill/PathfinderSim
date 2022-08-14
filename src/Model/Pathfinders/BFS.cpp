@@ -14,7 +14,7 @@ namespace Pathfinder {
     }
 
     int BFS::currStep() 
-    {
+    {  
         MazeNode* currNode = m_NodeQueue.front();
         m_NodeQueue.pop();
 
@@ -36,6 +36,11 @@ namespace Pathfinder {
             currNode->setIsNext(false);
 
             addAvailableMoves(currNode);
+
+            if(m_NodeQueue.empty())
+            {
+                m_IsStillSearching = false;
+            }
         }
 
         return currNode->getPosition().positionKey;
@@ -43,7 +48,7 @@ namespace Pathfinder {
 
     void BFS::addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir)
     {
-        if(curr != nullptr && !curr->isVisited()) 
+        if(PathfinderTemplate::isAvailableMove(curr)) 
         {
             m_NodeQueue.push(curr);
 
