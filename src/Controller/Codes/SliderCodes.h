@@ -5,7 +5,7 @@ namespace PFSim {
 
     enum SliderCode
     {
-        SliderMoved
+        AnimationSpeed
     };
     
 } // namespace PFSim

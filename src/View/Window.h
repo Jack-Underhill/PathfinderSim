@@ -51,7 +51,7 @@ namespace PFSim {
         Window(const WindowProps& props = WindowProps());
         ~Window();
 
-        bool isRunning() { return m_Window->isOpen(); }
+        bool isRunning() { return m_Window->isOpen(); } // ISSUE: never returns false.
 
         unsigned int getWidth() { return m_Data.width; };
         unsigned int getHeight() { return m_Data.height; };
@@ -78,6 +78,7 @@ namespace PFSim {
         StatisticsDisplay* m_StatDisplay;
         std::stack<sgl::GInteractor*> m_Interactors;
 
+        //interactors
         sgl::GButton* btn_AddCP;
         sgl::GButton* btn_RemoveCP;
         sgl::GTextField* tf_MazeLength;
@@ -100,7 +101,7 @@ namespace PFSim {
         void loadPanelPathfinder();
         void loadPanelGenerator();
         void loadPanelSpeed();
-        void loadPanelCheckboxes();
+        void loadPanelExtras();
         void addSpacer(Panel& panel);
 
         void loadMouseListeners();

@@ -14,7 +14,7 @@ namespace PFSim {
         gen_Open,
         gen_DFS, 
         
-        WallCellClear
+        clear_Obstacles
     };
 
 }

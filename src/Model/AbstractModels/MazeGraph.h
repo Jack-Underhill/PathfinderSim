@@ -16,7 +16,7 @@
 #include "BFS.h"
 #include "DFS.h"
 #include "ResetNodes.h"
-#include "ClearWalls.h"
+#include "ClearObstacles.h"
 #include "PathSolution.h"
 
 namespace PFSim {
@@ -55,7 +55,7 @@ namespace PFSim {
         void setGenerator(GeneratorType type);
         void setPathfinder(PathfinderType type);
         void setGraphReset(); 
-        void setWallClear();
+        void setObstacleClear();
         void setPathSolution(); 
         void setMazeLength(int length) { m_MazeLength = length; }
         MazeNode*& setEndNode() { return m_MappedNodes->at( setAvailableNodeCellType(EndCell) ); }
@@ -127,7 +127,7 @@ namespace PFSim {
         void initPathfinderDFS();
 
         void initResetNodes();
-        void initClearWalls();
+        void initClearObstacles();
 
         void initPathSolution();
 

@@ -5,7 +5,7 @@ namespace PFSim {
 
     enum CheckboxCode
     {
-        InstantPathUpdating
+        InstantRepathing
     };
     
 } // namespace PFSim

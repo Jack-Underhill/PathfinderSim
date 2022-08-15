@@ -1,12 +1,6 @@
 #ifndef _Application_h_
 #define _Application_h_
 
-#include <memory>
-#include <chrono>
-#include <thread>
-
-#include "gevent.h"
-
 #include "Event.h"
 #include "AnimationTimer.h"
 #include "Window.h"
@@ -28,26 +22,27 @@ namespace PFSim {
         Window* m_Window;
         MazeGraph* m_Graph;
         AnimationTimer* m_AnimationTimer;
-        bool m_IsValidToInstantPathUpdate;  // need better bool names
-        bool m_IsInstantPathUpdatingEnabled;
+        bool m_IsInstantRepathingEnabled; //True if the user enabled instant repathing (from cell dragging).
+        bool m_IsInstantRepathingValid;   //True if the graph conditions are valid for instant repathing.
 
         void onEvent(Event& e);
-        
-        bool onCheckpointEvent(UpdateCheckpointEvent& e);
-        bool onPathfinderEvent(UpdatePathfinderEvent& e);
-        bool onGeneratorEvent(UpdateGeneratorEvent& e);
+
+        bool onButtonEvent(ButtonEvent& e);
+        bool onCheckboxClickedEvent(CheckboxClickedEvent& e);
+        bool onSliderMovedEvent(SliderMovedEvent& e);
         bool onMousePressedEvent(MouseButtonPressedEvent& e);
         bool onMouseReleasedEvent(MouseButtonReleasedEvent& e);
         bool onMouseMovedEvent(MouseMovedEvent& e);
-        bool onSliderEvent(SliderMovedEvent& e);
-        bool onInstantPathUpdatingEvent(InstantPathUpdatingEvent& e);
-        bool onWallCellClearEvent(WallCellClearEvent& e);
-
-        bool isMouseInsideSimBounds(int x, int y);
-        void updateCPButtons(bool isIncrementingPositively);
         
+        bool handleCheckpoint(ButtonCode& code);
+        bool handlePathfinder(ButtonCode& code);
+        bool handleGenerator(ButtonCode& code);
+        bool handleObstacles(/*ButtonCode& code*/);
         void handleMouseDrawingEvent();
         void handleMouseDraggingEvent();
+
+        void updateCPButtons(bool isIncrementingPositively);
+        bool isMouseInsideSimBounds(int x, int y);
     };
 
 }

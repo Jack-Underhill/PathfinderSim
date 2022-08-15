@@ -21,7 +21,7 @@ namespace PFSim {
         Generate,
         Pathfind,
         Reset,
-        WallClear,
+        ObstacleClear,
         DrawPath
     };
 

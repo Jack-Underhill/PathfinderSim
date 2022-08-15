@@ -109,9 +109,9 @@ namespace PFSim {
         initResetNodes();
     }
     
-    void MazeGraph::setWallClear()
+    void MazeGraph::setObstacleClear()
     {
-        initClearWalls();
+        initClearObstacles();
     }
 
     void MazeGraph::setPathSolution()
@@ -334,7 +334,7 @@ namespace PFSim {
 
     void MazeGraph::initPathfinderBFS()
     {
-        if(m_LastTargetFound == nullptr) // isn't re-pathfinding from last target found. Is starting from the start node.
+        if(m_LastTargetFound == nullptr)
         {
             m_Animation = new Pathfinder::BFS(m_StartNode, m_TargetList);
         }
@@ -346,7 +346,7 @@ namespace PFSim {
     
     void MazeGraph::initPathfinderDFS()
     {
-        if(m_LastTargetFound == nullptr) // isn't re-pathfinding from last target found. Is starting from the start node.
+        if(m_LastTargetFound == nullptr)
         {
             m_Animation = new Pathfinder::DFS(m_StartNode, m_TargetList);
         }
@@ -363,13 +363,13 @@ namespace PFSim {
         m_Animation = new ResetNodes(m_MappedNodes, m_MazeLength);
     }
 
-    void MazeGraph::initClearWalls() 
+    void MazeGraph::initClearObstacles() 
     {
         freeAllocatedAnimation();
 
         m_IsReadyForSimulation = true;
 
-        m_Animation = new ClearWalls(m_MappedNodes, m_MazeLength);
+        m_Animation = new ClearObstacles(m_MappedNodes, m_MazeLength);
     }
 
     void MazeGraph::initPathSolution()

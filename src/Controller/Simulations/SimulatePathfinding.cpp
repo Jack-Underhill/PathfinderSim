@@ -28,7 +28,7 @@ namespace PFSim
         runGraphReset(false);
     }
     
-    void SimulatePathfinding::clearWalls()
+    void SimulatePathfinding::clearObstacles()
     {
         runGraphReset(true);
     }
@@ -98,12 +98,12 @@ namespace PFSim
         }
     }
 
-    void SimulatePathfinding::runGraphReset(bool isClearingWalls)
+    void SimulatePathfinding::runGraphReset(bool isClearingObstacles)
     {
         //algorithm setup
-        if(isClearingWalls)
+        if(isClearingObstacles)
         {
-            m_Graph->setWallClear();
+            m_Graph->setObstacleClear();
         }
         else
         {

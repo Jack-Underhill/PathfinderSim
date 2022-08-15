@@ -1,8 +1,5 @@
 #include "Window.h"
 
-// #include <Qt>
-// class QEvent;
-
 namespace PFSim {
 
     Window::Window(const WindowProps& props) 
@@ -45,7 +42,7 @@ namespace PFSim {
         loadPanelPathfinder();
         loadPanelGenerator();
         loadPanelSpeed();
-        loadPanelCheckboxes();
+        loadPanelExtras();
         loadMouseListeners();
     }
 
@@ -60,7 +57,7 @@ namespace PFSim {
         {
             WindowData& data = this->m_Data;
 
-            UpdateCheckpointEvent event(ButtonCode::cp_Add);
+            ButtonEvent event(ButtonCode::cp_Add);
             data.EventCallback(event);
         });
         p_Checkpoint.addInteractor(btn_AddCP);
@@ -72,7 +69,7 @@ namespace PFSim {
         {
             WindowData& data = this->m_Data; 
 
-            UpdateCheckpointEvent event(ButtonCode::cp_Subtract);
+            ButtonEvent event(ButtonCode::cp_Subtract);
             data.EventCallback(event);
         });
         btn_RemoveCP->setEnabled(false);
@@ -94,7 +91,7 @@ namespace PFSim {
         {
             WindowData& data = this->m_Data;
 
-            UpdatePathfinderEvent event(ButtonCode::pf_BFS);
+            ButtonEvent event(ButtonCode::pf_BFS);
             data.EventCallback(event);
         });
         p_Pathfinder.addInteractor(btn_pfBFS);
@@ -106,7 +103,7 @@ namespace PFSim {
         {
             WindowData& data = this->m_Data;
 
-            UpdatePathfinderEvent event(ButtonCode::pf_DFS);
+            ButtonEvent event(ButtonCode::pf_DFS);
             data.EventCallback(event);
         });
         p_Pathfinder.addInteractor(btn_pfDFS);
@@ -143,19 +140,19 @@ namespace PFSim {
         {
             WindowData& data = this->m_Data; 
 
-            UpdateGeneratorEvent event(ButtonCode::gen_Open);
+            ButtonEvent event(ButtonCode::gen_Open);
             data.EventCallback(event);
         });
         p_Generator.addInteractor(btn_genOpen);
         m_Interactors.push(btn_genOpen);
 
         
-        sgl::GButton* btn_genDFS = new sgl::GButton("Run DFS");
+        sgl::GButton* btn_genDFS = new sgl::GButton("Run DFS Maze");
         btn_genDFS->setActionListener([this] 
         {
             WindowData& data = this->m_Data; 
 
-            UpdateGeneratorEvent event(ButtonCode::gen_DFS);
+            ButtonEvent event(ButtonCode::gen_DFS);
             data.EventCallback(event);
         });
         p_Generator.addInteractor(btn_genDFS);
@@ -184,7 +181,7 @@ namespace PFSim {
         {
             WindowData& data = this->m_Data; 
 
-            SliderMovedEvent event(SliderCode::SliderMoved);
+            SliderMovedEvent event(SliderCode::AnimationSpeed);
             data.EventCallback(event);
         });
         p_Speed.addInteractor(sld_Speed);
@@ -193,7 +190,7 @@ namespace PFSim {
         m_Window->addToRegion(p_Speed.getPanel(), sgl::GWindow::REGION_EAST);
     }
     
-    void Window::loadPanelCheckboxes()
+    void Window::loadPanelExtras()
     {
         Panel p_Checkboxes("Extra Settings");
         addSpacer(p_Checkboxes);
@@ -202,12 +199,12 @@ namespace PFSim {
         // p_Checkboxes.addInteractor(lbl_desc);
         // m_Interactors.push(lbl_desc);
 
-        cb_InstantSim = new sgl::GCheckBox("Enable Instant Path Updating");
+        cb_InstantSim = new sgl::GCheckBox("Enable Instant Repathing");
         cb_InstantSim->setActionListener([this](sgl::GEvent e)
         {
             WindowData& data = this->m_Data; 
 
-            InstantPathUpdatingEvent event(CheckboxCode::InstantPathUpdating, this->cb_InstantSim->isChecked());
+            CheckboxClickedEvent event(CheckboxCode::InstantRepathing, this->cb_InstantSim->isChecked());
             data.EventCallback(event);
         });
         p_Checkboxes.addInteractor(cb_InstantSim);
@@ -215,16 +212,16 @@ namespace PFSim {
         
         addSpacer(p_Checkboxes);
         
-        sgl::GButton* btn_ClearWalls = new sgl::GButton("Clear Wall Cells");
-        btn_ClearWalls->setActionListener([this] 
+        sgl::GButton* btn_ClearObstacles = new sgl::GButton("Clear Obstacles");
+        btn_ClearObstacles->setActionListener([this] 
         {
             WindowData& data = this->m_Data; 
 
-            WallCellClearEvent event(ButtonCode::WallCellClear);
+            ButtonEvent event(ButtonCode::clear_Obstacles);
             data.EventCallback(event);
         });
-        p_Checkboxes.addInteractor(btn_ClearWalls);
-        m_Interactors.push(btn_ClearWalls);
+        p_Checkboxes.addInteractor(btn_ClearObstacles);
+        m_Interactors.push(btn_ClearObstacles);
 
         m_Window->addToRegion(p_Checkboxes.getPanel(), sgl::GWindow::REGION_EAST);
     }
@@ -271,4 +268,4 @@ namespace PFSim {
         lbl_SpeedValue->setText(ss.str()); 
     }
 
-}
+} //namespace PFSim

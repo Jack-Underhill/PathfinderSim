@@ -27,7 +27,7 @@ namespace PFSim
         bool isValidMazeLength(std::string gtf_MazeLength) const;
         bool isAnInteger(std::string str) const;
 
-        void handleAnimationTimer(MazeNode*& node);////////////////////////////////////////////////////
+        void handleAnimationTimer(MazeNode*& node);
     };
 
 } // namespace PFSim

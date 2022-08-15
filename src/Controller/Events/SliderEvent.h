@@ -11,16 +11,21 @@ namespace PFSim {
     class SliderEvent : public Event
     {
     public:
-        SliderEvent(const SliderCode sliderCode) : m_SliderCode(sliderCode) {}
-
         SliderCode getSliderCode() const { return m_SliderCode; }
 
-        virtual int getCategoryFlags() const override { return EventCategory::EventCategorySlider; }
         virtual EventType getEventType() const = 0;
         virtual const char* getName() const = 0;
-        virtual std::string toString() const { return getName(); }; // debug tool
+        
+        std::string toString() const override
+        {
+            std::stringstream ss;
+            ss << getName() << ": " << m_SliderCode;
+            return ss.str();
+        }
 
     protected:
+        SliderEvent(const SliderCode sliderCode) : m_SliderCode(sliderCode) {}
+
         SliderCode m_SliderCode;
     };
     
@@ -32,13 +37,6 @@ namespace PFSim {
         static EventType getStaticType() { return EventType::SliderMoved; }
         virtual EventType getEventType() const override { return getStaticType(); }
         virtual const char* getName() const override { return "SliderMoved"; }
-
-        std::string toString() const override
-        {
-            std::stringstream ss;
-            ss << "SliderEvent: "  << m_SliderCode << " = " << getName();
-            return ss.str();
-        }
     };
 
 } //namespace PFSim

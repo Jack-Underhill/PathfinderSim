@@ -11,21 +11,26 @@ namespace PFSim {
     class MouseEvent : public Event
     {
     public:
-        MouseEvent(const MouseCode MouseCode, int x, int y) : m_MouseCode(MouseCode), m_X(x), m_Y(y) {}
-
         MouseCode getMouseCode() const { return m_MouseCode; }
 
-        virtual int getCategoryFlags() const override { return EventCategory::EventCategoryMouse; }
         virtual EventType getEventType() const = 0;
         virtual const char* getName() const = 0;
-        virtual std::string toString() const { return getName(); }; // debug tool
+        
+        std::string toString() const override
+        {
+            std::stringstream ss;
+            ss << getName() << ": " << m_MouseCode;
+            return ss.str();
+        }
 
         int getX() { return m_X; }
         int getY() { return m_Y; }
 
     protected:
-        MouseCode m_MouseCode;
+        MouseEvent(const MouseCode MouseCode, int x, int y) : m_MouseCode(MouseCode), m_X(x), m_Y(y) {}
     
+        MouseCode m_MouseCode;
+        
     private:
         int m_X;
         int m_Y;
@@ -40,15 +45,6 @@ namespace PFSim {
         static EventType getStaticType() { return EventType::MouseButtonPressed; }
         EventType getEventType() const { return getStaticType(); }
         const char* getName() const { return "MouseButtonPressed"; }
-
-        std::string toString() const override
-        {
-            std::stringstream ss;
-            ss << "MouseEvent: " << m_MouseCode << " = " << getName();
-            return ss.str();
-        }
-    private:
-
     };
 
     class MouseButtonReleasedEvent : public MouseEvent
@@ -59,15 +55,6 @@ namespace PFSim {
         static EventType getStaticType() { return EventType::MouseButtonReleased; }
         EventType getEventType() const { return getStaticType(); }
         const char* getName() const { return "MouseButtonReleased"; }
-
-        std::string toString() const override
-        {
-            std::stringstream ss;
-            ss << "MouseEvent: " << m_MouseCode << " = " << getName();
-            return ss.str();
-        }
-    private:
-
     };
 
     class MouseMovedEvent : public MouseEvent
@@ -78,18 +65,8 @@ namespace PFSim {
         static EventType getStaticType() { return EventType::MouseMoved; }
         EventType getEventType() const { return getStaticType(); }
         const char* getName() const { return "MouseMoved"; }
-
-        std::string toString() const override
-        {
-            std::stringstream ss;
-            ss << "MouseEvent: " << m_MouseCode << " = " << getName();
-            return ss.str();
-        }
-    private:
-
     };
 
 } // namespace PFSim
-
 
 #endif

@@ -71,6 +71,7 @@ FILE(GLOB ProjectSources
 
 	src/View/*.cpp
 
+	src/Controller/Codes/*.cpp
 	src/Controller/Core/*.cpp
 	src/Controller/Simulations/*.cpp
 )
@@ -83,6 +84,7 @@ FILE(GLOB ProjectHeaders
 
 	src/View/*.h
 
+	src/Controller/Codes/*.h
 	src/Controller/Core/*.h
 	src/Controller/Simulations/*.h
 	src/Controller/Events/*.h
@@ -138,6 +140,7 @@ target_include_directories(StarterProject
 
 	src/View/
 
+	src/Controller/Codes/
 	src/Controller/Core/
 	src/Controller/Simulations/
 	src/Controller/Events/

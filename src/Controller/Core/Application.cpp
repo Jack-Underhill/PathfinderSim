@@ -6,8 +6,8 @@ namespace PFSim {
 
     Application::Application() 
     {
-        m_IsInstantPathUpdatingEnabled = false;
-        m_IsValidToInstantPathUpdate = false;
+        m_IsInstantRepathingEnabled = false;
+        m_IsInstantRepathingValid = false;
 
         m_Window = new Window();
         m_Window->setEventCallback(BIND_EVENT_FN(onEvent));
@@ -38,85 +38,53 @@ namespace PFSim {
         // std::cout << "Event Fired: " << e << std::endl;
 
         EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<ButtonEvent>(BIND_EVENT_FN(onButtonEvent));
+        dispatcher.Dispatch<CheckboxClickedEvent>(BIND_EVENT_FN(onCheckboxClickedEvent));
+        dispatcher.Dispatch<SliderMovedEvent>(BIND_EVENT_FN(onSliderMovedEvent));
+
         dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(onMousePressedEvent));
         dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(onMouseReleasedEvent));
         dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMovedEvent));
-
-        // refactor buttonEvents to just be 1 button class instead of these 4. ///////////////////////////////////////////////////////////////////////////////////////////
-        // use buttonPressedEvent and then use button codes to decipher which.
-        // onButtonPressEvent will be the function given to the dispatcher and that function will decipher its button code.
-        dispatcher.Dispatch<UpdateCheckpointEvent>(BIND_EVENT_FN(onCheckpointEvent));
-        dispatcher.Dispatch<UpdatePathfinderEvent>(BIND_EVENT_FN(onPathfinderEvent));
-        dispatcher.Dispatch<UpdateGeneratorEvent>(BIND_EVENT_FN(onGeneratorEvent));
-        dispatcher.Dispatch<WallCellClearEvent>(BIND_EVENT_FN(onWallCellClearEvent));
-
-        
-        dispatcher.Dispatch<SliderMovedEvent>(BIND_EVENT_FN(onSliderEvent));
-        
-        //refactor this into a checkbox enabled event and decipher from checkboxcodes
-        //refactor out eventcategories if found redundant rn
-        dispatcher.Dispatch<InstantPathUpdatingEvent>(BIND_EVENT_FN(onInstantPathUpdatingEvent));
     }
 
-    bool Application::onCheckpointEvent(UpdateCheckpointEvent& e)
+    bool Application::onButtonEvent(ButtonEvent& e)
     {
-        if(!m_Graph->isReadyForSimulation())
+        ButtonCode code = e.getButtonCode();
+        
+        if(code == ButtonCode::cp_Add || code == ButtonCode::cp_Subtract)
         {
-            SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
-            pf.reset();
+            handleCheckpoint(code);
         }
-
-        if(e.getButtonCode() == ButtonCode::cp_Add) 
+        else if(code == ButtonCode::pf_BFS || code == ButtonCode::pf_DFS)
         {
-            updateCPButtons(true);
-            
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->addCheckpoint(), m_Graph->getCellSize(), false );
+            handlePathfinder(code);
         }
-        else if(e.getButtonCode() == ButtonCode::cp_Subtract) 
+        else if(code == ButtonCode::gen_Open || code == ButtonCode::gen_DFS)
         {
-            updateCPButtons(false);
-
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->removeTopCheckpoint(), m_Graph->getCellSize(), false );
+            handleGenerator(code);
+        }
+        else if(code == ButtonCode::clear_Obstacles)
+        {
+            handleObstacles(/*code*/);
         }
 
         return true;
     }
-
-    bool Application::onPathfinderEvent(UpdatePathfinderEvent& e)
+    
+    bool Application::onCheckboxClickedEvent(CheckboxClickedEvent& e)
     {
-        PathfinderType type;
-
-        if(e.getButtonCode() == ButtonCode::pf_BFS) 
-        {
-            type = BFS;
-        }
-        else if(e.getButtonCode() == ButtonCode::pf_DFS) 
-        {
-            type = DFS;
-        }
-
-        SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
-        pf.run(true, type);
+        m_IsInstantRepathingEnabled = e.isChecked();
 
         return true;
     }
-            
-    bool Application::onGeneratorEvent(UpdateGeneratorEvent& e) 
+    
+    bool Application::onSliderMovedEvent(SliderMovedEvent& e)
     {
-        GeneratorType type;
+        int speedPercent = m_Window->getAnimationSpeedValue();
+        m_Window->setSpeedText(speedPercent);
 
-        if(e.getButtonCode() == ButtonCode::gen_Open) 
-        {
-            type = Open;
-        }
-        else if(e.getButtonCode() == ButtonCode::gen_DFS) 
-        {
-            type = DFSMaze;
-        }
-
-        SimulateGeneration gen(m_Graph, m_Window, m_AnimationTimer);
-        gen.run(type);
-        updateCPButtons(false);
+        //update animation timer
+        m_AnimationTimer->updatePercentage(speedPercent);
 
         return true;
     }
@@ -167,7 +135,7 @@ namespace PFSim {
                 updatedNodes.pop();
             }
 
-            if(m_IsInstantPathUpdatingEnabled && m_IsValidToInstantPathUpdate)   // this code ran if mouse moved on a non-BlankCell and after a SimulationPathfinding (or a "live simulation updating") just finished
+            if(m_IsInstantRepathingEnabled && m_IsInstantRepathingValid) 
             {
                 SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
                 pf.run(false);
@@ -176,45 +144,126 @@ namespace PFSim {
 
         return true;
     }
-    
-    bool Application::onSliderEvent(SliderMovedEvent& e)
-    {
-        int speedPercent = m_Window->getAnimationSpeedValue();
-        m_Window->setSpeedText(speedPercent);
 
-        //update animation timer
-        m_AnimationTimer->updatePercentage(speedPercent);
+    bool Application::handleCheckpoint(ButtonCode& code)
+    {
+        if(!m_Graph->isReadyForSimulation())
+        {
+            SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
+            pf.reset();
+        }
+
+        if(code == ButtonCode::cp_Add) 
+        {
+            updateCPButtons(true);
+            
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->addCheckpoint(), m_Graph->getCellSize(), false );
+        }
+        else if(code == ButtonCode::cp_Subtract) 
+        {
+            updateCPButtons(false);
+
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->removeTopCheckpoint(), m_Graph->getCellSize(), false );
+        }
+
+        return true;
+    }
+
+    bool Application::handlePathfinder(ButtonCode& code)
+    {
+        PathfinderType type;
+
+        if(code == ButtonCode::pf_BFS) 
+        {
+            type = BFS;
+        }
+        else if(code == ButtonCode::pf_DFS) 
+        {
+            type = DFS;
+        }
+
+        SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
+        pf.run(true, type);
+
+        return true;
+    }
+            
+    bool Application::handleGenerator(ButtonCode& code) 
+    {
+        GeneratorType type;
+
+        if(code == ButtonCode::gen_Open) 
+        {
+            type = Open;
+        }
+        else if(code == ButtonCode::gen_DFS) 
+        {
+            type = DFSMaze;
+        }
+
+        SimulateGeneration gen(m_Graph, m_Window, m_AnimationTimer);
+        gen.run(type);
+        updateCPButtons(false);
 
         return true;
     }
     
-    bool Application::onInstantPathUpdatingEvent(InstantPathUpdatingEvent& e)
-    {
-        m_IsInstantPathUpdatingEnabled = e.isChecked();
-
-        return true;
-    }
-    
-    bool Application::onWallCellClearEvent(WallCellClearEvent& e)
+    bool Application::handleObstacles(/*ButtonCode& code*/)
     {
         SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
-        pf.clearWalls();
+        pf.clearObstacles();
 
         return true;
     }
-    
 
-    
-    bool Application::isMouseInsideSimBounds(int x, int y)
+    void Application::handleMouseDrawingEvent()
     {
-        // actual displayed size 
-        int displayLengthUsed = (WALL_WIDTH + m_Graph->getCellSize()) * m_Graph->getMazeLength();
+        if(!m_Graph->isMazeGenerated())
+        {
+            // setup
+            m_IsInstantRepathingValid = false;
+            if(!m_Graph->isReadyForSimulation())
+            {
+                SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
+                pf.reset();
+                m_Graph->setIsReadyForSimulation(true);
+            }
 
-        bool isInsideXBounds = (DISPLAY_LEFT_BUFFER + WALL_WIDTH < x && x < DISPLAY_LEFT_BUFFER + displayLengthUsed);
-        bool isInsideYBounds = (DISPLAY_TOP_BUFFER + WALL_WIDTH < y && y < DISPLAY_TOP_BUFFER + displayLengthUsed);
-
-        return (isInsideXBounds && isInsideYBounds);
+            // execute drawEvent
+            CellType type = m_Graph->getCellTypePressed();
+            if(type == BlankCell) 
+            {
+                m_Graph->setDrawWallsMode(true);
+            }
+            else if(type == WallCell) 
+            {
+                m_Graph->setEraseWallsMode(true);
+            }
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->getMouseUpdatedNodes().top(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+        }
+        else
+        {
+            m_Graph->setMouseReleased();
+            m_Graph->setDrawWallsMode(false);
+            m_Graph->setEraseWallsMode(false);
+        }
     }
+
+    void Application::handleMouseDraggingEvent()
+    {
+        if(m_IsInstantRepathingEnabled)
+        {
+            m_IsInstantRepathingValid = !m_Graph->isReadyForSimulation();
+        }
+        else if(!m_Graph->isReadyForSimulation())
+        {
+            SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
+            pf.reset();
+            m_Graph->setIsReadyForSimulation(true);
+        }
+    }
+    
+
     
     void Application::updateCPButtons(bool isIncrementingPositively)
     {        
@@ -239,54 +288,16 @@ namespace PFSim {
             m_Window->setRemoveCPEnabled(false);
         }
     }
-
-    void Application::handleMouseDrawingEvent()
+    
+    bool Application::isMouseInsideSimBounds(int x, int y)
     {
-        if(!m_Graph->isMazeGenerated())
-        {
-            // setup
-            m_IsValidToInstantPathUpdate = false;
-            if(!m_Graph->isReadyForSimulation())
-            {
-                SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
-                pf.reset();
-                m_Graph->setIsReadyForSimulation(true);
-            }
+        // actual displayed size 
+        int displayLengthUsed = (WALL_WIDTH + m_Graph->getCellSize()) * m_Graph->getMazeLength();
 
-            // execute drawEvent
-            CellType type = m_Graph->getCellTypePressed();
-            if(type == BlankCell) 
-            {
-                // enable draw walls 
-                m_Graph->setDrawWallsMode(true);
-            }
-            else if(type == WallCell) 
-            {
-                // enable erase walls 
-                m_Graph->setEraseWallsMode(true);
-            }
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->getMouseUpdatedNodes().top(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
-        }
-        else
-        {
-            m_Graph->setMouseReleased();
-            m_Graph->setDrawWallsMode(false);
-            m_Graph->setEraseWallsMode(false);
-        }
-    }
+        bool isInsideXBounds = (DISPLAY_LEFT_BUFFER + WALL_WIDTH < x && x < DISPLAY_LEFT_BUFFER + displayLengthUsed);
+        bool isInsideYBounds = (DISPLAY_TOP_BUFFER + WALL_WIDTH < y && y < DISPLAY_TOP_BUFFER + displayLengthUsed);
 
-    void Application::handleMouseDraggingEvent()
-    {
-        if(m_IsInstantPathUpdatingEnabled)// this code ran if wanting "live simulation updating"
-        {
-            m_IsValidToInstantPathUpdate = !m_Graph->isReadyForSimulation();
-        }
-        else if(!m_Graph->isReadyForSimulation())// this code ran if not wanting "live simulation updating"
-        {
-            SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
-            pf.reset();
-            m_Graph->setIsReadyForSimulation(true);
-        }
+        return (isInsideXBounds && isInsideYBounds);
     }
 
 }

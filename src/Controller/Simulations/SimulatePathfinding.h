@@ -21,7 +21,7 @@ namespace PFSim
         // Animate clearing all the pathfinding after-effects to the graph.
         void reset();
 
-        void clearWalls();
+        void clearObstacles();
 
     private:
         MazeGraph* m_Graph;
@@ -31,7 +31,7 @@ namespace PFSim
 
         void runPathfindingSimulation(PathfinderType type);
         void runPathfinder(PathfinderType type);
-        void runGraphReset(bool isClearingWalls);
+        void runGraphReset(bool isClearingObstacles);
         void runPathSolution();
         
         void runNonAnimationSimulation();
@@ -39,7 +39,7 @@ namespace PFSim
         void runNonAnimationReset(bool doesUpdateScreen);
         void runNonAnimationPath();
 
-        void handleAnimationTimer(MazeNode*& node);////////////////////////////////////////////////////
+        void handleAnimationTimer(MazeNode*& node);
     };
 
 } // namespace PFSim

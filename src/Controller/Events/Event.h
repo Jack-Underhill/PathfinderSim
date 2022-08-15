@@ -9,20 +9,11 @@ namespace PFSim {
     enum class EventType
     {
         None = 0,
-        MouseButtonPressed, MouseButtonReleased, MouseMoved,
-        UpdateGenerator, UpdatePathfinder, UpdateCheckpoint, WallCellClear,
         // WindowResize,
+        MouseButtonPressed, MouseButtonReleased, MouseMoved,
+        ButtonPressed, //(GUI Button)
         SliderMoved,
-        InstantPathUpdating
-    };
-
-    enum EventCategory 
-    {
-        None = 0,
-        EventCategoryMouse          = (1 << 0),
-        EventCategoryButton         = (1 << 1),
-        EventCategorySlider         = (1 << 2),
-        EventCategoryCheckbox       = (1 << 3)
+        CheckboxClicked
     };
     
     class Event 
@@ -31,18 +22,15 @@ namespace PFSim {
     public:
         virtual ~Event() = default;
 
-        virtual int getCategoryFlags() const = 0;
         virtual EventType getEventType() const = 0;
         virtual const char* getName() const = 0;
         virtual std::string toString() const { return getName(); }; // debug tool
-
-        inline bool IsInCategory(EventCategory category) { return getCategoryFlags() & category; }
 
     protected:
         bool m_IsHandled = false;
     };
 
-    class EventDispatcher 
+    class EventDispatcher
     {
         template<typename T>
         using EventFn = std::function<bool(T&)>;
@@ -66,6 +54,7 @@ namespace PFSim {
     inline std::ostream& operator<< (std::ostream& os, const Event& e) { // debug tool
         return os << e.toString();
     }
-};
+
+} //namespace PFSim
 
 #endif
