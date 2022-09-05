@@ -23,7 +23,7 @@ namespace Generator {
     public:
         //Constructor takes a map of all the existing nodes to their location and a starting position
         //to generate the graph from.
-        DFSMaze(std::unordered_map<int, MazeNode*>* mappedNodes, int mazeLength, MazeNode* startNode);
+        DFSMaze(MazeGraph*& graph);
 
         //Moves through the disconnected graph, connecting nodes in its path, until it reaches a
         //deadend (no current-neighboring unvisited-cells). Then it backtrack its steps 

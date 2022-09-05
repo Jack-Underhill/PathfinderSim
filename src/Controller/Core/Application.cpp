@@ -12,7 +12,8 @@ namespace PFSim {
         m_Window = new Window();
         m_Window->setEventCallback(BIND_EVENT_FN(onEvent));
         
-        m_Graph = new MazeGraph();
+        m_Graph = nullptr;
+        m_MouseInteraction = nullptr;
 
         m_AnimationTimer = new AnimationTimer();
 
@@ -93,9 +94,9 @@ namespace PFSim {
     {
         if(isMouseInsideSimBounds( e.getX(), e.getY() ))
         {
-            m_Graph->setMousePressed(e.getX(), e.getY());
+            m_MouseInteraction = new InteractiveCells(e.getX(), e.getY(), m_Graph);
 
-            CellType type = m_Graph->getCellTypePressed();
+            CellType type = m_Graph->getNodeMap()->at( m_MouseInteraction->getMousePositionKey() )->getType();
             if(type == BlankCell || type == WallCell) 
             {
                 handleMouseDrawingEvent();
@@ -111,12 +112,10 @@ namespace PFSim {
 
     bool Application::onMouseReleasedEvent(MouseButtonReleasedEvent& e)
     {
-        if(m_Graph->isMouseInteractive())
+        if(m_MouseInteraction != nullptr)
         {
-            m_Graph->setMouseReleased();
-
-            m_Graph->setDrawWallsMode(false);
-            m_Graph->setEraseWallsMode(false);
+            delete m_MouseInteraction; 
+            m_MouseInteraction = nullptr; 
         }
 
         return true;
@@ -124,21 +123,27 @@ namespace PFSim {
 
     bool Application::onMouseMovedEvent(MouseMovedEvent& e)
     {
-        if(m_Graph->isMouseInteractive() && isMouseInsideSimBounds( e.getX(), e.getY() ) && m_Graph->isNewPosition( e.getX(), e.getY() ))
+        if(m_MouseInteraction != nullptr && isMouseInsideSimBounds( e.getX(), e.getY() ) && m_MouseInteraction->isNewPosition( e.getX(), e.getY() ))
         {
-            m_Graph->setMouseMoved( e.getX(), e.getY() );
-
-            std::stack<MazeNode*> updatedNodes = m_Graph->getMouseUpdatedNodes(); // change to array
-            while(updatedNodes.size() > 0)
+            if(m_MouseInteraction->setMouseMoved( e.getX(), e.getY() )) // continue if set was a success
             {
-                m_Window->getSimulationDisplay()->updateMazeNode( updatedNodes.top(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
-                updatedNodes.pop();
-            }
+                if(m_MouseInteraction->isStartNodeMoved())
+                {
+                    m_Graph->setStartNode( m_MouseInteraction->getNewStartNode() );
+                }
 
-            if(m_IsInstantRepathingEnabled && m_IsInstantRepathingValid) 
-            {
-                SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
-                pf.run(false);
+                std::stack<MazeNode*> updatedNodes = m_MouseInteraction->getMouseUpdatedNodes(); // change to array
+                while(updatedNodes.size() > 0)
+                {
+                    m_Window->getSimulationDisplay()->updateMazeNode( updatedNodes.top(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+                    updatedNodes.pop();
+                }
+
+                if(m_IsInstantRepathingEnabled && m_IsInstantRepathingValid) 
+                {
+                    SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
+                    pf.run(false, m_PathfinderType);
+                }
             }
         }
 
@@ -157,13 +162,13 @@ namespace PFSim {
         {
             updateCPButtons(true);
             
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->addCheckpoint(), m_Graph->getCellSize(), false );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateCheckpoint(true), m_Graph->getCellSize(), false );
         }
         else if(code == ButtonCode::cp_Subtract) 
         {
             updateCPButtons(false);
 
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->removeTopCheckpoint(), m_Graph->getCellSize(), false );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->updateCheckpoint(false), m_Graph->getCellSize(), false );
         }
 
         return true;
@@ -171,23 +176,21 @@ namespace PFSim {
 
     bool Application::handlePathfinder(ButtonCode& code)
     {
-        PathfinderType type;
-
         if(code == ButtonCode::pf_BFS) 
         {
-            type = BFS;
+            m_PathfinderType = BFS;
         }
         else if(code == ButtonCode::pf_DFS) 
         {
-            type = DFS;
+            m_PathfinderType = DFS;
         }
 
         SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
-        pf.run(true, type);
+        pf.run(true, m_PathfinderType);
 
         return true;
     }
-            
+
     bool Application::handleGenerator(ButtonCode& code) 
     {
         GeneratorType type;
@@ -226,26 +229,24 @@ namespace PFSim {
             {
                 SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
                 pf.reset();
-                m_Graph->setIsReadyForSimulation(true);
             }
 
             // execute drawEvent
-            CellType type = m_Graph->getCellTypePressed();
+            CellType type = m_Graph->getNodeMap()->at( m_MouseInteraction->getMousePositionKey() )->getType();
             if(type == BlankCell) 
             {
-                m_Graph->setDrawWallsMode(true);
+                m_MouseInteraction->setDrawWallsMode(true);
             }
             else if(type == WallCell) 
             {
-                m_Graph->setEraseWallsMode(true);
+                m_MouseInteraction->setEraseWallsMode(true);
             }
-            m_Window->getSimulationDisplay()->updateMazeNode( m_Graph->getMouseUpdatedNodes().top(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+            m_Window->getSimulationDisplay()->updateMazeNode( m_MouseInteraction->getMouseUpdatedNodes().top(), m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         }
         else
         {
-            m_Graph->setMouseReleased();
-            m_Graph->setDrawWallsMode(false);
-            m_Graph->setEraseWallsMode(false);
+            delete m_MouseInteraction; 
+            m_MouseInteraction = nullptr; 
         }
     }
 
@@ -259,7 +260,6 @@ namespace PFSim {
         {
             SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
             pf.reset();
-            m_Graph->setIsReadyForSimulation(true);
         }
     }
     
@@ -278,12 +278,12 @@ namespace PFSim {
         }
 
         // check to disable addCP
-        if(m_Graph->getCheckpointCount() == CHECKPOINT_LIMIT - 1 && isIncrementingPositively)
+        if(m_Graph->getTargetCount() == CHECKPOINT_LIMIT - 1 && isIncrementingPositively)
         {
             m_Window->setAddCPEnabled(false);
         }
         // check to disable removeCP
-        else if(m_Graph->getCheckpointCount() <= 1 && !isIncrementingPositively)
+        else if(m_Graph->getTargetCount() <= 1 && !isIncrementingPositively)
         {
             m_Window->setRemoveCPEnabled(false);
         }

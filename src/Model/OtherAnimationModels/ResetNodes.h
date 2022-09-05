@@ -4,13 +4,14 @@
 #include <unordered_map>
 
 #include "AnimationObject.h"
+#include "MazeGraph.h"
 
 namespace PFSim {
 
     class ResetNodes : public AnimationObject
     {
     public:
-        ResetNodes(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength);
+        ResetNodes(MazeGraph*& graph);
 
         //Returns the animation's title to be displayed on the GUI while it runs.
         std::string getTitle() const { return "Resetting Nodes"; }
@@ -21,9 +22,12 @@ namespace PFSim {
         //Takes one step of animation and returns the updates node.
         virtual int step();
 
+        // void resetDirection() { m_MappedNodes->at(m_lastPositionKey)->setDirectionMovedIn(CENTER); } causes a bug of not reseting path as nodefiller...
+
     protected:
         int m_MazeLength;
         NodePosition m_CurrPos;
+        // int m_lastPositionKey;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
 
     };

@@ -4,8 +4,7 @@ namespace PFSim {
     
 namespace Generator {
     
-    Open::Open(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength) 
-    : GeneratorTemplate(mappedNodes, mazeLength) 
+    Open::Open(MazeGraph*& graph) : GeneratorTemplate(graph) 
     {
         m_CurrPos = NodePosition(1, 1, m_MazeLength);
     }
@@ -22,14 +21,17 @@ namespace Generator {
 
         connectUnlinkedNeighbors(node);
         
-        if(m_CurrPos.x < m_MazeLength) {
+        if(m_CurrPos.x < m_MazeLength)
+        {
             m_CurrPos.x++;
         }
-        else if(m_CurrPos.y < m_MazeLength) {
+        else if(m_CurrPos.y < m_MazeLength) 
+        {
             m_CurrPos.x = 1;
             m_CurrPos.y++;
         }
-        else {
+        else 
+        {
             setIsComplete(true);
         }
 

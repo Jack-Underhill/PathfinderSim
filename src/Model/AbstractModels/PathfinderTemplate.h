@@ -1,4 +1,4 @@
-/* Jack Underhill & Jack Sanger
+/* Jack Underhill
  * CS 133, Spring 2022
  * Final Project - Pathfinding
  * The purpose of this class is to act as a parent class for the path finders which share similar
@@ -11,27 +11,23 @@
 #include <unordered_set>
 #include <stack>
 
+#include "Constants.h"
+
 #include "AnimationObject.h"
+#include "MazeGraph.h"
 
 namespace PFSim {
-
-    //An additional type to differentiate between the pathfinders when constructing the maze.
-    enum PathfinderType 
-    {
-        BFS             = 0,
-        DFS             = 1
-    };
 
     class PathfinderTemplate : public AnimationObject 
     {
     public:
         //Constructor takes the start of the maze and the checkpoints it needs to find before the end.
-        PathfinderTemplate(std::unordered_set<int>* targetList);
+        PathfinderTemplate(MazeGraph*& graph);
         
         //Empty virtual destructor. This class doesn't allocate any memory.
         virtual ~PathfinderTemplate();
 
-        //Returns the end node.
+        //Returns the node found (a checkpoint or the end).
         MazeNode* getTargetNodeFound() const { return m_TargetNodeFound; }
 
         //Returns the animation's title to be displayed on the GUI while it runs.
@@ -58,13 +54,25 @@ namespace PFSim {
 
         bool isStillSearching() const { return m_IsStillSearching; }
 
+        // Returns true if contained and removed.
+        // Returns false if not contained.
+        bool removeTargetIfContained(MazeNode*& curr);
+
+        void setTargetList(int size, int* targets);
+        int* getTargetList() { return m_TargetList; }
+        int getTargetListSize() { return m_TargetListSize; }
+
     protected:
-        std::unordered_set<int>* m_TargetList;
+        int m_TargetList[CHECKPOINT_LIMIT] = {0};
+        int m_TargetListSize;
         MazeNode* m_TargetNodeFound;
         bool m_IsStillSearching;
+
+        MazeNode* getStartingPlace();
         
     private:
         std::stack<MazeNode*> stackOfNextNodes;
+        MazeGraph* m_Graph;
         
         //Helps the step method by returning the next step for the pathfinder to take
         //and removes it from the list of possible next steps.

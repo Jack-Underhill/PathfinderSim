@@ -21,10 +21,11 @@ namespace PFSim {
 
 namespace Pathfinder {
 
-    class DFS: public PathfinderTemplate {
+    class DFS: public PathfinderTemplate 
+    {
     public:
         //Constructor takes the start, end, and a list of checkpoints the pathfinder must hit
-        DFS(MazeNode* startNode, std::unordered_set<int>* targetList);
+        DFS(MazeGraph*& graph);
 
         //Returns the animation's title to be displayed on the GUI while it runs
         std::string getTitle() const { return "DFS"; }

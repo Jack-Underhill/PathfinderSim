@@ -9,7 +9,9 @@ namespace PFSim {
     class ClearObstacles : public ResetNodes
     {
     public:
-        ClearObstacles(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength);
+        ClearObstacles(MazeGraph*& graph) : ResetNodes(graph)
+        {
+        }
 
         //Returns the animation's title to be displayed on the GUI while it runs.
         std::string getTitle() const { return "Clearing Obstacles"; }

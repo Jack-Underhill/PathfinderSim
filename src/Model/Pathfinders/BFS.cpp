@@ -8,9 +8,9 @@ namespace PFSim {
 
 namespace Pathfinder {
 
-    BFS::BFS(MazeNode* startNode, std::unordered_set<int>* targetList) : PathfinderTemplate(targetList) 
+    BFS::BFS(MazeGraph*& graph) : PathfinderTemplate(graph) 
     {
-        m_NodeQueue.push(startNode);
+        m_NodeQueue.push( getStartingPlace() );
     }
 
     int BFS::currStep() 
@@ -18,17 +18,21 @@ namespace Pathfinder {
         MazeNode* currNode = m_NodeQueue.front();
         m_NodeQueue.pop();
 
-        if(m_TargetList->empty() && currNode->getType() == EndCell)
+        if(m_TargetListSize == 0 && currNode->getType() == EndCell)
         {
             setIsComplete(true);
             m_TargetNodeFound = currNode;
+            m_IsStillSearching = false;//
         }
-        else if(m_TargetList->count(currNode->getPosition().positionKey))
+        // else if(currNode->getType() == CheckpointCell && m_TargetList->count(currNode->getPosition().positionKey)) 
+        // {
+        //     setIsComplete(true);
+        //     m_TargetNodeFound = currNode;
+
+        //     m_TargetList->erase(currNode->getPosition().positionKey);
+        // }
+        else if(currNode->getType() == CheckpointCell && removeTargetIfContained(currNode)) 
         {
-            setIsComplete(true);
-            m_TargetNodeFound = currNode;
-            
-            m_TargetList->erase(currNode->getPosition().positionKey);
         }
         else 
         {

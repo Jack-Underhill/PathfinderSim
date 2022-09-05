@@ -7,6 +7,7 @@
 #include "MazeGraph.h"
 #include "SimulateGeneration.h"
 #include "SimulatePathfinding.h"
+#include "InteractiveCells.h"
 
 namespace PFSim {
 
@@ -24,6 +25,10 @@ namespace PFSim {
         AnimationTimer* m_AnimationTimer;
         bool m_IsInstantRepathingEnabled; //True if the user enabled instant repathing (from cell dragging).
         bool m_IsInstantRepathingValid;   //True if the graph conditions are valid for instant repathing.
+        
+        InteractiveCells* m_MouseInteraction;
+
+        PathfinderType m_PathfinderType;
 
         void onEvent(Event& e);
 

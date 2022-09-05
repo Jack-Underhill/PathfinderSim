@@ -9,9 +9,9 @@ namespace PFSim {
 
 namespace Pathfinder {
 
-    DFS::DFS(MazeNode* startNode, std::unordered_set<int>* targetList) : PathfinderTemplate(targetList) 
+    DFS::DFS(MazeGraph*& graph) : PathfinderTemplate(graph) 
     {
-        m_NodeStack.push(startNode);
+        m_NodeStack.push( getStartingPlace() );
     }
 
     int DFS::currStep() 
@@ -19,17 +19,21 @@ namespace Pathfinder {
         MazeNode* currNode = m_NodeStack.top();
         m_NodeStack.pop();
 
-        if(m_TargetList->size() == 0 && currNode->getType() == EndCell) 
+        if(m_TargetListSize == 0 && currNode->getType() == EndCell) 
         {
             setIsComplete(true);
             m_TargetNodeFound = currNode;
+            m_IsStillSearching = false;//
         }
-        else if(currNode->getType() == CheckpointCell && m_TargetList->count(currNode->getPosition().positionKey)) 
-        {
-            setIsComplete(true);
-            m_TargetNodeFound = currNode;
+        // else if(currNode->getType() == CheckpointCell && m_TargetList->count(currNode->getPosition().positionKey)) 
+        // {
+        //     setIsComplete(true);
+        //     m_TargetNodeFound = currNode;
 
-            m_TargetList->erase(currNode->getPosition().positionKey);
+        //     m_TargetList->erase(currNode->getPosition().positionKey);
+        // }
+        else if(currNode->getType() == CheckpointCell && removeTargetIfContained(currNode)) 
+        {
         }
         else 
         {

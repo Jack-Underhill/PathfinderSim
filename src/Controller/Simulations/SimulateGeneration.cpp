@@ -1,13 +1,18 @@
 #include "SimulateGeneration.h"
 
-namespace PFSim
-{
+namespace PFSim {
 
     SimulateGeneration::SimulateGeneration(MazeGraph*& graph, Window*& window, AnimationTimer*& timer)
     {
-        m_Graph = graph;
         m_Window = window;
         m_AnimationTimer = timer;
+
+        if(graph != nullptr)
+        {
+            delete graph;
+        }
+        graph = new MazeGraph( updateMazeLength() );
+        m_Graph = graph;
     }
 
     void SimulateGeneration::run(GeneratorType type)
@@ -18,33 +23,50 @@ namespace PFSim
     void SimulateGeneration::runGenerator(GeneratorType type)
     {
         //algorithm setup
-        updateMazeLength();
-        m_Graph->setGenerator(type);
-        m_Window->getStatisticsDisplay()->updateTitle( Generate, m_Graph->getAnimationTitle() );
+        setGenerator(type);
+        m_Window->getStatisticsDisplay()->updateTitle( Generate, m_Animation->getTitle() );
         m_Window->getSimulationDisplay()->clearDisplay();
         m_AnimationTimer->updateAnimation(AnimationType::Generate, m_Graph->getMazeLength(), type);
         Timer timer;
 
         //execute algorithm
-        while(!m_Graph->isAnimationComplete()) 
+        int count = 0;
+        while(!m_Animation->isComplete()) 
         {
-            MazeNode*& node = m_Graph->updateAnimation();
+            MazeNode*& node = m_Graph->getNodeMap()->at(m_Animation->step());
             handleAnimationTimer(node);
             
             m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+
+            count++;
         }
 
         //set the graph's end point
-        MazeNode*& node = m_Graph->setEndNode();
+        MazeNode*& node = m_Graph->updateEndNode();
         handleAnimationTimer(node);
         m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
         
         //update Stats
-        m_Window->getStatisticsDisplay()->updateStepCount( Generate, m_Graph->getStepCount() );
+        m_Window->getStatisticsDisplay()->updateStepCount( Generate, count );
         m_Window->getStatisticsDisplay()->updateTimeRan( Generate, timer.getElapsedTime() );
     }
+    
+    void SimulateGeneration::setGenerator(GeneratorType type)
+    {
+        m_Graph->setGeneratorType(type);
 
-    void SimulateGeneration::updateMazeLength()
+        switch(type)
+        {
+        case(Open):
+            m_Animation = new Generator::Open(m_Graph);
+            break;
+        case(DFSMaze):
+            m_Animation = new Generator::DFSMaze(m_Graph);
+            break;
+        }
+    }
+
+    int SimulateGeneration::updateMazeLength()
     {
         int mazeLength;
         std::string gtf_MazeLength = m_Window->getInputMazeLength();
@@ -59,7 +81,7 @@ namespace PFSim
             m_Window->setInputMazeLength(mazeLength);
         }
 
-        m_Graph->setMazeLength(mazeLength);
+        return mazeLength;
     }
 
     bool SimulateGeneration::isValidMazeLength(std::string gtf_MazeLength) const

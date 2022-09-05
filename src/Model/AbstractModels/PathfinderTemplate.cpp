@@ -1,4 +1,4 @@
-/* Jack Underhill & Jack Sanger
+/* Jack Underhill
  * CS 133, Spring 2022
  * Final Project - Pathfinding
  */
@@ -6,9 +6,12 @@
 
 namespace PFSim {
 
-    PathfinderTemplate::PathfinderTemplate(std::unordered_set<int>* targetList) : AnimationObject() 
+    PathfinderTemplate::PathfinderTemplate(MazeGraph*& graph) : AnimationObject() 
     {
-        m_TargetList = targetList;
+        m_Graph = graph;
+
+        setTargetList( m_Graph->getTargetCount(), m_Graph->getTargets() );
+
         m_IsStillSearching = true;
     }
 
@@ -66,6 +69,50 @@ namespace PFSim {
     bool PathfinderTemplate::isAvailableMove(MazeNode*& curr) const
     {
         return (curr != nullptr && curr->getType() != WallCell && !curr->isVisited());
+    }
+    
+    bool PathfinderTemplate::removeTargetIfContained(MazeNode*& curr)
+    {
+        bool isContained = false;
+
+        for(int i = 0; i < m_TargetListSize && !isContained; i++) 
+        {
+            if(m_TargetList[i] == curr->getPosition().positionKey)
+            {
+                isContained = true;
+
+                setIsComplete(true);
+                m_IsStillSearching = false;
+                m_TargetNodeFound = curr;
+
+                m_TargetList[i] = m_TargetList[m_TargetListSize - 1];
+                m_TargetListSize--;
+            }
+        }
+
+        return isContained;
+    }
+
+    MazeNode* PathfinderTemplate::getStartingPlace()
+    {
+        if(m_Graph->getLastFoundTarget() == nullptr)
+        {
+            return m_Graph->getStartNode();
+        }
+        else
+        {
+            return m_Graph->getLastFoundTarget();
+        }
+    }
+    
+    void PathfinderTemplate::setTargetList(int size, int* targets)
+    {
+        m_TargetListSize = size;
+
+        for(int i = 0; i < m_TargetListSize; i++)
+        {
+            m_TargetList[i] = *(targets + i);
+        }
     }
 
 } // namespace PFSim

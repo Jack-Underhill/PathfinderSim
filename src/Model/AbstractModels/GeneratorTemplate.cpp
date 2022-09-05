@@ -6,10 +6,10 @@
 
 namespace PFSim {
 
-    GeneratorTemplate::GeneratorTemplate(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength)
+    GeneratorTemplate::GeneratorTemplate(MazeGraph*& graph)
     {
-        m_MappedNodes = mappedNodes;
-        m_MazeLength = mazeLength;
+        m_MappedNodes = graph->getNodeMap();
+        m_MazeLength = graph->getMazeLength();
     }
 
     bool GeneratorTemplate::isInsideMaze(const NodePosition& p, int mazeLength) const

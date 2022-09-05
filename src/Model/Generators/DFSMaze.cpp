@@ -8,10 +8,10 @@ namespace PFSim {
     
 namespace Generator {
 
-    DFSMaze::DFSMaze(std::unordered_map<int, MazeNode*>* mappedNodes, int mazeLength, MazeNode* startNode) : GeneratorTemplate(mappedNodes, mazeLength) 
+    DFSMaze::DFSMaze(MazeGraph*& graph) : GeneratorTemplate(graph) 
     {
-        currBacktrackFrom = startNode->getDirectionMovedIn();
-        currNode = startNode;
+        currNode = graph->getStartNode();
+        currBacktrackFrom = graph->getStartNode()->getDirectionMovedIn();
     }
 
     int DFSMaze::step() 
@@ -154,7 +154,7 @@ namespace Generator {
         }
         MazeNode* temp = currNode;
 
-        DirectionMoved chosenMove = availableMoves[rand() % availableMoves.size()];// chosenDirection in range of (0 to (count of available moves - 1))
+        DirectionMoved chosenMove = availableMoves[rand() % availableMoves.size()];
         MazeNode* nodeMovedTo = connectNodes(currNode, chosenMove);
         nodeMovedTo->setDirectionMovedIn(chosenMove);
 

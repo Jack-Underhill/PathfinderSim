@@ -21,7 +21,7 @@ namespace Pathfinder {
     {
     public:
         //Constructor takes the start, end, and a list of checkpoints the pathfinder must hit.
-        BFS(MazeNode* startNode, std::unordered_set<int>* targetList);
+        BFS(MazeGraph*& graph);
 
         //Returns the animation's title to be displayed on the GUI while it runs.
         std::string getTitle() const { return "BFS"; }

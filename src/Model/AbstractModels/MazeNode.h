@@ -69,6 +69,7 @@ namespace PFSim {
         CellType getType() const { return m_CellType; }
         const NodePosition& getPosition() const { return m_Position; }
         DirectionMoved getDirectionMovedIn() const { return m_MovedIn; }
+        // static int getCellSize() { return m_CellSize; }
 
         bool isVisited() const { return m_IsVisited; }
         bool isNext() const { return m_IsNext; }
@@ -83,6 +84,8 @@ namespace PFSim {
         void setIsNext(bool isNext) { m_IsNext = isNext; }
         void setIsPath(bool isPath) { m_IsPath = isPath; }
 
+        // static int setCellSize(int size) { m_CellSize = size; } // or maybe do a updateCellSize(int mazelength). then do the cellsize conversion equation inside
+
     private:
         CellType m_CellType;
         NodePosition m_Position;
@@ -91,6 +94,8 @@ namespace PFSim {
         bool m_IsVisited;
         bool m_IsNext;
         bool m_IsPath;
+
+        // static int m_CellSize;
     };
 
 }

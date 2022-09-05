@@ -12,7 +12,7 @@ namespace Generator {
     class Open : public GeneratorTemplate
     {
     public:
-        Open(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength);
+        Open(MazeGraph*& graph);
 
         //Returns the animation's title to be displayed on the GUI while it runs.
         std::string getTitle() const { return "Open"; }

@@ -24,6 +24,21 @@ namespace PFSim {
         ObstacleClear,
         DrawPath
     };
+    
+    //An additional type to differentiate between the generators when constructing the maze.
+    enum GeneratorType 
+    {
+        Open, 
+        DFSMaze,
+        Prims
+    };
+
+    //An additional type to differentiate between the pathfinders when constructing the maze.
+    enum PathfinderType 
+    {
+        BFS             = 0,
+        DFS             = 1
+    };
 
     class AnimationObject 
     {

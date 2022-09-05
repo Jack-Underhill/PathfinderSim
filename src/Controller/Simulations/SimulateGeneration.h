@@ -4,9 +4,11 @@
 #include "MazeGraph.h"
 #include "Window.h"
 #include "AnimationTimer.h"
+#include "Open.h"
+#include "DFSMaze.h"
+#include "AnimationObject.h"
 
-namespace PFSim
-{
+namespace PFSim {
     
     class SimulateGeneration
     {
@@ -20,10 +22,13 @@ namespace PFSim
         MazeGraph* m_Graph;
         Window* m_Window;
         AnimationTimer* m_AnimationTimer;
+        AnimationObject* m_Animation;
         
         void runGenerator(GeneratorType type);
+        
+        void setGenerator(GeneratorType type);
 
-        void updateMazeLength();
+        int updateMazeLength();
         bool isValidMazeLength(std::string gtf_MazeLength) const;
         bool isAnInteger(std::string str) const;
 

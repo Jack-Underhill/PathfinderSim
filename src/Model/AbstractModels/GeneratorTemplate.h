@@ -12,22 +12,15 @@
 #include <unordered_map>
 
 #include "AnimationObject.h"
+#include "MazeGraph.h"
 
 namespace PFSim {
-
-    //An additional type to differentiate between the generators when constructing the maze.
-    enum GeneratorType 
-    {
-        Open, 
-        DFSMaze,
-        Prims
-    };
 
     class GeneratorTemplate : public AnimationObject 
     {
     public:
         //Constructor which takes a unordered_map of all the existing nodes to their NodePositions.
-        GeneratorTemplate(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength);
+        GeneratorTemplate(MazeGraph*& graph);
 
         //Empty virtual destructor. This class doesn't allocate any memory.
         virtual ~GeneratorTemplate() = default;
@@ -50,8 +43,6 @@ namespace PFSim {
     protected:
         int m_MazeLength;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
-
-    private:
 
     };
 

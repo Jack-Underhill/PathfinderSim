@@ -2,15 +2,16 @@
 
 namespace PFSim {
 
-    ResetNodes::ResetNodes(std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength)
+    ResetNodes::ResetNodes(MazeGraph*& graph)
     {
-        m_MazeLength = mazeLength;
-        m_MappedNodes = mappedNodes;
-        m_CurrPos = NodePosition(1, 1, mazeLength);
+        m_MazeLength = graph->getMazeLength();
+        m_MappedNodes = graph->getNodeMap();
+        m_CurrPos = NodePosition(1, 1, m_MazeLength);
     }
 
     int ResetNodes::step() 
     {
+        // m_lastPositionKey = m_CurrPos.positionKey;
         MazeNode*& node = m_MappedNodes->at(m_CurrPos.positionKey);
 
         if(node->getType() == StartCell)
@@ -23,14 +24,17 @@ namespace PFSim {
         node->setIsPath(false);
         node->parent = nullptr;
         
-        if(m_CurrPos.y < m_MazeLength) {
+        if(m_CurrPos.y < m_MazeLength) 
+        {
             m_CurrPos.y++;
         }
-        else if(m_CurrPos.x < m_MazeLength) {
+        else if(m_CurrPos.x < m_MazeLength) 
+        {
             m_CurrPos.y = 1;
             m_CurrPos.x++;
         }
-        else {
+        else 
+        {
             setIsComplete(true);
         }
 
