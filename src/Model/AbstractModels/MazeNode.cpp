@@ -12,6 +12,7 @@ namespace PFSim  {
         E = nullptr;
         parent = nullptr;
         
+        m_MovedIn = CENTER;
         m_CellType = GenerationCell;
         m_IsVisited = false;
         m_IsNext = false;
@@ -51,10 +52,20 @@ namespace PFSim  {
 
     std::string MazeNode::getColor() const
     {
-        // Disregards Celltype
-        if(m_IsPath)
+        return PFSim::getNodeColor(m_CellType, m_IsNext, m_IsVisited, m_IsPath);
+    }
+
+    bool MazeNode::isAvailableToMoveInto() 
+    {
+        return !m_IsVisited && m_CellType != StartCell;
+    }
+    
+    std::string getNodeColor(CellType type, bool isNext, bool isVisited, bool isPath)
+    {
+        // Prioritize before Celltype
+        if(isPath)
         {
-            if(m_IsNext)
+            if(isNext)
                 // return "#84B6C5";//glacier blue
                 // return "#207d9c";// gray blue
                 return "cyan";
@@ -62,7 +73,7 @@ namespace PFSim  {
                 return "#123D73";// dark blue
         }
 
-        switch(m_CellType) 
+        switch(type) 
         {
         case(WallCell):
             return "dark gray";
@@ -75,18 +86,13 @@ namespace PFSim  {
         case(GenerationCell):
             return "#A7A7A7";//gray
         default: //(BlankCell)
-            if(m_IsNext) 
+            if(isNext) 
                 return "#207d9c";// gray blue
-            else if(m_IsVisited) 
+            else if(isVisited) 
                 return "cyan";
             else 
                 return "#FFFFFF";// white
         }
-    }
-
-    bool MazeNode::isAvailableToMoveInto() 
-    {
-        return !m_IsVisited && m_CellType != StartCell;
     }
 
 }

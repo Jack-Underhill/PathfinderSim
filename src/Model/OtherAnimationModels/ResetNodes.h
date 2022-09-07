@@ -22,12 +22,12 @@ namespace PFSim {
         //Takes one step of animation and returns the updates node.
         virtual int step();
 
-        // void resetDirection() { m_MappedNodes->at(m_lastPositionKey)->setDirectionMovedIn(CENTER); } causes a bug of not reseting path as nodefiller...
+        void resetDirection();
 
     protected:
         int m_MazeLength;
         NodePosition m_CurrPos;
-        // int m_lastPositionKey;
+        int m_lastPositionKey;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
 
     };

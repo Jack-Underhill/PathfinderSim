@@ -141,7 +141,7 @@ namespace PFSim {
 
                 if(m_IsInstantRepathingEnabled && m_IsInstantRepathingValid) 
                 {
-                    SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);
+                    SimulateInstantPathfinding pf(m_Graph, m_Window, m_AnimationTimer);
                     pf.run(false, m_PathfinderType);
                 }
             }

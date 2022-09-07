@@ -11,7 +11,7 @@ namespace Generator {
     DFSMaze::DFSMaze(MazeGraph*& graph) : GeneratorTemplate(graph) 
     {
         currNode = graph->getStartNode();
-        currBacktrackFrom = graph->getStartNode()->getDirectionMovedIn();
+        currBacktrackFrom = currNode->getDirectionMovedIn();
     }
 
     int DFSMaze::step() 
@@ -41,9 +41,11 @@ namespace Generator {
 
     /*********************************************Private*********************************************/
 
-    MazeNode* DFSMaze::connectNodes(MazeNode*& curr, DirectionMoved& chosenMove) const {
+    MazeNode* DFSMaze::connectNodes(MazeNode*& curr, DirectionMoved& chosenMove) const 
+    {
         NodePosition newPos = curr->getPosition();
         MazeNode* cellMovedTo;
+
         // find chosenMove
         if(chosenMove == NORTH) 
         {

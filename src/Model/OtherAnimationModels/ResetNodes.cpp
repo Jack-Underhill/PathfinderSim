@@ -11,13 +11,8 @@ namespace PFSim {
 
     int ResetNodes::step() 
     {
-        // m_lastPositionKey = m_CurrPos.positionKey;
+        m_lastPositionKey = m_CurrPos.positionKey;
         MazeNode*& node = m_MappedNodes->at(m_CurrPos.positionKey);
-
-        if(node->getType() == StartCell)
-        {
-            node->setDirectionMovedIn(CENTER);
-        }
 
         node->setIsVisited(false);
         node->setIsNext(false);
@@ -43,6 +38,16 @@ namespace PFSim {
         m_stepCount++;
 
         return node->getPosition().positionKey;
+    }
+    
+    void ResetNodes::resetDirection() 
+    { 
+        MazeNode* node = m_MappedNodes->at(m_lastPositionKey);
+
+        if(node->getType() != CheckpointCell)
+        {
+            node->setDirectionMovedIn(CENTER);
+        }
     }
 
 } // namespace PFSim

@@ -17,7 +17,6 @@ namespace Generator {
         {
             node->setType(BlankCell);
         }
-        node->setDirectionMovedIn(CENTER);
 
         connectUnlinkedNeighbors(node);
         

@@ -22,19 +22,10 @@ namespace Pathfinder {
         {
             setIsComplete(true);
             m_TargetNodeFound = currNode;
-            m_IsStillSearching = false;//
+            m_IsStillSearching = false;
         }
-        // else if(currNode->getType() == CheckpointCell && m_TargetList->count(currNode->getPosition().positionKey)) 
-        // {
-        //     setIsComplete(true);
-        //     m_TargetNodeFound = currNode;
-
-        //     m_TargetList->erase(currNode->getPosition().positionKey);
-        // }
-        else if(currNode->getType() == CheckpointCell && removeTargetIfContained(currNode)) 
-        {
-        }
-        else 
+        else if((currNode->getType() == CheckpointCell && !removeTargetIfContained(currNode)) || 
+                 currNode->getType() != CheckpointCell)
         {
             currNode->setIsVisited(true);
             currNode->setIsNext(false);

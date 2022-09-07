@@ -8,6 +8,7 @@ namespace PFSim
         m_Graph = graph;
         m_Window = window;
         m_AnimationTimer = timer;
+
         m_HasSimulationFailed = false;
 
         m_TargetList = nullptr;
@@ -16,16 +17,7 @@ namespace PFSim
     void SimulatePathfinding::run(bool isAnimating, PathfinderType type)
     {
         m_Pathfinder = type;
-        initPath(isAnimating);
-
-        if(isAnimating)
-        {
-            runSimulation();
-        }
-        else
-        {
-            runNonAnimationSimulation();
-        }
+        runSimulation();
     }
 
     void SimulatePathfinding::reset()
@@ -49,7 +41,17 @@ namespace PFSim
             m_Animation = new Pathfinder::DFS(m_Graph);
             break;
         }
-        
+
+        if(m_TargetList != nullptr)
+        {
+            ((PathfinderTemplate*)m_Animation)->setTargetList(m_TargetListSize, m_TargetList);
+        }
+        m_Window->getStatisticsDisplay()->updateTitle( AnimationType::Pathfind, m_Animation->getTitle() );
+
+        if(isAnimating)
+        {
+            m_AnimationTimer->updateAnimation( AnimationType::Pathfind, m_Graph->getMazeLength(), m_Graph->getGeneratorType() );
+        }
         m_Animation->setIsAnimating(isAnimating);
     }
     
@@ -77,6 +79,7 @@ namespace PFSim
     void SimulatePathfinding::runSimulation()
     {
         //simulation setup
+        initPath(true);
         m_Window->getStatisticsDisplay()->resetPathingStats();
         m_Graph->clearTargetFound();
         if(!m_Graph->isReadyForSimulation())
@@ -96,18 +99,14 @@ namespace PFSim
         {
             runPath();
         }
+        
+        delete m_PathSolution;
     }
 
     void SimulatePathfinding::runPathfinder()
     {
         //algorithm setup
         initPathfinder(true);
-        if(m_TargetList != nullptr)
-        {
-            ((PathfinderTemplate*)m_Animation)->setTargetList(m_TargetListSize, m_TargetList);
-        }
-        m_Window->getStatisticsDisplay()->updateTitle( AnimationType::Pathfind, m_Animation->getTitle() );
-        m_AnimationTimer->updateAnimation( AnimationType::Pathfind, m_Graph->getMazeLength(), m_Graph->getGeneratorType() );
         Timer timer;
 
         //execute algorithm
@@ -120,13 +119,10 @@ namespace PFSim
         }
 
         handlePathfinderFinalizing(timer);
-
-        m_TargetListSize = ((PathfinderTemplate*)m_Animation)->getTargetListSize();
-        m_TargetList = ((PathfinderTemplate*)m_Animation)->getTargetList();
         delete m_Animation;
     }
 
-    void SimulatePathfinding::runGraphReset(bool isClearingObstacles)
+    void SimulatePathfinding::runGraphReset(bool isClearingObstacles, bool isAnimating)
     {
         //algorithm setup
         initReset(isClearingObstacles);
@@ -139,8 +135,8 @@ namespace PFSim
             MazeNode*& node = m_Graph->getNodeMap()->at( m_Animation->step() );
             handleAnimationTimer(node);
             
-            m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
-            // ((ResetNodes*)m_Animation)->resetDirection();
+            m_Window->getSimulationDisplay()->updateNodeReset( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
+            ((ResetNodes*)m_Animation)->resetDirection();
             
             // update markers when moved
             if(lastMarkerPosition < node->getPosition().x)  
@@ -177,99 +173,6 @@ namespace PFSim
         //update Stats
         m_Window->getStatisticsDisplay()->updateStepCount( DrawPath, m_PathSolution->getStepCount() );
         m_Window->getStatisticsDisplay()->updateTimeRan( DrawPath, timer.getElapsedTime() );
-        
-        delete m_PathSolution;
-    }
-        
-    void SimulatePathfinding::runNonAnimationSimulation()
-    {
-        //simulation setup
-        m_Window->getStatisticsDisplay()->resetPathingStats();
-        m_Graph->clearTargetFound();
-        if(!m_Graph->isReadyForSimulation())
-        {
-            runNonAnimationGraphReset(true);
-        }
-
-        //execute simulation
-        while((m_Graph->getLastFoundTarget() == nullptr || m_Graph->getLastFoundTarget()->getType() != EndCell) && !m_HasSimulationFailed) 
-        {
-            runNonAnimationPathfinder();
-            runNonAnimationGraphReset(false);
-        }
-
-        // simulation after-effects
-        if(!m_HasSimulationFailed)
-        {
-            runNonAnimationPath();
-        }
-    }
-
-    void SimulatePathfinding::runNonAnimationPathfinder()
-    {
-        //algorithm setup
-        initPathfinder(false);
-        if(m_TargetList != nullptr)
-        {
-            ((PathfinderTemplate*)m_Animation)->setTargetList(m_TargetListSize, m_TargetList);
-        }
-        m_Window->getStatisticsDisplay()->updateTitle( Pathfind, m_Animation->getTitle() );
-        Timer timer;
-        
-        //execute algorithm
-        while(!m_Animation->isComplete() && ((PathfinderTemplate*)m_Animation)->isStillSearching()) 
-        {
-            m_Animation->step();
-        }
-
-        handlePathfinderFinalizing(timer);
-
-        m_TargetListSize = ((PathfinderTemplate*)m_Animation)->getTargetListSize();
-        m_TargetList = ((PathfinderTemplate*)m_Animation)->getTargetList();
-        delete m_Animation;
-    }
-
-    void SimulatePathfinding::runNonAnimationGraphReset(bool doesUpdateScreen)
-    {
-        //algorithm setup
-        initReset();
-
-        //execute algorithm
-        while(!m_Animation->isComplete()) 
-        {
-            MazeNode*& node = m_Graph->getNodeMap()->at( m_Animation->step() );
-
-            if(doesUpdateScreen)
-            {
-                m_Window->getSimulationDisplay()->updateMazeNode( node, m_Graph->getCellSize(), m_Graph->isMazeGenerated() );
-            }
-            // ((ResetNodes*)m_Animation)->resetDirection();
-        }
-        
-        delete m_Animation;
-    }
-
-    void SimulatePathfinding::runNonAnimationPath()
-    {
-        //algorithm setup
-        m_PathSolution->reversePath();
-        m_Graph->setIsReadyForSimulation(false);
-        m_Window->getStatisticsDisplay()->updateTitle( DrawPath, m_PathSolution->getTitle() );
-        Timer timer;
-
-        //execute algorithm
-        while(!m_PathSolution->isComplete()) 
-        {
-            MazeNode*& node = m_Graph->getNodeMap()->at( m_PathSolution->step() );
-
-            m_Window->getSimulationDisplay()->updatePathNode( node, m_Graph->getCellSize() );
-        }
-        
-        //update Stats
-        m_Window->getStatisticsDisplay()->updateStepCount( DrawPath, m_PathSolution->getStepCount() );
-        m_Window->getStatisticsDisplay()->updateTimeRan( DrawPath, timer.getElapsedTime() );
-        
-        delete m_PathSolution;
     }
 
     void SimulatePathfinding::handleAnimationTimer(MazeNode*& node)
@@ -297,6 +200,9 @@ namespace PFSim
             m_HasSimulationFailed = true;
             m_Graph->setIsReadyForSimulation(false);
         }
+
+        m_TargetListSize = ((PathfinderTemplate*)m_Animation)->getTargetListSize();
+        m_TargetList = ((PathfinderTemplate*)m_Animation)->getTargetList();
     }
 
 } // namespace PFSim

@@ -37,21 +37,18 @@ namespace PFSim {
 
     void SimulationDisplay::updateMazeNode(MazeNode*& node, int cellSize, bool isMazeGenerated) 
     {
-        m_Window->setColor(node->getColor());
-
-        NodePosition currentPos = node->getPosition();
-
-        int cellAndWallSize = cellSize + WALL_WIDTH;
-        int xOfSimDisplay = WALL_WIDTH + ((currentPos.x - 1) * cellAndWallSize);
-        int yOfSimDisplay = WALL_WIDTH + ((currentPos.y - 1) * cellAndWallSize);
-
-        // fill cell
-        m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay, DISPLAY_TOP_BUFFER + yOfSimDisplay,
-                        cellSize, cellSize);
+        fillMazeNode(node, cellSize);
 
         if(isMazeGenerated)
         {
-            updateMazeNodeFiller(node, cellSize);
+            if(node->getType() != StartCell && node->getType() != CheckpointCell && node->getType() != EndCell)
+            {
+                updateMazeNodeFiller(node, cellSize);
+            }
+            else
+            {
+                updateMazeNodeFiller(node, cellSize, true);
+            }
         }
     }
     
@@ -77,7 +74,18 @@ namespace PFSim {
                            pathSize, pathSize); 
     }
     
-    void SimulationDisplay::updateMazeNodeFiller(MazeNode*& node, int cellSize)
+    void SimulationDisplay::updateNodeReset(MazeNode*& node, int cellSize, bool isMazeGenerated)
+    {
+        fillMazeNode(node, cellSize);
+
+        if(isMazeGenerated)
+        {
+            m_Window->setColor( getNodeColor(BlankCell) );
+            updateNodeResetFillers(node, cellSize);
+        }
+    }
+    
+    void SimulationDisplay::updateMazeNodeFiller(MazeNode*& node, int cellSize, bool isSpecialNode)
     {
         NodePosition currentPos = node->getPosition();
     
@@ -88,6 +96,7 @@ namespace PFSim {
         // filler space (where a wall was) between cells. If movedIn = CENTER, this is skipped
         if(node->getDirectionMovedIn() == NORTH) 
         {
+            specialCase(node->S, isSpecialNode);
             //south wall fill
             m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay + WALL_WIDTH,
                                 DISPLAY_TOP_BUFFER + yOfSimDisplay + cellAndWallSize,
@@ -95,6 +104,7 @@ namespace PFSim {
         }
         else if(node->getDirectionMovedIn() == WEST) 
         {    
+            specialCase(node->E, isSpecialNode);
             //east wall fill
             m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay + cellAndWallSize,
                                 DISPLAY_TOP_BUFFER + yOfSimDisplay + WALL_WIDTH, 
@@ -102,6 +112,7 @@ namespace PFSim {
         }
         else if(node->getDirectionMovedIn() == SOUTH) 
         {    
+            specialCase(node->N, isSpecialNode);
             //north wall fill
             m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay + WALL_WIDTH, 
                                 DISPLAY_TOP_BUFFER + yOfSimDisplay,
@@ -109,6 +120,7 @@ namespace PFSim {
         }
         else if(node->getDirectionMovedIn() == EAST) 
         {    
+            specialCase(node->W, isSpecialNode);
             //west wall fill
             m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay, 
                                 DISPLAY_TOP_BUFFER + yOfSimDisplay + WALL_WIDTH, 
@@ -161,6 +173,78 @@ namespace PFSim {
                                    cellAndWallSize, pathSize);
             }   
         }
+    }
+
+    void SimulationDisplay::updateNodeResetFillers(MazeNode*& node, int cellSize)
+    {
+        NodePosition currentPos = node->getPosition();
+    
+        int cellAndWallSize = cellSize + WALL_WIDTH;
+        int xOfSimDisplay = (currentPos.x - 1) * cellAndWallSize;
+        int yOfSimDisplay = (currentPos.y - 1) * cellAndWallSize;
+
+        // filler space (where a wall was) between cells.
+        if(node->S != nullptr) 
+        {
+            //south wall fill
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay + WALL_WIDTH,
+                                DISPLAY_TOP_BUFFER + yOfSimDisplay + cellAndWallSize,
+                                cellSize, WALL_WIDTH);
+        }
+        
+        if(node->E != nullptr) 
+        {    
+            //east wall fill
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay + cellAndWallSize,
+                                DISPLAY_TOP_BUFFER + yOfSimDisplay + WALL_WIDTH, 
+                                WALL_WIDTH, cellSize);
+        }
+        
+        if(node->N != nullptr) 
+        {    
+            //north wall fill
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay + WALL_WIDTH, 
+                                DISPLAY_TOP_BUFFER + yOfSimDisplay,
+                                cellSize, WALL_WIDTH);
+        }
+        
+        if(node->W != nullptr) 
+        {    
+            //west wall fill
+            m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay, 
+                                DISPLAY_TOP_BUFFER + yOfSimDisplay + WALL_WIDTH, 
+                                WALL_WIDTH, cellSize);
+        }
+    }
+    
+    void SimulationDisplay::specialCase(MazeNode*& node, bool isSpecialNode)
+    {
+        if(isSpecialNode)
+        {
+            if(node->isVisited() && !node->isPath())
+            {
+                m_Window->setColor( getNodeColor(BlankCell, false, true, false) );
+            }
+            else
+            {
+                m_Window->setColor( getNodeColor(BlankCell) );
+            }
+        }
+    }
+    
+    void SimulationDisplay::fillMazeNode(MazeNode*& node, int cellSize)
+    {
+        m_Window->setColor(node->getColor());
+
+        NodePosition currentPos = node->getPosition();
+
+        int cellAndWallSize = cellSize + WALL_WIDTH;
+        int xOfSimDisplay = WALL_WIDTH + ((currentPos.x - 1) * cellAndWallSize);
+        int yOfSimDisplay = WALL_WIDTH + ((currentPos.y - 1) * cellAndWallSize);
+
+        // fill cell
+        m_Window->fillRect(DISPLAY_LEFT_BUFFER + xOfSimDisplay, DISPLAY_TOP_BUFFER + yOfSimDisplay,
+                           cellSize, cellSize);
     }
 
 } // namespace PFSim

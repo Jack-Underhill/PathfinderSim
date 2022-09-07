@@ -29,7 +29,7 @@ namespace PFSim {
 
         void clearObstacles();
 
-    private:
+    protected:
         MazeGraph* m_Graph;
         Window* m_Window;
         AnimationTimer* m_AnimationTimer;
@@ -42,23 +42,19 @@ namespace PFSim {
 
         int m_TargetListSize;
         int* m_TargetList;
-        
+
         void initPathfinder(bool isAnimating);
         void initPath(bool isAnimating);
         void initReset(bool isClearingObstacles = false);
 
-        void runSimulation();
-        void runPathfinder();
-        void runGraphReset(bool isClearingObstacles = false);
-        void runPath();
-        
-        void runNonAnimationSimulation();
-        void runNonAnimationPathfinder();
-        void runNonAnimationGraphReset(bool doesUpdateScreen);
-        void runNonAnimationPath();
-
         void handleAnimationTimer(MazeNode*& node);
         void handlePathfinderFinalizing(Timer& timer);
+
+    private:
+        virtual void runSimulation();
+        virtual void runPathfinder();
+        virtual void runGraphReset(bool isClearingObstacles = false, bool isAnimating = true);
+        virtual void runPath();
     };
 
 } // namespace PFSim

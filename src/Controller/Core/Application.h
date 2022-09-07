@@ -7,6 +7,7 @@
 #include "MazeGraph.h"
 #include "SimulateGeneration.h"
 #include "SimulatePathfinding.h"
+#include "SimulateInstantPathfinding.h"
 #include "InteractiveCells.h"
 
 namespace PFSim {
