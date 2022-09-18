@@ -38,14 +38,17 @@ namespace PFSim {
     {
         // std::cout << "Event Fired: " << e << std::endl;
 
-        EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<ButtonEvent>(BIND_EVENT_FN(onButtonEvent));
-        dispatcher.Dispatch<CheckboxClickedEvent>(BIND_EVENT_FN(onCheckboxClickedEvent));
-        dispatcher.Dispatch<SliderMovedEvent>(BIND_EVENT_FN(onSliderMovedEvent));
+        // if(/*not currently computing an event then continue to trigger new event*/)
+        // {
+            EventDispatcher dispatcher(e);
+            dispatcher.Dispatch<ButtonEvent>(BIND_EVENT_FN(onButtonEvent));
+            dispatcher.Dispatch<CheckboxClickedEvent>(BIND_EVENT_FN(onCheckboxClickedEvent));
+            dispatcher.Dispatch<SliderMovedEvent>(BIND_EVENT_FN(onSliderMovedEvent));
 
-        dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(onMousePressedEvent));
-        dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(onMouseReleasedEvent));
-        dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMovedEvent));
+            dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(onMousePressedEvent));
+            dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(onMouseReleasedEvent));
+            dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMovedEvent));
+        // }
     }
 
     bool Application::onButtonEvent(ButtonEvent& e)
@@ -60,7 +63,7 @@ namespace PFSim {
         {
             handlePathfinder(code);
         }
-        else if(code == ButtonCode::gen_Open || code == ButtonCode::gen_DFS)
+        else if(code == ButtonCode::gen_Open || code == ButtonCode::gen_DFS || code == ButtonCode::gen_Prims)
         {
             handleGenerator(code);
         }
@@ -202,6 +205,10 @@ namespace PFSim {
         else if(code == ButtonCode::gen_DFS) 
         {
             type = DFSMaze;
+        }
+        else if(code == ButtonCode::gen_Prims)
+        {
+            type = Prims;
         }
 
         SimulateGeneration gen(m_Graph, m_Window, m_AnimationTimer);

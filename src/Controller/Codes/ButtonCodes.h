@@ -13,6 +13,7 @@ namespace PFSim {
 
         gen_Open,
         gen_DFS, 
+        gen_Prims, 
         
         clear_Obstacles
     };

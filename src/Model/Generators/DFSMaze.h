@@ -10,7 +10,6 @@
 #include <iostream>
 #include <vector>
 #include <stack>
-#include <unordered_map>
 
 #include "GeneratorTemplate.h"
 #include "MazeNode.h"
@@ -19,11 +18,17 @@ namespace PFSim {
     
 namespace Generator {
 
-    class DFSMaze : public GeneratorTemplate {
+    class DFSMaze : public GeneratorTemplate 
+    {
     public:
         //Constructor takes a map of all the existing nodes to their location and a starting position
         //to generate the graph from.
         DFSMaze(MazeGraph*& graph);
+
+        //Returns the animation's title to be displayed on the GUI while it runs.
+        std::string getTitle() const { return "Random DFS Maze"; }
+
+        GeneratorType getGeneratorType() const { return GeneratorType::DFSMaze; }
 
         //Moves through the disconnected graph, connecting nodes in its path, until it reaches a
         //deadend (no current-neighboring unvisited-cells). Then it backtrack its steps 
@@ -32,19 +37,10 @@ namespace Generator {
         //Returns the cell it came from or nullptr if the graph is complete.
         int step();
 
-        //Returns the animation's title to be displayed on the GUI while it runs.
-        std::string getTitle() const { return "Random DFS Maze"; }
-
-        GeneratorType getGeneratorType() const { return GeneratorType::DFSMaze; }
-
     private:
         std::stack<MazeNode*> nodeStack;
         MazeNode* currNode; 
         DirectionMoved currBacktrackFrom;
-
-        //Connects the given current cell to the one in the given direction
-        //then returns the cell in that direction.
-        MazeNode* connectNodes(MazeNode*& curr, DirectionMoved& chosenMove) const;
 
         // Check N,S,W,E and see if they are nullptr (available) and make a vector of available directions.
         std::vector<DirectionMoved> getAvailableMoves(MazeNode*& curr) const;

@@ -44,6 +44,12 @@ namespace PFSim {
         int m_MazeLength;
         std::unordered_map<int, MazeNode*>* m_MappedNodes;
 
+        //Connects the given current cell to the one in the given direction
+        //then returns the cell in that direction.
+        MazeNode* connectNodes(MazeNode*& curr, const DirectionMoved& chosenMove) const;
+
+        NodePosition copyPosition(const NodePosition& pos) const;
+        DirectionMoved inverseDirection(const DirectionMoved& dir) const;
     };
 
 } // namespace PFSim

@@ -20,4 +20,77 @@ namespace PFSim {
         return isWithinXBounds && isWithinYBounds;
     }
     
+    MazeNode* GeneratorTemplate::connectNodes(MazeNode*& curr, const DirectionMoved& chosenMove) const
+    {
+        NodePosition newPos = copyPosition(curr->getPosition());
+        MazeNode* cellMovedTo;
+
+        // find chosenMove
+        if(chosenMove == NORTH) 
+        {
+            // move to chosen position
+            newPos.y--;
+            newPos.updatePositionKey(m_MazeLength);
+            // find node at position
+            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
+            // connect nodes
+            curr->N = cellMovedTo;
+            cellMovedTo->S = curr;
+        }
+        else if(chosenMove == WEST) 
+        {
+            // move to chosen position
+            newPos.x--;
+            newPos.updatePositionKey(m_MazeLength);
+            // find node at position
+            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
+            // connect nodes
+            curr->W = cellMovedTo;
+            cellMovedTo->E = curr;
+        }
+        else if(chosenMove == SOUTH) 
+        {
+            // move to chosen position
+            newPos.y++;
+            newPos.updatePositionKey(m_MazeLength);
+            // find node at position
+            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
+            // connect nodes
+            curr->S = cellMovedTo;
+            cellMovedTo->N = curr;
+        }
+        else 
+        {
+            // move to chosen position
+            newPos.x++;
+            newPos.updatePositionKey(m_MazeLength);
+            // find node at position
+            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
+            // connect nodes
+            curr->E = cellMovedTo;
+            cellMovedTo->W = curr;
+        }
+
+        return cellMovedTo;
+    }
+    
+    NodePosition GeneratorTemplate::copyPosition(const NodePosition& pos) const
+    {
+        NodePosition p(pos.x, pos.y, m_MazeLength);
+
+        return p;
+    }
+    
+    DirectionMoved GeneratorTemplate::inverseDirection(const DirectionMoved& dir) const
+    {
+        if(dir < 2)
+        {
+            return (DirectionMoved)(dir + 2);
+        }
+        else
+        {
+            return (DirectionMoved)(dir - 2);
+        }
+    }
+    
 } // namespace PFSim

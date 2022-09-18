@@ -158,6 +158,18 @@ namespace PFSim {
         p_Generator.addInteractor(btn_genDFS);
         m_Interactors.push(btn_genDFS);
 
+        
+        sgl::GButton* btn_genPrim = new sgl::GButton("Run Prim's Maze");
+        btn_genPrim->setActionListener([this] 
+        {
+            WindowData& data = this->m_Data; 
+
+            ButtonEvent event(ButtonCode::gen_Prims);
+            data.EventCallback(event);
+        });
+        p_Generator.addInteractor(btn_genPrim);
+        m_Interactors.push(btn_genPrim);
+
 
         m_Window->addToRegion(p_Generator.getPanel(), sgl::GWindow::REGION_EAST);
     }

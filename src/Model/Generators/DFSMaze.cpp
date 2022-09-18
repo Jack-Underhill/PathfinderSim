@@ -41,60 +41,6 @@ namespace Generator {
 
     /*********************************************Private*********************************************/
 
-    MazeNode* DFSMaze::connectNodes(MazeNode*& curr, DirectionMoved& chosenMove) const 
-    {
-        NodePosition newPos = curr->getPosition();
-        MazeNode* cellMovedTo;
-
-        // find chosenMove
-        if(chosenMove == NORTH) 
-        {
-            // move to chosen position
-            newPos.y--;
-            newPos.updatePositionKey(m_MazeLength);
-            // find node at position
-            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
-            // connect nodes
-            curr->N = cellMovedTo;
-            cellMovedTo->S = curr;
-        }
-        else if(chosenMove == WEST) 
-        {
-            // move to chosen position
-            newPos.x--;
-            newPos.updatePositionKey(m_MazeLength);
-            // find node at position
-            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
-            // connect nodes
-            curr->W = cellMovedTo;
-            cellMovedTo->E = curr;
-        }
-        else if(chosenMove == SOUTH) 
-        {
-            // move to chosen position
-            newPos.y++;
-            newPos.updatePositionKey(m_MazeLength);
-            // find node at position
-            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
-            // connect nodes
-            curr->S = cellMovedTo;
-            cellMovedTo->N = curr;
-        }
-        else 
-        {
-            // move to chosen position
-            newPos.x++;
-            newPos.updatePositionKey(m_MazeLength);
-            // find node at position
-            cellMovedTo = m_MappedNodes->at(newPos.positionKey);
-            // connect nodes
-            curr->E = cellMovedTo;
-            cellMovedTo->W = curr;
-        }
-
-        return cellMovedTo;
-    }
-
     std::vector<DirectionMoved> DFSMaze::getAvailableMoves(MazeNode*& curr) const 
     {
         std::vector<DirectionMoved> availableMoves;

@@ -6,6 +6,7 @@
 #include "AnimationTimer.h"
 #include "Open.h"
 #include "DFSMaze.h"
+#include "Prims.h"
 #include "AnimationObject.h"
 
 namespace PFSim {

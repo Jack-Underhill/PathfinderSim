@@ -1,10 +1,11 @@
 #ifndef _Prims_h_
 #define _Prims_h_
 
-#include <unordered_map>
+#include <vector>
+#include <stack>
 
-#include "AnimationObject.h"
 #include "GeneratorTemplate.h"
+#include "MazeNode.h"
 
 namespace PFSim {
     
@@ -13,17 +14,26 @@ namespace Generator {
     class Prims : public GeneratorTemplate
     {
     public:
-        Prims(MazeNode*& startNode, std::unordered_map<int, MazeNode*>*& mappedNodes, int mazeLength);
-        // ~Prims();
+        Prims(MazeGraph*& graph);
 
-        std::string getTitle() const { return "Prim's"; }
+        std::string getTitle() const { return "Prim's Maze"; }
 
         GeneratorType getGeneratorType() const { return GeneratorType::Prims; }
 
         int step();
 
     private:
+        std::vector<int> currNodeList;
+        std::stack<int> nextNodeList;
+
+        int handleNextNode();
+        int handleCurrNode();
+
+        void updateNodes(MazeNode*& node);
+        DirectionMoved connectWithCompletedNode(MazeNode*& node) const;
         
+        void checkIsNotHandled(NodePosition& pos);
+        void checkIsCompletedNode(NodePosition& pos, const DirectionMoved& dir, std::vector<DirectionMoved>& neighbors) const;
     };
 
 } // namespace Generator

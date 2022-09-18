@@ -63,6 +63,9 @@ namespace PFSim {
         case(DFSMaze):
             m_Animation = new Generator::DFSMaze(m_Graph);
             break;
+        case(Prims):
+            m_Animation = new Generator::Prims(m_Graph);
+            break;
         }
     }
 
