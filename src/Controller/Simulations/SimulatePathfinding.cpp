@@ -40,6 +40,9 @@ namespace PFSim
         case(DFS):
             m_Animation = new Pathfinder::DFS(m_Graph);
             break;
+        case(AStar):
+            m_Animation = new Pathfinder::AStar(m_Graph);
+            break;
         }
 
         if(m_TargetList != nullptr)

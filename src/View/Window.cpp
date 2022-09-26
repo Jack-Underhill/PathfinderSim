@@ -110,6 +110,18 @@ namespace PFSim {
         m_Interactors.push(btn_pfDFS);
 
 
+        sgl::GButton* btn_pfAStar = new sgl::GButton("Run AStar");
+        btn_pfAStar->setActionListener([this] 
+        {
+            WindowData& data = this->m_Data;
+
+            ButtonEvent event(ButtonCode::pf_AStar);
+            data.EventCallback(event);
+        });
+        p_Pathfinder.addInteractor(btn_pfAStar);
+        m_Interactors.push(btn_pfAStar);
+
+
         m_Window->addToRegion(p_Pathfinder.getPanel(), sgl::GWindow::REGION_EAST);
     }
 

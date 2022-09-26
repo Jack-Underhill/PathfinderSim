@@ -154,6 +154,18 @@ namespace PFSim {
             m_IsStartNodeMoved = true;
         }
 
+        //update end
+        if(currNode->getType() == EndCell)
+        {
+            m_EndNode = currNode;
+            m_IsEndNodeMoved = true;
+        }
+        else if(prevNode->getType() == EndCell)
+        {
+            m_EndNode = prevNode;
+            m_IsEndNodeMoved = true;
+        }
+
         //update checkpoints
         if(currNode->getType() == CheckpointCell && prevNode->getType() == CheckpointCell) 
         {

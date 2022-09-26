@@ -7,6 +7,7 @@
 #include "AnimationObject.h"
 #include "BFS.h"
 #include "DFS.h"
+#include "AStar.h"
 #include "PathSolution.h"
 #include "ResetNodes.h"
 #include "ClearObstacles.h"

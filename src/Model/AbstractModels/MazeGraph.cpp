@@ -46,6 +46,13 @@ namespace PFSim {
             return node;
         }
     }
+    
+    MazeNode*& MazeGraph::updateEndNode() 
+    { 
+        setEndNode( spawnInCellType(EndCell) ); 
+
+        return m_EndNode;
+    }
 
     /******************************************Private********************************************/
 

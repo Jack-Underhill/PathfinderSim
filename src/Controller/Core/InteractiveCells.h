@@ -20,9 +20,11 @@ namespace PFSim {
         std::stack<MazeNode*>& getMouseUpdatedNodes() { return m_MouseUpdatedNodes; }
         int getMousePositionKey() { return m_MousePositionKey; }
         MazeNode*& getNewStartNode() { return m_StartNode; }
+        MazeNode*& getNewEndNode() { return m_EndNode; }
 
         bool isNewPosition(int x, int y) const;
         bool isStartNodeMoved() { return m_IsStartNodeMoved; }
+        bool isEndNodeMoved() { return m_IsEndNodeMoved; }
 
         bool setMouseMoved(int x, int y);   //returns false if conditions give no update.
         void setDrawWallsMode(bool val);
@@ -42,8 +44,10 @@ namespace PFSim {
         bool m_IsEraseWallsMode;
 
         bool m_IsStartNodeMoved;
+        bool m_IsEndNodeMoved;
 
         MazeNode* m_StartNode;
+        MazeNode* m_EndNode;
         
         int* m_TargetList;
         int m_TargetListSize;

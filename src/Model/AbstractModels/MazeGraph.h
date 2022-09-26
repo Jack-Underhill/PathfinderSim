@@ -22,6 +22,7 @@ namespace PFSim {
         GeneratorType getGeneratorType() { return m_Generated; }
         std::unordered_map<int, MazeNode*>* getNodeMap() { return m_MappedNodes; }
         MazeNode* getStartNode() { return m_StartNode; }
+        MazeNode* getEndNode() { return m_EndNode; }
         int getTargetCount() { return m_TargetListSize; }
         int* getTargets() { return m_TargetList; }
         MazeNode* getLastFoundTarget() { return m_LastTargetFound; }
@@ -30,13 +31,15 @@ namespace PFSim {
         bool isMazeGenerated() const { return (m_Generated != GeneratorType::Open); }
  
         MazeNode*& updateCheckpoint(bool isAdding);
-        MazeNode*& updateEndNode() { return spawnInCellType(EndCell); }
+        // MazeNode*& updateEndNode() { return spawnInCellType(EndCell); }
+        MazeNode*& updateEndNode();
 
         void clearTargetFound() { m_LastTargetFound = nullptr; }
 
         void setIsReadyForSimulation(bool val) { m_IsReadyForSimulation = val; }
         void setGeneratorType(GeneratorType type) { m_Generated = type; }
         void setStartNode(MazeNode*& node) { m_StartNode = node; }
+        void setEndNode(MazeNode*& node) { m_EndNode = node; }
         void setTargetFound(MazeNode* lastTargetFound) { m_LastTargetFound = lastTargetFound; }
 
     private:
@@ -48,6 +51,7 @@ namespace PFSim {
         int m_TargetListSize;
 
         MazeNode* m_StartNode;
+        MazeNode* m_EndNode;
         MazeNode* m_LastTargetFound;
 
         GeneratorType m_Generated;

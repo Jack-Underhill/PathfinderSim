@@ -59,7 +59,7 @@ namespace PFSim {
         {
             handleCheckpoint(code);
         }
-        else if(code == ButtonCode::pf_BFS || code == ButtonCode::pf_DFS)
+        else if(code == ButtonCode::pf_BFS || code == ButtonCode::pf_DFS || code == ButtonCode::pf_AStar)
         {
             handlePathfinder(code);
         }
@@ -117,6 +117,16 @@ namespace PFSim {
     {
         if(m_MouseInteraction != nullptr)
         {
+            // update pointers if cells were moved
+            if(m_MouseInteraction->isStartNodeMoved())
+            {
+                m_Graph->setStartNode( m_MouseInteraction->getNewStartNode() );
+            }
+            if(m_MouseInteraction->isEndNodeMoved())
+            {
+                m_Graph->setEndNode( m_MouseInteraction->getNewEndNode() );
+            }
+
             delete m_MouseInteraction; 
             m_MouseInteraction = nullptr; 
         }
@@ -130,11 +140,6 @@ namespace PFSim {
         {
             if(m_MouseInteraction->setMouseMoved( e.getX(), e.getY() )) // continue if set was a success
             {
-                if(m_MouseInteraction->isStartNodeMoved())
-                {
-                    m_Graph->setStartNode( m_MouseInteraction->getNewStartNode() );
-                }
-
                 std::stack<MazeNode*> updatedNodes = m_MouseInteraction->getMouseUpdatedNodes(); // change to array
                 while(updatedNodes.size() > 0)
                 {
@@ -186,6 +191,10 @@ namespace PFSim {
         else if(code == ButtonCode::pf_DFS) 
         {
             m_PathfinderType = DFS;
+        }
+        else if(code == ButtonCode::pf_AStar) 
+        {
+            m_PathfinderType = AStar;
         }
 
         SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);

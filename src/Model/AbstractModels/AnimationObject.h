@@ -36,8 +36,10 @@ namespace PFSim {
     //An additional type to differentiate between the pathfinders when constructing the maze.
     enum PathfinderType 
     {
-        BFS             = 0,
-        DFS             = 1
+        BFS,
+        DFS,
+        // Dijkstra,
+        AStar
     };
 
     class AnimationObject 
