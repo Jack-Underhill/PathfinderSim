@@ -61,7 +61,7 @@ namespace PFSim {
         MazeNode(const NodePosition& p);
 
         //Returns the CellType's string name.
-        std::string getTypeString() const;
+        std::string getString() const;
 
         //Returns the color the cell should be in the GUI
         std::string getColor() const;
@@ -93,6 +93,7 @@ namespace PFSim {
         bool m_IsPath;
     };
 
+    std::string getTypeString(CellType type, bool isNext = false, bool isVisited = false, bool isPath = false);
     std::string getNodeColor(CellType type, bool isNext = false, bool isVisited = false, bool isPath = false);
 
 }

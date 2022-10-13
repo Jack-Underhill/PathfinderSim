@@ -25,6 +25,7 @@ namespace PFSim {
         void updateTimeRan(AnimationType type, long long time);
 
         void resetPathingStats();
+        void resetPathSolution();
 
     private: 
         DisplayCategory* m_Generator;
@@ -36,7 +37,6 @@ namespace PFSim {
         void setTimeRan(DisplayCategory*& category, long long time);
     };
     
-
 
     class DisplayCategory
     {

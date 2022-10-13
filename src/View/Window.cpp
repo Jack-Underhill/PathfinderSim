@@ -44,6 +44,9 @@ namespace PFSim {
         loadPanelSpeed();
         loadPanelExtras();
         loadMouseListeners();
+
+        // Draw cell names
+        loadCellNames();
     }
 
     void Window::loadPanelCheckpoint() 
@@ -86,18 +89,6 @@ namespace PFSim {
         addSpacer(p_Pathfinder);
 
 
-        sgl::GButton* btn_pfBFS = new sgl::GButton("Run BFS");
-        btn_pfBFS->setActionListener([this] 
-        {
-            WindowData& data = this->m_Data;
-
-            ButtonEvent event(ButtonCode::pf_BFS);
-            data.EventCallback(event);
-        });
-        p_Pathfinder.addInteractor(btn_pfBFS);
-        m_Interactors.push(btn_pfBFS);
-
-
         sgl::GButton* btn_pfDFS = new sgl::GButton("Run DFS");
         btn_pfDFS->setActionListener([this] 
         {
@@ -110,6 +101,18 @@ namespace PFSim {
         m_Interactors.push(btn_pfDFS);
 
 
+        sgl::GButton* btn_pfBFS = new sgl::GButton("Run BFS");
+        btn_pfBFS->setActionListener([this] 
+        {
+            WindowData& data = this->m_Data;
+
+            ButtonEvent event(ButtonCode::pf_BFS);
+            data.EventCallback(event);
+        });
+        p_Pathfinder.addInteractor(btn_pfBFS);
+        m_Interactors.push(btn_pfBFS);
+
+
         sgl::GButton* btn_pfAStar = new sgl::GButton("Run AStar");
         btn_pfAStar->setActionListener([this] 
         {
@@ -120,6 +123,18 @@ namespace PFSim {
         });
         p_Pathfinder.addInteractor(btn_pfAStar);
         m_Interactors.push(btn_pfAStar);
+
+
+        sgl::GButton* btn_pfSHP = new sgl::GButton("Run SHP");
+        btn_pfSHP->setActionListener([this] 
+        {
+            WindowData& data = this->m_Data;
+
+            ButtonEvent event(ButtonCode::pf_SHP);
+            data.EventCallback(event);
+        });
+        p_Pathfinder.addInteractor(btn_pfSHP);
+        m_Interactors.push(btn_pfSHP);
 
 
         m_Window->addToRegion(p_Pathfinder.getPanel(), sgl::GWindow::REGION_EAST);
@@ -290,6 +305,49 @@ namespace PFSim {
         std::stringstream ss;
         ss << value << "%";
         lbl_SpeedValue->setText(ss.str()); 
+    }
+    
+
+    void Window::loadCellNames()
+    {
+        int fontSize = DISPLAY_TOP_BUFFER / 8;
+
+        std::string fontStr = FONT_STYLE + "-" + std::to_string(fontSize);
+        m_Window->setFont(fontStr);
+
+
+        int iterator = 0;
+
+        drawCellName(GenerationCell, iterator);
+        drawCellName(BlankCell, iterator);
+        drawCellName(StartCell, iterator);
+        drawCellName(EndCell, iterator);
+        drawCellName(CheckpointCell, iterator);
+        drawCellName(WallCell, iterator);
+
+        drawCellName(BlankCell, iterator, true, false, false);
+        drawCellName(BlankCell, iterator, false, true, false);
+        drawCellName(BlankCell, iterator, false, false, true);
+    }
+    
+    void Window::drawCellName(CellType type, int& iterator, bool isNext, bool isVisited, bool isPath)
+    {
+        std::string color = getNodeColor(type, isNext, isVisited, isPath);
+        std::string name = getTypeString(type, isNext, isVisited, isPath);
+
+        int spacing = DISPLAY_SIZE / 11;
+        int size = DISPLAY_SIZE / 15;
+
+        int xForCell = DISPLAY_LEFT_BUFFER / 5;
+        int xForName = xForCell + (size * 3 / 2);
+
+        int y = (iterator * spacing) + DISPLAY_TOP_BUFFER + (spacing);
+
+        m_Window->setColor(color);
+        m_Window->drawString(name, xForName, y + (spacing / 2));
+        m_Window->fillRect(xForCell, y, size, size);
+
+        iterator++;
     }
 
 } //namespace PFSim

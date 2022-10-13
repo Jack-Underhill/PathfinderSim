@@ -1,7 +1,6 @@
 #include "SimulatePathfinding.h"
 
-namespace PFSim
-{
+namespace PFSim {
 
     SimulatePathfinding::SimulatePathfinding(MazeGraph*& graph, Window*& window, AnimationTimer*& timer)
     {
@@ -30,7 +29,7 @@ namespace PFSim
         runGraphReset(true);
     }
 
-    void SimulatePathfinding::initPathfinder(bool isAnimating)
+    void SimulatePathfinding::initPathfinder(bool isAnimating, int target)
     {
         switch(m_Pathfinder)
         {
@@ -43,9 +42,12 @@ namespace PFSim
         case(AStar):
             m_Animation = new Pathfinder::AStar(m_Graph);
             break;
+        case(SHP):
+            m_Animation = new Pathfinder::SHP(m_Graph, target);
+            break;
         }
 
-        if(m_TargetList != nullptr)
+        if(m_Pathfinder != SHP && m_TargetList != nullptr)
         {
             ((PathfinderTemplate*)m_Animation)->setTargetList(m_TargetListSize, m_TargetList);
         }
@@ -90,12 +92,30 @@ namespace PFSim
             runGraphReset();
         }
 
+
         //execute simulation
-        while((m_Graph->getLastFoundTarget() == nullptr || m_Graph->getLastFoundTarget()->getType() != EndCell) && !m_HasSimulationFailed) 
+        if(m_Pathfinder == PathfinderType::SHP)
         {
-            runPathfinder();
-            runGraphReset();
+            if(m_Graph->getTargetCount() > 0)
+            {
+                runSHPSimulation();
+            }
+            else
+            {
+                int target = m_Graph->getEndNode()->getPosition().positionKey;
+                runPathfinder(target);
+                runGraphReset();
+            }
         }
+        else
+        {
+            while((m_Graph->getLastFoundTarget() == nullptr || m_Graph->getLastFoundTarget()->getType() != EndCell) && !m_HasSimulationFailed) 
+            {
+                runPathfinder();
+                runGraphReset();
+            }
+        }
+
 
         // simulation after-effects
         if(!m_HasSimulationFailed)
@@ -106,10 +126,51 @@ namespace PFSim
         delete m_PathSolution;
     }
 
-    void SimulatePathfinding::runPathfinder()
+    void SimulatePathfinding::runSHPSimulation()
+    {
+        Pathfinder::MinHeapSHP minHeap;
+        Pathfinder::Permutations permutations(m_Graph->getTargets(), m_Graph->getTargetCount());
+
+        while(!permutations.empty())
+        {
+            Pathfinder::Sequence* sequence = permutations.top();
+            permutations.pop();
+
+            //execute simulation
+            while((m_Graph->getLastFoundTarget() == nullptr || m_Graph->getLastFoundTarget()->getType() != EndCell) && !m_HasSimulationFailed) 
+            {
+                int target;
+                if(!sequence->empty())
+                {
+                    target = sequence->top();
+                    sequence->pop();
+                }
+                else 
+                {
+                    target = m_Graph->getEndNode()->getPosition().positionKey;
+                }
+                runPathfinder(target);
+
+                runGraphReset();
+            }
+
+            int pathSolutionSteps = m_PathSolution->getStepCount();
+            minHeap.push( new Pathfinder::HeapPropsSHP(m_PathSolution, pathSolutionSteps) );
+
+            //reset
+            initPath(true);
+            m_Window->getStatisticsDisplay()->resetPathSolution();
+            m_Graph->clearTargetFound();
+            delete sequence;
+        }
+        
+        m_PathSolution = ((Pathfinder::HeapPropsSHP*)minHeap.top())->path;
+    }
+
+    void SimulatePathfinding::runPathfinder(int target)
     {
         //algorithm setup
-        initPathfinder(true);
+        initPathfinder(true, target);
         Timer timer;
 
         //execute algorithm

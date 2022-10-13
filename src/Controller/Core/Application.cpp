@@ -59,7 +59,7 @@ namespace PFSim {
         {
             handleCheckpoint(code);
         }
-        else if(code == ButtonCode::pf_BFS || code == ButtonCode::pf_DFS || code == ButtonCode::pf_AStar)
+        else if(code == ButtonCode::pf_BFS || code == ButtonCode::pf_DFS || code == ButtonCode::pf_AStar || code == ButtonCode::pf_SHP)
         {
             handlePathfinder(code);
         }
@@ -195,6 +195,10 @@ namespace PFSim {
         else if(code == ButtonCode::pf_AStar) 
         {
             m_PathfinderType = AStar;
+        }
+        else if(code == ButtonCode::pf_SHP) 
+        {
+            m_PathfinderType = SHP;
         }
 
         SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);

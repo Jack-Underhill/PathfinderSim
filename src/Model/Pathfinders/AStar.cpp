@@ -11,13 +11,59 @@ namespace Pathfinder {
     /*
         BUG: the pathing solutions for: instant repathing and clicking run AStar are (sometimes) different..
     */
+   
+    
+    bool MinHeapAStar::push(HeapProps* props)
+    {
+        int key = ((HeapPropsAStar*)props)->node->getPosition().positionKey;
+        int index = find(key);
+
+        if(index == -1)
+        {
+            m_PropVector.push_back(props);
+            bubbleUp();
+        }
+        else
+        {
+            HeapProps* curr = m_PropVector[index];
+
+            if(((HeapPropsAStar*)curr)->distanceG > ((HeapPropsAStar*)props)->distanceG)
+            {
+                // update optimized distanceG
+                ((HeapPropsAStar*)curr)->distanceG = ((HeapPropsAStar*)props)->distanceG;
+
+                bubbleUp(index);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    int MinHeapAStar::find(int key) const 
+    {
+        for(int i = 0; i < m_PropVector.size(); i++)
+        {
+            if(((HeapPropsAStar*)m_PropVector[i])->node->getPosition().positionKey == key)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+    
+    /*------------------------------------------AStar-----------------------------------------*/
 
     AStar::AStar(MazeGraph*& graph) : PathfinderTemplate(graph) 
     {
         m_MazeLength = graph->getMazeLength();
         m_EndPosition = graph->getEndNode()->getPosition();
 
-        m_MinHeap = new MinHeap();
+        m_MinHeap = new MinHeapAStar();
 
         m_PrevDistanceG = (-1 * NON_DIAGONAL_COST);
         m_IsDiagonalMove = false;
@@ -40,8 +86,8 @@ namespace Pathfinder {
 
     int AStar::currStep()
     {
-        MazeNode* curr = m_MinHeap->top()->node;
-        m_PrevDistanceG = m_MinHeap->top()->distanceG;
+        MazeNode* curr = ((HeapPropsAStar*)m_MinHeap->top())->node;
+        m_PrevDistanceG = ((HeapPropsAStar*)m_MinHeap->top())->distanceG;
         closeNode();
 
         if(m_TargetListSize == 0 && curr->getType() == EndCell)
@@ -135,7 +181,7 @@ namespace Pathfinder {
             stepDistance = NON_DIAGONAL_COST;
         }
 
-        AStarNodeProps* props = new AStarNodeProps(curr, m_PrevDistanceG + stepDistance, getHeuristicDistance( curr->getPosition() ));
+        HeapProps* props = new HeapPropsAStar(curr, m_PrevDistanceG + stepDistance, getHeuristicDistance( curr->getPosition() ));
         // std::cout << "push: " << curr->getPosition().positionKey << " with F = " << props->getFScore() << std::endl;//
 
         return m_MinHeap->push(props);
@@ -144,7 +190,7 @@ namespace Pathfinder {
     void AStar::closeNode()
     {
         // std::cout << "CLOSED: " << m_MinHeap->top()->node->getPosition().positionKey << " with F = " << m_MinHeap->top()->getFScore() << std::endl;//
-        MazeNode* curr = m_MinHeap->top()->node;
+        MazeNode* curr = ((HeapPropsAStar*)m_MinHeap->top())->node;
         
         m_MinHeap->pop();
 

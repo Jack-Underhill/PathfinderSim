@@ -28,7 +28,7 @@ namespace Pathfinder {
         DFS(MazeGraph*& graph);
 
         //Returns the animation's title to be displayed on the GUI while it runs
-        std::string getTitle() const { return "DFS"; }
+        std::string getTitle() const { return "Depth First Search"; }
 
         PathfinderType getPathfinderType() const { return PathfinderType::DFS; }
         

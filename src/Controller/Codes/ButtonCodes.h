@@ -11,6 +11,7 @@ namespace PFSim {
         pf_BFS,
         pf_DFS,
         pf_AStar,
+        pf_SHP,
 
         gen_Open,
         gen_DFS, 

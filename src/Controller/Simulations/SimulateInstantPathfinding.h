@@ -23,7 +23,7 @@ namespace PFSim {
 
     private:
         void runSimulation() override;
-        void runPathfinder() override;
+        void runPathfinder(int target = -1) override;
         void runGraphReset(bool isClearingObstacles = false, bool isAnimating = true) override;
         void runPath() override;
     };

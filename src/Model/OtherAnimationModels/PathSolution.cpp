@@ -42,7 +42,6 @@ namespace PFSim {
         //step to highlight the head of the path
         if(!m_IsAnimating || isHeadOfPath) 
         {
-            m_stepCount++;
             headStep(currNode);
         }
         //step to paint in the true path color
@@ -79,11 +78,17 @@ namespace PFSim {
             currPathEnd->next->movedIn = nextMazeNode->getDirectionMovedIn();
             currMazeNode = nextMazeNode;
             currPathEnd = currPathEnd->next;
+            
+            m_stepCount++;
         }
 
         if(front != nullptr) 
         {
             currPathEnd->next = front->next;
+        }
+        else
+        {
+            m_stepCount++;
         }
         front = currPathFront;
     }

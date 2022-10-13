@@ -56,7 +56,7 @@ namespace PFSim {
 
         // Returns true if contained and removed.
         // Returns false if not contained.
-        bool removeTargetIfContained(MazeNode*& curr);
+        virtual bool removeTargetIfContained(MazeNode*& curr);
 
         void setTargetList(int size, int* targets);
         int* getTargetList() { return m_TargetList; }

@@ -19,35 +19,9 @@ namespace PFSim  {
         m_IsPath = false;
     }
 
-    std::string MazeNode::getTypeString() const 
+    std::string MazeNode::getString() const 
     {
-        switch(m_CellType) 
-        {
-        case(WallCell):
-            return "Wall Cell";
-        case(StartCell):
-            return "Maze Start";
-        case(EndCell):
-            return "Maze End";
-        case(CheckpointCell):
-            return "Maze Checkpoint";
-        case(GenerationCell):
-            return "Generation Cell";
-        default: //(BlankCell)
-            if(m_IsPath) 
-            {
-                if(m_IsNext)
-                    return "Path Head";
-                else
-                    return "Path Cell";
-            } 
-            else if(m_IsNext) 
-                return "Next Cell";
-            else if(m_IsVisited) 
-                return "Visited Cell";
-            else 
-                return "Empty Cell";
-        }
+        return PFSim::getTypeString(m_CellType, m_IsNext, m_IsVisited, m_IsPath);
     }
 
     std::string MazeNode::getColor() const
@@ -58,6 +32,38 @@ namespace PFSim  {
     bool MazeNode::isAvailableToMoveInto() 
     {
         return !m_IsVisited && m_CellType != StartCell;
+    }
+
+    std::string getTypeString(CellType type, bool isNext, bool isVisited, bool isPath)
+    {
+        if(isPath) 
+        {
+            if(isNext)
+                return "Path Head";
+            else
+                return "Path Cell";
+        } 
+
+        switch(type) 
+        {
+        case(WallCell):
+            return "Wall Cell";
+        case(StartCell):
+            return "Start Cell";
+        case(EndCell):
+            return "End Cell";
+        case(CheckpointCell):
+            return "Checkpoint Cell";
+        case(GenerationCell):
+            return "Generation Cell";
+        default: //(BlankCell)
+            if(isNext) 
+                return "Next Cell";
+            else if(isVisited) 
+                return "Visited Cell";
+            else 
+                return "Empty Cell";
+        }
     }
     
     std::string getNodeColor(CellType type, bool isNext, bool isVisited, bool isPath)

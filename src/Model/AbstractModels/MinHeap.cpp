@@ -8,7 +8,7 @@ namespace PFSim {
     //     if(-1 < index && index < m_PropVector.size())
     //     {
     //         // node
-    //         std::cout << m_PropVector[index]->node->getPosition().positionKey << ": " << m_PropVector[index]->getFScore() << std::endl;
+    //         std::cout << m_PropVector[index]->getValue() << std::endl;
     //         if(!hasLeftChild(index) && !hasRightChild(index)) //isleaf
     //         {
     //             std::cout << "---------" << std::endl;
@@ -25,19 +25,15 @@ namespace PFSim {
     //     }
     // }
 
-    MinHeap::MinHeap()
-    {
-    }
-
     MinHeap::~MinHeap()
     {
-        for(AStarNodeProps* prop : m_PropVector)
+        for(HeapProps* prop : m_PropVector)
         {
             delete prop;
         }
     }
 
-    AStarNodeProps* MinHeap::top() const
+    HeapProps* MinHeap::top() const
     {
         if(m_PropVector.size() > 0)
         {
@@ -60,52 +56,10 @@ namespace PFSim {
             bubbleDown();
         }
     }
-
-    bool MinHeap::push(AStarNodeProps* props)
-    {
-        int index = find(props->node->getPosition().positionKey);
-
-        if(index == -1)
-        {
-            m_PropVector.push_back(props);
-            bubbleUp();
-        }
-        else
-        {
-            AStarNodeProps* curr = m_PropVector[index];
-
-            if(curr->distanceG > props->distanceG)
-            {
-                // update optimized distanceG
-                curr->distanceG = props->distanceG;
-
-                bubbleUp(index);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    int MinHeap::find(int key) const 
-    {
-        for(int i = 0; i < m_PropVector.size(); i++)
-        {
-            if(m_PropVector[i]->node->getPosition().positionKey == key)
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
     
     void MinHeap::swap(int index1, int index2)
     {
-        AStarNodeProps* temp = m_PropVector[index1];
+        HeapProps* temp = m_PropVector[index1];
         m_PropVector[index1] = m_PropVector[index2];
         m_PropVector[index2] = temp;
     }
@@ -117,7 +71,7 @@ namespace PFSim {
             index = m_PropVector.size() - 1;
         }
 
-        while(hasParent(index) && (parent(index)->getFScore() > m_PropVector[index]->getFScore()))
+        while(hasParent(index) && (parent(index)->getValue() > m_PropVector[index]->getValue()))
         {
             swap(getParentIndex(index), index);
             index = getParentIndex(index);
@@ -133,13 +87,13 @@ namespace PFSim {
         {
             //get index of child with lower FScore
             int smallerChildIndex = getLeftChildIndex(index);
-            if(hasRightChild(index) && (rightChild(index)->getFScore() < leftChild(index)->getFScore()))
+            if(hasRightChild(index) && (rightChild(index)->getValue() < leftChild(index)->getValue()))
             {
                 smallerChildIndex = getRightChildIndex(index);
             }
 
             //bubble down if child is less than or equal to parent, else end while loop.
-            if(m_PropVector[index]->getFScore() >= m_PropVector[smallerChildIndex]->getFScore())
+            if(m_PropVector[index]->getValue() >= m_PropVector[smallerChildIndex]->getValue())
             {
                 swap(index, smallerChildIndex); 
             }

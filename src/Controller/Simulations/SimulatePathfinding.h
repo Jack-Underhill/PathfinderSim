@@ -8,9 +8,12 @@
 #include "BFS.h"
 #include "DFS.h"
 #include "AStar.h"
+#include "SHP.h"
 #include "PathSolution.h"
 #include "ResetNodes.h"
 #include "ClearObstacles.h"
+
+// #include "MinHeap.h"
 
 
 namespace PFSim {
@@ -44,16 +47,19 @@ namespace PFSim {
         int m_TargetListSize;
         int* m_TargetList;
 
-        void initPathfinder(bool isAnimating);
+        void initPathfinder(bool isAnimating, int target);
         void initPath(bool isAnimating);
         void initReset(bool isClearingObstacles = false);
 
         void handleAnimationTimer(MazeNode*& node);
         void handlePathfinderFinalizing(Timer& timer);
 
+    protected:
+        virtual void runSHPSimulation();
+
     private:
         virtual void runSimulation();
-        virtual void runPathfinder();
+        virtual void runPathfinder(int target = -1);
         virtual void runGraphReset(bool isClearingObstacles = false, bool isAnimating = true);
         virtual void runPath();
     };

@@ -24,7 +24,7 @@ namespace Pathfinder {
         BFS(MazeGraph*& graph);
 
         //Returns the animation's title to be displayed on the GUI while it runs.
-        std::string getTitle() const { return "BFS"; }
+        std::string getTitle() const { return "Breadth First Search"; }
 
         PathfinderType getPathfinderType() const { return PathfinderType::BFS; }
 

@@ -105,6 +105,9 @@ namespace PFSim {
         void addSpacer(Panel& panel);
 
         void loadMouseListeners();
+
+        void loadCellNames();
+        void drawCellName(CellType type, int& iterator, bool isNext = false, bool isVisited = false, bool isPath = false);
     };
 
 }

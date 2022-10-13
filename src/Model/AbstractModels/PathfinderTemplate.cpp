@@ -73,24 +73,22 @@ namespace PFSim {
     
     bool PathfinderTemplate::removeTargetIfContained(MazeNode*& curr)
     {
-        bool isContained = false;
-
-        for(int i = 0; i < m_TargetListSize && !isContained; i++) 
+        for(int i = 0; i < m_TargetListSize; i++) 
         {
             if(m_TargetList[i] == curr->getPosition().positionKey)
             {
-                isContained = true;
-
                 setIsComplete(true);
                 m_IsStillSearching = false;
                 m_TargetNodeFound = curr;
 
                 m_TargetList[i] = m_TargetList[m_TargetListSize - 1];
                 m_TargetListSize--;
+
+                return true;
             }
         }
 
-        return isContained;
+        return false;
     }
 
     MazeNode* PathfinderTemplate::getStartingPlace()

@@ -17,7 +17,7 @@ namespace PFSim {
     // const int WINDOW_WIDTH = 900;
     // const int WINDOW_HEIGHT = 600;
     
-    const int DISPLAY_SIZE = WINDOW_HEIGHT * ( 5.0 / 6 );
+    const int DISPLAY_SIZE = WINDOW_HEIGHT * ( 5.2 / 6 );
     const int DISPLAY_TOP_BUFFER = WINDOW_HEIGHT / 8.0;
     const int DISPLAY_BOTTOM_BUFFER = DISPLAY_TOP_BUFFER + DISPLAY_SIZE;
     const int DISPLAY_LEFT_BUFFER = (WINDOW_WIDTH - DISPLAY_SIZE) / 2;

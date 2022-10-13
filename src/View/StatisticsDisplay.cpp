@@ -70,6 +70,11 @@ namespace PFSim {
         m_PathSolution->reset();
     }
     
+    void StatisticsDisplay::resetPathSolution() 
+    { 
+        m_PathSolution->reset(); 
+    }
+    
     void StatisticsDisplay::setTitle(DisplayCategory*& category, const std::string& title)
     {
         if(category == m_Generator)
@@ -150,7 +155,7 @@ namespace PFSim {
         m_Window->setColor(BACKGROUND_WINDOW_COLOR);
 
         double offset = DISPLAY_TOP_BUFFER / 8.0;
-        double width = DISPLAY_SIZE / 3.0;
+        double width = DISPLAY_SIZE * 4.0 / 10.0;
         double height = DISPLAY_TOP_BUFFER / 6.0;
 
         m_Window->fillRect(getX(section - 1), getY() - offset, width, height);

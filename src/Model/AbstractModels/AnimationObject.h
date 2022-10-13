@@ -38,8 +38,8 @@ namespace PFSim {
     {
         BFS,
         DFS,
-        // Dijkstra,
-        AStar
+        AStar,
+        SHP
     };
 
     class AnimationObject 

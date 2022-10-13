@@ -19,12 +19,21 @@ namespace PFSim
             runGraphReset(false, true);
         }
 
+
         //execute simulation
-        while((m_Graph->getLastFoundTarget() == nullptr || m_Graph->getLastFoundTarget()->getType() != EndCell) && !m_HasSimulationFailed) 
+        if(m_Pathfinder == PathfinderType::SHP && m_Graph->getTargetCount() > 0)
         {
-            runPathfinder();
-            runGraphReset(false, false);
+            runSHPSimulation();
         }
+        else
+        {
+            while((m_Graph->getLastFoundTarget() == nullptr || m_Graph->getLastFoundTarget()->getType() != EndCell) && !m_HasSimulationFailed) 
+            {
+                runPathfinder();
+                runGraphReset(false, false);
+            }
+        }
+        
 
         // simulation after-effects
         if(!m_HasSimulationFailed)
@@ -35,10 +44,10 @@ namespace PFSim
         delete m_PathSolution;
     }
 
-    void SimulateInstantPathfinding::runPathfinder()
+    void SimulateInstantPathfinding::runPathfinder(int target)
     {
         //algorithm setup
-        initPathfinder(false);
+        initPathfinder(false, target);
         Timer timer;
         
         //execute algorithm

@@ -5,39 +5,31 @@
 #include <vector>
 
 #include "MazeNode.h"
+#include "PathSolution.h"
+
 
 namespace PFSim {
-    
-    struct AStarNodeProps
+
+    class HeapProps
     {
-        MazeNode* node;    // Node's posisiton Key
-        int distanceG;  // Step count from start
-        int distanceH;  // Heuristic (Manhatten) distance
-
-        int getFScore() { return distanceG + distanceH; } 
-
-        AStarNodeProps(MazeNode* node, int distanceG, int distanceH)
-        {
-            this->node = node;
-            this->distanceG = distanceG;
-            this->distanceH = distanceH;
-        }
-        ~AStarNodeProps() = default;
+    public:
+        virtual int getValue() const = 0;
     };
+
 
     class MinHeap 
     {
     public:
-        MinHeap();
-        ~MinHeap();
+        MinHeap() = default;
+        virtual ~MinHeap();
         bool isEmpty() const { return (m_PropVector.size() == 0); }
-        AStarNodeProps* top() const;
+        HeapProps* top() const;
         void pop();
-        bool push(AStarNodeProps* props);
+        virtual bool push(HeapProps* props) = 0;
 
         // void print(int index);
-    private:
-        std::vector<AStarNodeProps*> m_PropVector; // change to array (initialize the capacity with mazeLength^2 or graph size)
+    protected:
+        std::vector<HeapProps*> m_PropVector; // change to array (initialize the capacity with mazeLength^2 or graph size)
 
         int getLeftChildIndex(int parentIndex) const { return 2 * parentIndex + 1; }
         int getRightChildIndex(int parentIndex) const { return 2 * parentIndex + 2; }
@@ -47,11 +39,9 @@ namespace PFSim {
         bool hasRightChild(int index) const { return getRightChildIndex(index) < m_PropVector.size(); }
         bool hasParent(int index) const { return getParentIndex(index) >= 0; }
 
-        AStarNodeProps* leftChild(int index) const { return m_PropVector[getLeftChildIndex(index)]; }
-        AStarNodeProps* rightChild(int index) const { return m_PropVector[getRightChildIndex(index)]; }
-        AStarNodeProps* parent(int index) const { return m_PropVector[getParentIndex(index)]; }
-
-        int find(int key) const;
+        HeapProps* leftChild(int index) const { return m_PropVector[getLeftChildIndex(index)]; }
+        HeapProps* rightChild(int index) const { return m_PropVector[getRightChildIndex(index)]; }
+        HeapProps* parent(int index) const { return m_PropVector[getParentIndex(index)]; }
 
         void swap(int index1, int index2);
         

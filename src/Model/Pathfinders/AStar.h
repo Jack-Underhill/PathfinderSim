@@ -77,6 +77,39 @@ namespace Pathfinder {
         SW, 
         SE
     };
+
+
+    class MinHeapAStar : public MinHeap
+    {
+    public:
+        MinHeapAStar() = default;
+        virtual ~MinHeapAStar() = default;
+
+        bool push(HeapProps* props);
+
+    private:
+        int find(int key) const;
+    };
+
+
+    class HeapPropsAStar : public HeapProps
+    {
+    public:
+        MazeNode* node;     // Node's posisiton Key
+        int distanceG;      // Step count from start
+        int distanceH;      // Heuristic (Manhatten) distance
+
+        int getValue() const { return distanceG + distanceH; } // F value
+
+        HeapPropsAStar(MazeNode* node, int distanceG, int distanceH)
+        {
+            this->node = node;
+            this->distanceG = distanceG;
+            this->distanceH = distanceH;
+        }
+        ~HeapPropsAStar() = default;
+    };
+    
     
     class AStar : public PathfinderTemplate 
     {
@@ -91,7 +124,7 @@ namespace Pathfinder {
         PathfinderType getPathfinderType() const { return PathfinderType::AStar; }
 
     private:
-        MinHeap* m_MinHeap;
+        MinHeapAStar* m_MinHeap;
         std::unordered_set<int> m_Set;
 
         NodePosition m_EndPosition;
