@@ -125,16 +125,28 @@ namespace PFSim {
         m_Interactors.push(btn_pfAStar);
 
 
-        sgl::GButton* btn_pfSHP = new sgl::GButton("Run SHP");
-        btn_pfSHP->setActionListener([this] 
+        sgl::GButton* btn_pfSHP_BFS = new sgl::GButton("Run SHP-BFS");
+        btn_pfSHP_BFS->setActionListener([this] 
         {
             WindowData& data = this->m_Data;
 
-            ButtonEvent event(ButtonCode::pf_SHP);
+            ButtonEvent event(ButtonCode::pf_SHP_BFS);
             data.EventCallback(event);
         });
-        p_Pathfinder.addInteractor(btn_pfSHP);
-        m_Interactors.push(btn_pfSHP);
+        p_Pathfinder.addInteractor(btn_pfSHP_BFS);
+        m_Interactors.push(btn_pfSHP_BFS);
+
+
+        sgl::GButton* btn_pfSHP_AStar = new sgl::GButton("Run SHP-AStar");
+        btn_pfSHP_AStar->setActionListener([this] 
+        {
+            WindowData& data = this->m_Data;
+
+            ButtonEvent event(ButtonCode::pf_SHP_AStar);
+            data.EventCallback(event);
+        });
+        p_Pathfinder.addInteractor(btn_pfSHP_AStar);
+        m_Interactors.push(btn_pfSHP_AStar);
 
 
         m_Window->addToRegion(p_Pathfinder.getPanel(), sgl::GWindow::REGION_EAST);

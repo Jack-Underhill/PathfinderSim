@@ -1,4 +1,5 @@
 #include "application.h"
+// #include <chrono>
 
 namespace PFSim {
 
@@ -31,7 +32,10 @@ namespace PFSim {
     void Application::run() 
     {
         //inifinitely keeping the project up
-        while(m_Window->isRunning()) {}
+        while(m_Window->isRunning()) 
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
     }
 
     void Application::onEvent(Event& e) 
@@ -59,7 +63,7 @@ namespace PFSim {
         {
             handleCheckpoint(code);
         }
-        else if(code == ButtonCode::pf_BFS || code == ButtonCode::pf_DFS || code == ButtonCode::pf_AStar || code == ButtonCode::pf_SHP)
+        else if(code == ButtonCode::pf_BFS || code == ButtonCode::pf_DFS || code == ButtonCode::pf_AStar || code == ButtonCode::pf_SHP_BFS || code == ButtonCode::pf_SHP_AStar)
         {
             handlePathfinder(code);
         }
@@ -196,9 +200,13 @@ namespace PFSim {
         {
             m_PathfinderType = AStar;
         }
-        else if(code == ButtonCode::pf_SHP) 
+        else if(code == ButtonCode::pf_SHP_BFS) 
         {
-            m_PathfinderType = SHP;
+            m_PathfinderType = SHP_BFS;
+        }
+        else if(code == ButtonCode::pf_SHP_AStar) 
+        {
+            m_PathfinderType = SHP_AStar;
         }
 
         SimulatePathfinding pf(m_Graph, m_Window, m_AnimationTimer);

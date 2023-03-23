@@ -1,6 +1,9 @@
 #ifndef _Application_h_
 #define _Application_h_
 
+#include <chrono>
+#include <thread>
+
 #include "Event.h"
 #include "AnimationTimer.h"
 #include "Window.h"
