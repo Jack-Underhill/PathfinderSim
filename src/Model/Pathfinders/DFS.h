@@ -1,10 +1,20 @@
-/* Jack Underhill & Jack Sanger
- * CS 133, Spring 2022
- * Final Project - Pathfinding
- * The purpose of this class is to interatively find the end of a mazing using a DFS algorithm.
- * To do this the class has a step() method which will progress the pathfinder one step as well
- * as a findEnd() method which will step through the pathfinder until the end is found.
- * When a path has been found the class can then return that class via the getPath() method.
+/* 
+ * Jack Underhill
+ * Summer 2022
+ * Maze Generating and Pathfinding Simulator
+ * 
+ * Pathfinder--Depth First Search(DFS)
+ * 
+ * This pathfinding algorithm walks the depth of a chosen direction until it can no longer.
+ * It then continues on walking the depth of a new randomly-chosen direction if available;
+ * if there are no available moves, then the algorithm recursively backtracks its steps until 
+ * there is available moves and then repeats the steps above. The algorithm ends once it has 
+ * found its target(s) or it has recursively backtracked to the start.
+ * 
+ * This implementation of DFS uses a stack. 
+ * Before each step, the current available moves to be made are pushed onto the stack. The node 
+ * from the top of the stack is always the next chosen step. This allows only the most recently 
+ * visited (available moves) to be prioritized first. The algorithm ends when the stack is empty.
  */
 
 #ifndef _DFS_h_
@@ -18,33 +28,43 @@
 #include "MazeNode.h"
 
 namespace PFSim {
-
 namespace Pathfinder {
 
     class DFS: public PathfinderTemplate 
     {
     public:
-        //Constructor takes the start, end, and a list of checkpoints the pathfinder must hit
+        //Takes the given graph to store the starting node for this pathfinding algorithm.
         DFS(MazeGraph*& graph);
 
-        //Returns the animation's title to be displayed on the GUI while it runs
+        //Default destructor.
+        ~DFS() = default;
+
+        //Returns the animation's title.
         std::string getTitle() const { return "Depth First Search"; }
 
+        //Returns the pathfinder type.
         PathfinderType getPathfinderType() const { return PathfinderType::DFS; }
         
     private:
         std::stack<MazeNode*> m_NodeStack;
 
-        //Searches through the maze graph until it reaches a deadend (no current-neighboring 
-        //unvisited-cells). Then it backtrack its steps until it can move into a unvisited cell.
-        //Search ends when it has found all checkpoints (if any), then finds the end node.
+        //Takes and pops the top node from the m_NodeStack to be current node step.
+        //PathfinderTemplate::currStepTemplate() is called and passed the current node.
+        //Returns the popped node.
         int currStep();
         
+        //addIfAvailable() for each (N,W,S,E) neighboring nodes into the m_NodeStack.
+        //If the m_NodeStack is still empty after, then set the algorithm to be no longer searching.
+        void updatePathfinderStep(MazeNode*& currNode);
+
+        //If it is available then: 
+        //set the given moved direction to the given curr node,
+        //set the curr node to next,
+        //set the curr node's parent node to be the given prev node.
         void addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir);
     };
     
 } // namespace Pathfinder
-
 } // namespace PFSim
 
 #endif

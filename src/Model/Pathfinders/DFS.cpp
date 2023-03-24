@@ -1,17 +1,16 @@
-/* Jack Underhill & Jack Sanger
- * CS 133, Spring 2022
- * Final Project - Pathfinding
+/* 
+ * Jack Underhill
+ * Summer 2022
+ * Maze Generating and Pathfinding Simulator
  */
-
 #include "DFS.h"
 
 namespace PFSim {
-
 namespace Pathfinder {
 
     DFS::DFS(MazeGraph*& graph) : PathfinderTemplate(graph) 
     {
-        m_NodeStack.push( getStartingPlace() );
+        m_NodeStack.push( PathfinderTemplate::getStartingPlace() );
     }
 
     int DFS::currStep() 
@@ -19,42 +18,39 @@ namespace Pathfinder {
         MazeNode* currNode = m_NodeStack.top();
         m_NodeStack.pop();
 
-        if(m_TargetListSize == 0 && currNode->getType() == EndCell) 
-        {
-            setIsComplete(true);
-            m_TargetNodeFound = currNode;
-            m_IsStillSearching = false;
-        }
-        else if((currNode->getType() == CheckpointCell && !removeTargetIfContained(currNode)) || 
-                 currNode->getType() != CheckpointCell)
-        {
-            currNode->setIsVisited(true);
-            currNode->setIsNext(false);
-
-            addAvailableMoves(currNode);
-
-            if(m_NodeStack.empty())
-            {
-                m_IsStillSearching = false;
-            }
-        }
+        PathfinderTemplate::currStepTemplate(currNode);
 
         return currNode->getPosition().positionKey;
     }
     
-    void DFS::addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir)
+    void DFS::updatePathfinderStep(MazeNode*& currNode)
+    {
+        currNode->setIsNext(false);
+        currNode->setIsVisited(true);
+
+        PathfinderTemplate::addAvailableMoves(currNode);
+
+        if(m_NodeStack.empty())
+        {
+            m_IsStillSearching = false;
+        }
+    }
+    
+    // am i pushing the same available nodes? through the course of the algorithm?
+    // meaning: a specific node can be available to multiple nodes (up to 4 = NWSE), can a node be found available multiple times before being a chosen move?
+    // if so then this is duplicating nodes into the m_NodeStack.
+    void DFS::addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir) 
     {
         if(PathfinderTemplate::isAvailableMove(curr)) 
         {
             m_NodeStack.push(curr);
 
             curr->setDirectionMovedIn(dir);
-            setNext(curr);
+            PathfinderTemplate::setNext(curr);
             
             curr->parent = prev;
         }
     }
     
 } // namespace Pathfinder
-
 } // namespace PFSim
