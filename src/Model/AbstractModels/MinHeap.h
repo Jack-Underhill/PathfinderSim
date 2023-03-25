@@ -10,9 +10,12 @@
 
 namespace PFSim {
 
-    class HeapProps
+    class HeapProp
     {
     public:
+        HeapProp() = default;
+        virtual ~HeapProp() = default;
+        
         virtual int getValue() const = 0;
     };
 
@@ -22,14 +25,14 @@ namespace PFSim {
     public:
         MinHeap() = default;
         virtual ~MinHeap();
-        bool isEmpty() const { return (m_PropVector.size() == 0); }
-        HeapProps* top() const;
+        bool isEmpty() const { return (m_PropVector.size() == 0); } // not used in MinHeap.cpp...?
+        HeapProp* top() const;
         void pop();
-        virtual bool push(HeapProps* props) = 0;
+        virtual bool push(HeapProp* props) = 0;
 
         // void print(int index);
     protected:
-        std::vector<HeapProps*> m_PropVector; // change to array (initialize the capacity with mazeLength^2 or graph size)
+        std::vector<HeapProp*> m_PropVector; // change to array (initialize the capacity with mazeLength^2 or graph size)
 
         int getLeftChildIndex(int parentIndex) const { return 2 * parentIndex + 1; }
         int getRightChildIndex(int parentIndex) const { return 2 * parentIndex + 2; }
@@ -39,9 +42,9 @@ namespace PFSim {
         bool hasRightChild(int index) const { return getRightChildIndex(index) < m_PropVector.size(); }
         bool hasParent(int index) const { return getParentIndex(index) >= 0; }
 
-        HeapProps* leftChild(int index) const { return m_PropVector[getLeftChildIndex(index)]; }
-        HeapProps* rightChild(int index) const { return m_PropVector[getRightChildIndex(index)]; }
-        HeapProps* parent(int index) const { return m_PropVector[getParentIndex(index)]; }
+        HeapProp* leftChild(int index) const { return m_PropVector[getLeftChildIndex(index)]; }
+        HeapProp* rightChild(int index) const { return m_PropVector[getRightChildIndex(index)]; }
+        HeapProp* parent(int index) const { return m_PropVector[getParentIndex(index)]; }
 
         void swap(int index1, int index2);
         

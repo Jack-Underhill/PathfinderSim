@@ -27,13 +27,13 @@ namespace PFSim {
 
     MinHeap::~MinHeap()
     {
-        for(HeapProps* prop : m_PropVector)
+        for(HeapProp* prop : m_PropVector)
         {
             delete prop;
         }
     }
 
-    HeapProps* MinHeap::top() const
+    HeapProp* MinHeap::top() const
     {
         if(m_PropVector.size() > 0)
         {
@@ -59,7 +59,7 @@ namespace PFSim {
     
     void MinHeap::swap(int index1, int index2)
     {
-        HeapProps* temp = m_PropVector[index1];
+        HeapProp* temp = m_PropVector[index1];
         m_PropVector[index1] = m_PropVector[index2];
         m_PropVector[index2] = temp;
     }
