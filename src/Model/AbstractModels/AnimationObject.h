@@ -39,7 +39,8 @@ namespace PFSim {
         BFS,
         DFS,
         AStar,
-        SHP
+        SHP_BFS,
+        SHP_AStar
     };
 
     class AnimationObject 

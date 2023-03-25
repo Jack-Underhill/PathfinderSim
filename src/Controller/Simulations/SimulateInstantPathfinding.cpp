@@ -12,6 +12,7 @@ namespace PFSim
     {
         //simulation setup
         initPath(false);
+        initTargets();
         m_Window->getStatisticsDisplay()->resetPathingStats();
         m_Graph->clearTargetFound();
         if(!m_Graph->isReadyForSimulation())
@@ -21,7 +22,7 @@ namespace PFSim
 
 
         //execute simulation
-        if(m_Pathfinder == PathfinderType::SHP && m_Graph->getTargetCount() > 0)
+        if(m_Pathfinder == PathfinderType::SHP_BFS || m_Pathfinder == PathfinderType::SHP_AStar)//why does this not have the same conditions as SimulatePathfinding?
         {
             runSHPSimulation();
         }
