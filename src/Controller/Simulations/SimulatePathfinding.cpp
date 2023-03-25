@@ -9,8 +9,6 @@ namespace PFSim {
         m_AnimationTimer = timer;
 
         m_HasSimulationFailed = false;
-
-        m_TargetList = nullptr;
     }
 
     void SimulatePathfinding::run(bool isAnimating, PathfinderType type)
@@ -29,7 +27,7 @@ namespace PFSim {
         runGraphReset(true);
     }
 
-    void SimulatePathfinding::initPathfinder(bool isAnimating, int target)
+    void SimulatePathfinding::initPathfinder(bool isAnimating, int target) 
     {
         switch(m_Pathfinder)
         {
@@ -42,15 +40,15 @@ namespace PFSim {
         case(AStar):
             m_Animation = new Pathfinder::AStar(m_Graph);
             break;
-        case(SHP):
-            m_Animation = new Pathfinder::SHP(m_Graph, target);
+        case(SHP_BFS):
+            m_Animation = new Pathfinder::SHP_BFS(m_Graph, target);
+            break;
+        case(SHP_AStar):
+            m_Animation = new Pathfinder::SHP_AStar(m_Graph, target);
             break;
         }
-
-        if(m_Pathfinder != SHP && m_TargetList != nullptr)
-        {
-            ((PathfinderTemplate*)m_Animation)->setTargetList(m_TargetListSize, m_TargetList);
-        }
+        ((PathfinderTemplate*)m_Animation)->setTargetList(m_TargetListSize, m_TargetList);
+        
         m_Window->getStatisticsDisplay()->updateTitle( AnimationType::Pathfind, m_Animation->getTitle() );
 
         if(isAnimating)
@@ -80,11 +78,26 @@ namespace PFSim {
 
         m_Graph->setIsReadyForSimulation(true);
     }
+    
+    void SimulatePathfinding::initTargets()
+    {
+        m_TargetListSize = m_Graph->getTargetCount();
+        int* list = m_Graph->getTargets();
+
+        //Copy array.
+        //(So changing data in the SimulatePathfinding::m_TargetList wont affect the data in 
+        //MazeGraph::m_Graph)
+        for(int i = 0; i < m_TargetListSize; i++)
+        {
+            m_TargetList[i] = list[i];
+        }
+    }
 
     void SimulatePathfinding::runSimulation()
     {
         //simulation setup
         initPath(true);
+        initTargets();
         m_Window->getStatisticsDisplay()->resetPathingStats();
         m_Graph->clearTargetFound();
         if(!m_Graph->isReadyForSimulation())
@@ -94,7 +107,7 @@ namespace PFSim {
 
 
         //execute simulation
-        if(m_Pathfinder == PathfinderType::SHP)
+        if(m_Pathfinder == PathfinderType::SHP_BFS || m_Pathfinder == PathfinderType::SHP_AStar)
         {
             if(m_Graph->getTargetCount() > 0)
             {
@@ -102,6 +115,7 @@ namespace PFSim {
             }
             else
             {
+                m_TargetListSize = 0;
                 int target = m_Graph->getEndNode()->getPosition().positionKey;
                 runPathfinder(target);
                 runGraphReset();
@@ -126,9 +140,10 @@ namespace PFSim {
         delete m_PathSolution;
     }
 
+    //runSHPExecution() ?
     void SimulatePathfinding::runSHPSimulation()
     {
-        Pathfinder::MinHeapSHP minHeap;
+        Pathfinder::SHPMinHeap minHeap;
         Pathfinder::Permutations permutations(m_Graph->getTargets(), m_Graph->getTargetCount());
 
         while(!permutations.empty())
@@ -144,18 +159,21 @@ namespace PFSim {
                 {
                     target = sequence->top();
                     sequence->pop();
+                    m_TargetListSize = 1;
                 }
                 else 
                 {
                     target = m_Graph->getEndNode()->getPosition().positionKey;
+                    m_TargetListSize = 0;
                 }
+                m_TargetList[0] = target; 
+                
                 runPathfinder(target);
-
                 runGraphReset();
             }
 
             int pathSolutionSteps = m_PathSolution->getStepCount();
-            minHeap.push( new Pathfinder::HeapPropsSHP(m_PathSolution, pathSolutionSteps) );
+            minHeap.push( new Pathfinder::SHPHeapProp(m_PathSolution, pathSolutionSteps) );
 
             //reset
             initPath(true);
@@ -164,7 +182,7 @@ namespace PFSim {
             delete sequence;
         }
         
-        m_PathSolution = ((Pathfinder::HeapPropsSHP*)minHeap.top())->path;
+        m_PathSolution = ((Pathfinder::SHPHeapProp*)minHeap.top())->path;
     }
 
     void SimulatePathfinding::runPathfinder(int target)
@@ -265,8 +283,13 @@ namespace PFSim {
             m_Graph->setIsReadyForSimulation(false);
         }
 
+        //update Targets
         m_TargetListSize = ((PathfinderTemplate*)m_Animation)->getTargetListSize();
-        m_TargetList = ((PathfinderTemplate*)m_Animation)->getTargetList();
+        int* list = ((PathfinderTemplate*)m_Animation)->getTargetList();
+        for(int i = 0; i < m_TargetListSize; i++)
+        {
+            m_TargetList[i] = list[i];
+        }
     }
 
 } // namespace PFSim

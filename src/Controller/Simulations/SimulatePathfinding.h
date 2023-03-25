@@ -13,8 +13,6 @@
 #include "ResetNodes.h"
 #include "ClearObstacles.h"
 
-// #include "MinHeap.h"
-
 
 namespace PFSim {
     
@@ -45,11 +43,12 @@ namespace PFSim {
         PathfinderType m_Pathfinder;
 
         int m_TargetListSize;
-        int* m_TargetList;
+        int m_TargetList[CHECKPOINT_LIMIT] = {0};
 
         void initPathfinder(bool isAnimating, int target);
         void initPath(bool isAnimating);
         void initReset(bool isClearingObstacles = false);
+        void initTargets();
 
         void handleAnimationTimer(MazeNode*& node);
         void handlePathfinderFinalizing(Timer& timer);
