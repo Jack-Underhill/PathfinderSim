@@ -12,12 +12,17 @@ namespace PFSim {
         m_MazeLength = graph->getMazeLength();
     }
 
-    bool GeneratorTemplate::isInsideMaze(const NodePosition& p, int mazeLength) const
-    {
-        bool isWithinXBounds = (1 <= p.x && p.x <= mazeLength);
-        bool isWithinYBounds = (1 <= p.y && p.y <= mazeLength);
+    // bool GeneratorTemplate::isInsideMaze(const NodePosition& p) const
+    // {
+    //     bool isWithinXBounds = (1 <= p.x && p.x <= m_MazeLength);
+    //     bool isWithinYBounds = (1 <= p.y && p.y <= m_MazeLength);
 
-        return isWithinXBounds && isWithinYBounds;
+    //     return isWithinXBounds && isWithinYBounds;
+    // }
+    
+    bool GeneratorTemplate::isInsideMaze(int positionKey) const
+    {
+        return (1 <= positionKey && positionKey <= pow(m_MazeLength, 2));
     }
     
     MazeNode* GeneratorTemplate::connectNodes(MazeNode*& curr, const DirectionMoved& chosenMove) const
@@ -91,6 +96,11 @@ namespace PFSim {
         {
             return (DirectionMoved)(dir - 2);
         }
+    }
+    
+    bool GeneratorTemplate::isOnTheSameRow(int positionKey, const MazeNode* node) const
+    {
+        return GeneratorTemplate::m_MappedNodes->at(positionKey)->getPosition().y == node->getPosition().y;
     }
     
 } // namespace PFSim

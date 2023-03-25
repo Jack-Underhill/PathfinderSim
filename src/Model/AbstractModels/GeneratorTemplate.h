@@ -33,9 +33,13 @@ namespace PFSim {
         //Returns the animation's title to be displayed on the GUI while it runs.
         virtual std::string getTitle() const = 0;
 
-        //Verifies the given NodePosition is a valid maze NodePosition (inside its bounds). 
+        // //Verifies the given NodePosition is a valid maze NodePosition (inside its bounds). 
+        // //Returns true if valid.
+        // bool isInsideMaze(const NodePosition& p) const;
+
+        //Verifies the given positionKey is a valid maze NodePosition (inside its bounds). 
         //Returns true if valid.
-        bool isInsideMaze(const NodePosition& p, int mazeLength) const;
+        bool isInsideMaze(int positionKey) const;
 
         //Progresses the generation of the maze a single step.
         virtual int step() = 0;
@@ -50,6 +54,11 @@ namespace PFSim {
 
         NodePosition copyPosition(const NodePosition& pos) const;
         DirectionMoved inverseDirection(const DirectionMoved& dir) const;
+        
+        //Checks the node at the given position key if its y position is the same as the 
+        //given node's y position.
+        //Returns true if the y positions are the same.
+        bool isOnTheSameRow(int positionKey, const MazeNode* node) const;
     };
 
 } // namespace PFSim
