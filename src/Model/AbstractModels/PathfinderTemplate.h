@@ -62,6 +62,18 @@ namespace PFSim {
         int* getTargetList() { return m_TargetList; }
         int getTargetListSize() { return m_TargetListSize; }
 
+        int getIndexOfTargetInList(int target);
+
+        //If the node isn't a target then it will update the current node to be no longer a next 
+        //move and now be visited. Then addIfAvailable for each NWSE neighboring nodes.
+        //
+        //The pathfinding continues until finding a valid target (CheckpointCell or EndCell):
+        //If there are CheckpointCells remaining then they are the only valid targets, 
+        //else the EndCell is the only valid target.
+        void currStepTemplate(MazeNode*& currNode);
+
+        void finalizePathfinder(MazeNode*& currNode);
+
     protected:
         int m_TargetList[CHECKPOINT_LIMIT] = {0};
         int m_TargetListSize;
@@ -81,6 +93,9 @@ namespace PFSim {
         //Helps the step method by progressing the path finder one step and returning the step it just
         //took or nullptr if the pathfinder has found a target.
         virtual int currStep() = 0;
+
+        //
+        virtual void updatePathfinderStep(MazeNode*& currNode) = 0;
     };  
 
 } // namespace PFSim

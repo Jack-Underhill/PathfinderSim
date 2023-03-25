@@ -10,8 +10,6 @@ namespace PFSim {
     {
         m_Graph = graph;
 
-        setTargetList( m_Graph->getTargetCount(), m_Graph->getTargets() );
-
         m_IsStillSearching = true;
     }
 
@@ -39,6 +37,7 @@ namespace PFSim {
     {
         MazeNode* nextNode = stackOfNextNodes.top();
         stackOfNextNodes.pop();
+        
         return nextNode->getPosition().positionKey;
     }
 
@@ -89,6 +88,58 @@ namespace PFSim {
         }
 
         return false;
+    }
+    
+    void PathfinderTemplate::currStepTemplate(MazeNode*& currNode)
+    {
+        if(m_TargetListSize == 0 && currNode->getType() == EndCell)
+        {
+            finalizePathfinder(currNode);
+        }
+        else if(currNode->getType() == CheckpointCell)
+        {
+            int index = PathfinderTemplate::getIndexOfTargetInList(currNode->getPosition().positionKey);
+
+            //target is in list of remaining targets
+            if(index != -1)
+            {
+                setIsComplete(true);
+                m_IsStillSearching = false;
+                m_TargetNodeFound = currNode;
+
+                m_TargetList[index] = m_TargetList[m_TargetListSize - 1];
+                m_TargetListSize--;
+            }
+            //else treat as basic step
+            else
+            {
+                updatePathfinderStep(currNode);
+            }
+        }
+        else
+        {
+            updatePathfinderStep(currNode);
+        }
+    }
+    
+    void PathfinderTemplate::finalizePathfinder(MazeNode*& currNode)
+    {
+        AnimationObject::setIsComplete(true);
+        m_TargetNodeFound = currNode;
+        m_IsStillSearching = false;
+    }
+    
+    int PathfinderTemplate::getIndexOfTargetInList(int target)
+    {
+        for(int i = 0; i < m_TargetListSize; i++) 
+        {
+            if(m_TargetList[i] == target)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     MazeNode* PathfinderTemplate::getStartingPlace()
