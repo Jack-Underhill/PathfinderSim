@@ -11,16 +11,16 @@ namespace Pathfinder {
             v.push_back(*(targets + i));
         }
         
-        Perm = new std::stack<Sequence*>();
-        permutate({}, v, Perm);
+        m_Sequence = new std::stack<Sequence*>();
+        permutate({}, v, m_Sequence);
     }
 
     Permutations::~Permutations()
     {
-        while(!Perm->empty())
+        while(!m_Sequence->empty())
         {
-            delete Perm->top();
-            Perm->pop();
+            delete m_Sequence->top();
+            m_Sequence->pop();
         }
     }
     
@@ -54,7 +54,7 @@ namespace Pathfinder {
     
     /*------------------------------------------SHP Heap-----------------------------------------*/
     
-    bool MinHeapSHP::push(HeapProps* props)
+    bool SHPMinHeap::push(HeapProp* props)
     {
         m_PropVector.push_back(props);
         bubbleUp();
@@ -62,54 +62,50 @@ namespace Pathfinder {
         return true;
     }
 
-    /*---------------------------------------------SHP-------------------------------------------*/
-
-    SHP::SHP(MazeGraph*& graph, int target) : PathfinderTemplate(graph) 
+    /*--------------------------------------------SHP_BFS----------------------------------------*/
+    
+    SHP_BFS::SHP_BFS(MazeGraph*& graph, int target) : BFS(graph) 
     {
-        m_NodeQueue.push( getStartingPlace() );
-
         m_Target = target;
     }
 
-    int SHP::currStep()
+    int SHP_BFS::currStep()
     {
-        MazeNode* currNode = m_NodeQueue.front();
-        m_NodeQueue.pop();
+        MazeNode* currNode = BFS::getCurrentNodeStep();
 
-        if(currNode->getPosition().positionKey == m_Target)
+        if(currNode->getPosition().positionKey == m_Target) //found
         {
-            setIsComplete(true);
-            m_TargetNodeFound = currNode;
-            m_IsStillSearching = false;
+            finalizePathfinder(currNode);
         }
-        else
+        else //keep searching
         {
-            currNode->setIsVisited(true);
-            currNode->setIsNext(false);
-
-            addAvailableMoves(currNode);
-
-            if(m_NodeQueue.empty())
-            {
-                m_IsStillSearching = false;
-            }
+            BFS::updatePathfinderStep(currNode);
         }
 
         return currNode->getPosition().positionKey;
     }
+    
+    /*-------------------------------------------SHP_AStar---------------------------------------*/
 
-    void SHP::addIfAvailable(MazeNode*& curr, MazeNode*& prev, DirectionMoved dir)
+    SHP_AStar::SHP_AStar(MazeGraph*& graph, int target) : AStar(graph) 
     {
-        if(PathfinderTemplate::isAvailableMove(curr)) 
+        m_Target = target;
+    }
+
+    int SHP_AStar::currStep()
+    {
+        MazeNode* currNode = AStar::getCurrentNodeStep();
+
+        if(currNode->getPosition().positionKey == m_Target) //found
         {
-            m_NodeQueue.push(curr);
-
-            curr->setDirectionMovedIn(dir);
-            curr->setIsVisited(true);
-            setNext(curr);
-
-            curr->parent = prev;
+            finalizePathfinder(currNode);
         }
+        else //keep searching
+        {
+            AStar::updatePathfinderStep(currNode);
+        }
+
+        return currNode->getPosition().positionKey;
     }
     
 } // namespace Pathfinder
