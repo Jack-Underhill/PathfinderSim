@@ -1,42 +1,33 @@
 #include "Open.h"
 
 namespace PFSim {
-    
 namespace Generator {
     
     Open::Open(MazeGraph*& graph) : GeneratorTemplate(graph) 
     {
-        m_CurrPos = NodePosition(1, 1, m_MazeLength);
+        m_CurrPos = 1;
     }
 
     int Open::step() 
-    {        
-        MazeNode*& node = m_MappedNodes->at(m_CurrPos.positionKey);
+    {
+        AnimationObject::m_stepCount++;
+        MazeNode*& node = GeneratorTemplate::m_MappedNodes->at(m_CurrPos);
 
-        if(node->getType() == GenerationCell)
+        if(node->getType() != StartCell)
         {
             node->setType(BlankCell);
         }
 
         connectUnlinkedNeighbors(node);
         
-        if(m_CurrPos.x < m_MazeLength)
+        if(m_CurrPos < pow(GeneratorTemplate::m_MazeLength, 2))
         {
-            m_CurrPos.x++;
-        }
-        else if(m_CurrPos.y < m_MazeLength) 
-        {
-            m_CurrPos.x = 1;
-            m_CurrPos.y++;
+            m_CurrPos++;
         }
         else 
         {
-            setIsComplete(true);
+            AnimationObject::setIsComplete(true);
         }
-
-        m_CurrPos.updatePositionKey(m_MazeLength);
-
-        m_stepCount++;
 
         return node->getPosition().positionKey;
     }
@@ -45,32 +36,30 @@ namespace Generator {
 
     void Open::connectUnlinkedNeighbors(MazeNode*& node) 
     {
-        // Check NORTH neighboring cell if has been connected. Connect if not yet.
-        NodePosition checkNorth(m_CurrPos.x, m_CurrPos.y - 1, m_MazeLength);
-        if(isInsideMaze(checkNorth, m_MazeLength)) 
+        int northKey = m_CurrPos - GeneratorTemplate::m_MazeLength;
+        if(isInsideMaze(northKey)) 
         {
-            node->N = m_MappedNodes->at(checkNorth.positionKey);
+            node->N = GeneratorTemplate::m_MappedNodes->at(northKey);
         }
 
-        NodePosition checkWest(m_CurrPos.x - 1, m_CurrPos.y, m_MazeLength);
-        if(isInsideMaze(checkWest, m_MazeLength)) 
+        int westKey = m_CurrPos - 1;
+        if(isInsideMaze(westKey) && GeneratorTemplate::isOnTheSameRow(westKey, node)) 
         {
-            node->W = m_MappedNodes->at(checkWest.positionKey);
+            node->W = GeneratorTemplate::m_MappedNodes->at(westKey);
         }
 
-        NodePosition checkSouth(m_CurrPos.x, m_CurrPos.y + 1, m_MazeLength);
-        if(isInsideMaze(checkSouth, m_MazeLength)) 
+        int southKey = m_CurrPos + GeneratorTemplate::m_MazeLength;
+        if(isInsideMaze(southKey)) 
         {
-            node->S = m_MappedNodes->at(checkSouth.positionKey);
+            node->S = GeneratorTemplate::m_MappedNodes->at(southKey);
         }
 
-        NodePosition checkEast(m_CurrPos.x + 1, m_CurrPos.y, m_MazeLength);
-        if(isInsideMaze(checkEast, m_MazeLength)) 
+        int eastKey = m_CurrPos + 1;
+        if(isInsideMaze(eastKey) && GeneratorTemplate::isOnTheSameRow(eastKey, node)) 
         {
-            node->E = m_MappedNodes->at(checkEast.positionKey);
+            node->E = GeneratorTemplate::m_MappedNodes->at(eastKey);
         }
     }
 
 } // namespace Generator
-
 } // namespace PFSim
